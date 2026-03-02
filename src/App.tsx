@@ -1,7 +1,7 @@
-import {ComponentExample} from "@/components/component-example";
+import {AppShell} from "@/components/layout/app-shell";
 
 export function App() {
-return <ComponentExample />;
+  return <AppShell />;
 }
 
 export default App;
