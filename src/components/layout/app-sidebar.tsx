@@ -36,9 +36,18 @@ import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation"
 type AppSidebarProps = {
   page: AppPage
   onPageChange: (page: AppPage) => void
+  userEmail: string | null
+  onSignOut: () => Promise<void>
 }
 
-export function AppSidebar({ page, onPageChange }: AppSidebarProps) {
+export function AppSidebar({
+  page,
+  onPageChange,
+  userEmail,
+  onSignOut,
+}: AppSidebarProps) {
+  const displayName = userEmail?.split("@")[0] ?? "Guest"
+
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
@@ -50,9 +59,9 @@ export function AppSidebar({ page, onPageChange }: AppSidebarProps) {
                   <SparklesIcon />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Lovable Style App</span>
+                  <span className="truncate font-semibold">Rx Operators</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    Modern Web Workspace
+                    Interaktivní playground
                   </span>
                 </div>
               </button>
@@ -101,9 +110,9 @@ export function AppSidebar({ page, onPageChange }: AppSidebarProps) {
                     <UserCircleIcon />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Kovar User</span>
+                    <span className="truncate font-medium">{displayName}</span>
                     <span className="truncate text-xs text-muted-foreground">
-                      Product Owner
+                      {userEmail ?? "Not signed in"}
                     </span>
                   </div>
                   <ChevronsUpDownIcon className="ml-auto" />
@@ -125,7 +134,14 @@ export function AppSidebar({ page, onPageChange }: AppSidebarProps) {
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem
+                  variant="destructive"
+                  disabled={!userEmail}
+                  onSelect={(event) => {
+                    event.preventDefault()
+                    void onSignOut()
+                  }}
+                >
                   <LogOutIcon />
                   Sign out
                 </DropdownMenuItem>
