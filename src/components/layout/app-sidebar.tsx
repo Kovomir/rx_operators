@@ -37,6 +37,7 @@ type AppSidebarProps = {
   page: AppPage
   onPageChange: (page: AppPage) => void
   userEmail: string | null
+  isAuthenticated: boolean
   onSignOut: () => Promise<void>
 }
 
@@ -44,9 +45,10 @@ export function AppSidebar({
   page,
   onPageChange,
   userEmail,
+  isAuthenticated,
   onSignOut,
 }: AppSidebarProps) {
-  const displayName = userEmail?.split("@")[0] ?? "Guest"
+  const displayName = userEmail?.split("@")[0] ?? (isAuthenticated ? "User" : "Guest")
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -112,7 +114,7 @@ export function AppSidebar({
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">{displayName}</span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {userEmail ?? "Not signed in"}
+                      {userEmail ?? (isAuthenticated ? "Signed in" : "Not signed in")}
                     </span>
                   </div>
                   <ChevronsUpDownIcon className="ml-auto" />
@@ -136,7 +138,7 @@ export function AppSidebar({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"
-                  disabled={!userEmail}
+                  disabled={!isAuthenticated}
                   onSelect={(event) => {
                     event.preventDefault()
                     void onSignOut()

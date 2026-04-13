@@ -11,6 +11,7 @@ type AuthValues = {
 export function useEmailPasswordAuth() {
   const [mode, setMode] = useState<AuthMode>("login")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isGitHubSubmitting, setIsGitHubSubmitting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,7 +28,7 @@ export function useEmailPasswordAuth() {
         return
       }
 
-      if (isSubmitting) {
+      if (isSubmitting || isGitHubSubmitting) {
         return
       }
 
@@ -71,15 +72,53 @@ export function useEmailPasswordAuth() {
 
       setIsSubmitting(false)
     },
-    [isSubmitting, mode]
+    [isSubmitting, mode, isGitHubSubmitting]
+  )
+
+  const signInWithGitHub = useCallback(
+    async () => {
+      if (!supabase) {
+        setError("Supabase is not configured.")
+        return
+      }
+
+      if (isSubmitting || isGitHubSubmitting) {
+        return
+      }
+
+      setIsGitHubSubmitting(true)
+      setMessage(null)
+      setError(null)
+
+      const redirectTo =
+        import.meta.env.VITE_SUPABASE_OAUTH_REDIRECT_TO ??
+        (typeof window !== "undefined" ? window.location.origin : undefined)
+
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: redirectTo ? { redirectTo } : undefined,
+      })
+
+      if (oauthError) {
+        setError(oauthError.message)
+        setIsGitHubSubmitting(false)
+        return
+      }
+
+      setMessage("Redirecting to GitHub...")
+      setIsGitHubSubmitting(false)
+    },
+    [isSubmitting, isGitHubSubmitting]
   )
 
   return {
     mode,
     setMode: switchMode,
     isSubmitting,
+    isGitHubSubmitting,
     message,
     error,
     submit,
+    signInWithGitHub,
   }
 }

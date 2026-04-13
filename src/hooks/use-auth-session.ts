@@ -1,20 +1,25 @@
 import { useCallback, useEffect, useState } from "react"
+import type { Session } from "@supabase/supabase-js"
 
 import { supabase } from "@/lib/supabase"
 
 export function useAuthSession() {
   const isSupabaseConfigured = Boolean(supabase)
-  const [isAuthLoading, setIsAuthLoading] = useState(true)
+  const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userEmail, setUserEmail] = useState<string | null>(null)
 
   useEffect(() => {
     if (!supabase) {
-      setIsAuthLoading(false)
       return
     }
     const client = supabase
 
     let mounted = true
+    const setSessionState = (session: Session | null) => {
+      setIsAuthenticated(Boolean(session?.user))
+      setUserEmail(session?.user.email ?? null)
+    }
 
     const loadSession = async () => {
       const { data } = await client.auth.getSession()
@@ -23,7 +28,7 @@ export function useAuthSession() {
         return
       }
 
-      setUserEmail(data.session?.user.email ?? null)
+      setSessionState(data.session)
       setIsAuthLoading(false)
     }
 
@@ -32,7 +37,7 @@ export function useAuthSession() {
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((_event, session) => {
-      setUserEmail(session?.user.email ?? null)
+      setSessionState(session)
     })
 
     return () => {
@@ -52,6 +57,7 @@ export function useAuthSession() {
   return {
     isSupabaseConfigured,
     isAuthLoading,
+    isAuthenticated,
     userEmail,
     signOut,
   }

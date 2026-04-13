@@ -11,8 +11,13 @@ import { type AppPage } from "./navigation"
 
 export function AppShell() {
   const [page, setPage] = useState<AppPage>("dashboard")
-  const { isSupabaseConfigured, isAuthLoading, userEmail, signOut } =
-    useAuthSession()
+  const {
+    isSupabaseConfigured,
+    isAuthLoading,
+    isAuthenticated,
+    userEmail,
+    signOut,
+  } = useAuthSession()
 
   return (
     <SidebarProvider defaultOpen>
@@ -20,6 +25,7 @@ export function AppShell() {
         page={page}
         onPageChange={setPage}
         userEmail={userEmail}
+        isAuthenticated={isAuthenticated}
         onSignOut={signOut}
       />
       <SidebarInset className="bg-linear-to-b from-muted/40 via-background to-background">
@@ -38,7 +44,9 @@ export function AppShell() {
           {isSupabaseConfigured && isAuthLoading && (
             <div className="text-sm text-muted-foreground">Loading session...</div>
           )}
-          {isSupabaseConfigured && !isAuthLoading && !userEmail && <AuthForm />}
+          {isSupabaseConfigured && !isAuthLoading && !isAuthenticated && (
+            <AuthForm />
+          )}
         </section>
       </SidebarInset>
     </SidebarProvider>

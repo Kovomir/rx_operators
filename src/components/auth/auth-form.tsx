@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form"
+import { GithubIcon } from "lucide-react"
 
 import { useEmailPasswordAuth } from "@/hooks/use-email-password-auth"
 
@@ -12,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 
 type AuthFormValues = {
   email: string
@@ -19,8 +21,17 @@ type AuthFormValues = {
 }
 
 export function AuthForm() {
-  const { mode, setMode, isSubmitting, message, error, submit } =
-    useEmailPasswordAuth()
+  const {
+    mode,
+    setMode,
+    isSubmitting,
+    isGitHubSubmitting,
+    message,
+    error,
+    submit,
+    signInWithGitHub,
+  } = useEmailPasswordAuth()
+  const isBusy = isSubmitting || isGitHubSubmitting
 
   const form = useForm<AuthFormValues>({
     defaultValues: {
@@ -43,7 +54,7 @@ export function AuthForm() {
         <Button
           type="button"
           variant={mode === "login" ? "default" : "outline"}
-          disabled={isSubmitting}
+          disabled={isBusy}
           onClick={() => setMode("login")}
         >
           Login
@@ -51,7 +62,7 @@ export function AuthForm() {
         <Button
           type="button"
           variant={mode === "register" ? "default" : "outline"}
-          disabled={isSubmitting}
+          disabled={isBusy}
           onClick={() => setMode("register")}
         >
           Register
@@ -84,6 +95,7 @@ export function AuthForm() {
                     type="email"
                     placeholder="name@example.com"
                     autoComplete="email"
+                    disabled={isBusy}
                     {...field}
                   />
                 </FormControl>
@@ -112,6 +124,7 @@ export function AuthForm() {
                     autoComplete={
                       mode === "login" ? "current-password" : "new-password"
                     }
+                    disabled={isBusy}
                     {...field}
                   />
                 </FormControl>
@@ -120,13 +133,33 @@ export function AuthForm() {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isBusy}>
             {isSubmitting
               ? "Please wait..."
               : mode === "login"
                 ? "Sign In"
                 : "Create Account"}
           </Button>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Separator className="flex-1" />
+            <span>or continue with</span>
+            <Separator className="flex-1" />
+          </div>
+
+          <div className="grid grid-cols-1 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isBusy}
+              onClick={() => {
+                void signInWithGitHub()
+              }}
+            >
+              <GithubIcon />
+              {isGitHubSubmitting ? "Redirecting..." : "GitHub"}
+            </Button>
+          </div>
         </form>
       </Form>
 
