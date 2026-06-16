@@ -1,35 +1,24 @@
-import {
-  ChevronsUpDownIcon,
-  CreditCardIcon,
-  LogOutIcon,
-  SparklesIcon,
-  UserCircleIcon,
-} from "lucide-react"
+import { LogOutIcon, UserCircleIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation"
 
@@ -57,8 +46,13 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <button type="button" onClick={() => onPageChange("dashboard")}>
-                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <SparklesIcon />
+                <div className="flex size-8 items-center justify-center overflow-hidden rounded-lg bg-white text-foreground ring-1 ring-border">
+                  <img
+                    src="/rx-icon.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="size-full object-contain"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Rx Operators</span>
@@ -74,12 +68,7 @@ export function AppSidebar({
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
-          <SidebarGroupAction asChild>
-            <Button variant="ghost" size="icon-xs" aria-label="Create item">
-              <SparklesIcon />
-            </Button>
-          </SidebarGroupAction>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {PRIMARY_NAV_ITEMS.map((item) => (
@@ -94,7 +83,6 @@ export function AppSidebar({
                       <span>{item.label}</span>
                     </button>
                   </SidebarMenuButton>
-                  {item.badge && <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -105,50 +93,39 @@ export function AppSidebar({
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg">
-                  <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-foreground">
-                    <UserCircleIcon />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{displayName}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {userEmail ?? (isAuthenticated ? "Signed in" : "Not signed in")}
-                    </span>
-                  </div>
-                  <ChevronsUpDownIcon className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <SparklesIcon />
-                  Upgrade Plan
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <CreditCardIcon />
-                  Billing
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <div>
+                <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-foreground">
                   <UserCircleIcon />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  disabled={!isAuthenticated}
-                  onSelect={(event) => {
-                    event.preventDefault()
-                    void onSignOut()
-                  }}
-                >
-                  <LogOutIcon />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{displayName}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {userEmail ?? (isAuthenticated ? "Signed in" : "Not signed in")}
+                  </span>
+                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="ml-auto text-muted-foreground hover:text-destructive"
+                      aria-label="Odhlásit se"
+                      disabled={!isAuthenticated}
+                      onClick={() => {
+                        void onSignOut()
+                      }}
+                    >
+                      <LogOutIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" align="center">
+                    Odhlásit se
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
