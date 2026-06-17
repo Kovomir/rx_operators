@@ -1,36 +1,40 @@
-import {useState} from "react"
-import {ActivityIcon} from "lucide-react"
+import {useState} from "react";
+import {ActivityIcon} from "lucide-react";
 
-import {AuthForm} from "@/components/auth/auth-form"
-import {useAuthSession} from "@/hooks/use-auth-session"
+import {AuthForm} from "@/components/auth/auth-form";
+import {useAuthSession} from "@/hooks/use-auth-session";
 
-import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar"
+import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
+import {PlaygroundPage} from "@/features/playground/playground-page";
 
-import {AppHeader} from "./app-header"
-import {AppSidebar} from "./app-sidebar"
-import {type AppPage} from "./navigation"
+import {AppHeader} from "./app-header";
+import {AppSidebar} from "./app-sidebar";
+import {PRIMARY_NAV_ITEMS, type AppPage} from "./navigation";
 
 export function AppShell() {
-  const [page, setPage] = useState<AppPage>("dashboard")
+  const [page, setPage] = useState<AppPage>("dashboard");
   const {
     isSupabaseConfigured,
     isAuthLoading,
     isAuthenticated,
     userEmail,
     signOut,
-  } = useAuthSession()
+  } = useAuthSession();
 
   if (!isSupabaseConfigured) {
-    return <GuestShell variant="missing-config"/>
+    return <GuestShell variant="missing-config"/>;
   }
 
   if (isAuthLoading) {
-    return <GuestShell variant="loading"/>
+    return <GuestShell variant="loading"/>;
   }
 
   if (!isAuthenticated) {
-    return <GuestShell variant="sign-in"/>
+    return <GuestShell variant="sign-in"/>;
   }
+
+  const currentPageTitle =
+    PRIMARY_NAV_ITEMS.find((item) => item.id === page)?.label ?? "Rx Operators";
 
   return (
     <SidebarProvider defaultOpen>
@@ -41,16 +45,26 @@ export function AppShell() {
         isAuthenticated={isAuthenticated}
         onSignOut={signOut}
       />
-      <SidebarInset className="bg-linear-to-b from-muted/40 via-background to-background">
-        <AppHeader title="Rx Operators"/>
-        <section className="flex flex-1 items-center justify-center p-4 md:p-6">
-          <div className="text-sm text-muted-foreground">
-            Vyberte modul z navigace.
-          </div>
-        </section>
+      <SidebarInset className="min-w-0 bg-linear-to-b from-muted/40 via-background to-background">
+        <AppHeader title={currentPageTitle}/>
+        <AppContent page={page}/>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
+}
+
+function AppContent({page}: { page: AppPage }) {
+  if (page === "playground") {
+    return <PlaygroundPage/>;
+  }
+
+  return (
+    <section className="flex flex-1 items-center justify-center p-4 md:p-6">
+      <div className="text-sm text-muted-foreground">
+        Vyberte modul z navigace.
+      </div>
+    </section>
+  );
 }
 
 type GuestShellProps = {
@@ -92,5 +106,5 @@ function GuestShell({variant}: GuestShellProps) {
         )}
       </section>
     </main>
-  )
+  );
 }
