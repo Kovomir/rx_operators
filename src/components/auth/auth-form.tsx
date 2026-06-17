@@ -1,9 +1,9 @@
-import { useForm } from "react-hook-form"
-import { GithubIcon } from "lucide-react"
+import { useForm } from "react-hook-form";
+import { GithubIcon } from "lucide-react";
 
-import { useEmailPasswordAuth } from "@/hooks/use-email-password-auth"
+import { useEmailPasswordAuth } from "@/hooks/use-email-password-auth";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,9 +11,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 type AuthFormValues = {
   email: string
@@ -30,15 +30,15 @@ export function AuthForm() {
     error,
     submit,
     signInWithGitHub,
-  } = useEmailPasswordAuth()
-  const isBusy = isSubmitting || isGitHubSubmitting
+  } = useEmailPasswordAuth();
+  const isBusy = isSubmitting || isGitHubSubmitting;
 
   const form = useForm<AuthFormValues>({
     defaultValues: {
       email: "",
       password: "",
     },
-  })
+  });
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
@@ -74,7 +74,7 @@ export function AuthForm() {
           className="space-y-4"
           noValidate
           onSubmit={form.handleSubmit(async (values) => {
-            await submit(values)
+            await submit(values);
           })}
         >
           <FormField
@@ -153,7 +153,7 @@ export function AuthForm() {
               variant="outline"
               disabled={isBusy}
               onClick={() => {
-                void signInWithGitHub()
+                void signInWithGitHub();
               }}
             >
               <GithubIcon />
@@ -174,5 +174,5 @@ export function AuthForm() {
         </div>
       )}
     </div>
-  )
+  );
 }

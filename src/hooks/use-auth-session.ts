@@ -1,58 +1,58 @@
-import { useCallback, useEffect, useState } from "react"
-import type { Session } from "@supabase/supabase-js"
+import { useCallback, useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase";
 
 export function useAuthSession() {
-  const isSupabaseConfigured = Boolean(supabase)
-  const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const isSupabaseConfigured = Boolean(supabase);
+  const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) {
-      return
+      return;
     }
-    const client = supabase
+    const client = supabase;
 
-    let mounted = true
+    let mounted = true;
     const setSessionState = (session: Session | null) => {
-      setIsAuthenticated(Boolean(session?.user))
-      setUserEmail(session?.user.email ?? null)
-    }
+      setIsAuthenticated(Boolean(session?.user));
+      setUserEmail(session?.user.email ?? null);
+    };
 
     const loadSession = async () => {
-      const { data } = await client.auth.getSession()
+      const { data } = await client.auth.getSession();
 
       if (!mounted) {
-        return
+        return;
       }
 
-      setSessionState(data.session)
-      setIsAuthLoading(false)
-    }
+      setSessionState(data.session);
+      setIsAuthLoading(false);
+    };
 
-    void loadSession()
+    void loadSession();
 
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange((_event, session) => {
-      setSessionState(session)
-    })
+      setSessionState(session);
+    });
 
     return () => {
-      mounted = false
-      subscription.unsubscribe()
-    }
-  }, [])
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const signOut = useCallback(async () => {
     if (!supabase) {
-      return
+      return;
     }
 
-    await supabase.auth.signOut()
-  }, [])
+    await supabase.auth.signOut();
+  }, []);
 
   return {
     isSupabaseConfigured,
@@ -60,5 +60,5 @@ export function useAuthSession() {
     isAuthenticated,
     userEmail,
     signOut,
-  }
+  };
 }
