@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState } from "react";
 
-import { supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase";
 
 type AuthMode = "login" | "register"
 type AuthValues = {
@@ -9,107 +9,107 @@ type AuthValues = {
 }
 
 export function useEmailPasswordAuth() {
-  const [mode, setMode] = useState<AuthMode>("login")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isGitHubSubmitting, setIsGitHubSubmitting] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGitHubSubmitting, setIsGitHubSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const switchMode = useCallback((nextMode: AuthMode) => {
-    setMode(nextMode)
-    setMessage(null)
-    setError(null)
-  }, [])
+    setMode(nextMode);
+    setMessage(null);
+    setError(null);
+  }, []);
 
   const submit = useCallback(
     async ({ email, password }: AuthValues) => {
       if (!supabase) {
-        setError("Supabase is not configured.")
-        return
+        setError("Supabase is not configured.");
+        return;
       }
 
       if (isSubmitting || isGitHubSubmitting) {
-        return
+        return;
       }
 
-      setIsSubmitting(true)
-      setMessage(null)
-      setError(null)
+      setIsSubmitting(true);
+      setMessage(null);
+      setError(null);
 
-      const trimmedEmail = email.trim()
+      const trimmedEmail = email.trim();
 
       if (!trimmedEmail || !password) {
-        setError("Email and password are required.")
-        setIsSubmitting(false)
-        return
+        setError("Email and password are required.");
+        setIsSubmitting(false);
+        return;
       }
 
       if (mode === "register") {
         const { error: signUpError } = await supabase.auth.signUp({
           email: trimmedEmail,
           password,
-        })
+        });
 
         if (signUpError) {
-          setError(signUpError.message)
+          setError(signUpError.message);
         } else {
           setMessage(
             "Registration successful. Check your email to confirm your account."
-          )
+          );
         }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: trimmedEmail,
           password,
-        })
+        });
 
         if (signInError) {
-          setError(signInError.message)
+          setError(signInError.message);
         } else {
-          setMessage("Logged in successfully.")
+          setMessage("Logged in successfully.");
         }
       }
 
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     },
     [isSubmitting, mode, isGitHubSubmitting]
-  )
+  );
 
   const signInWithGitHub = useCallback(
     async () => {
       if (!supabase) {
-        setError("Supabase is not configured.")
-        return
+        setError("Supabase is not configured.");
+        return;
       }
 
       if (isSubmitting || isGitHubSubmitting) {
-        return
+        return;
       }
 
-      setIsGitHubSubmitting(true)
-      setMessage(null)
-      setError(null)
+      setIsGitHubSubmitting(true);
+      setMessage(null);
+      setError(null);
 
       const redirectTo =
         import.meta.env.VITE_SUPABASE_OAUTH_REDIRECT_TO ??
-        (typeof window !== "undefined" ? window.location.origin : undefined)
+        (typeof window !== "undefined" ? window.location.origin : undefined);
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: redirectTo ? { redirectTo } : undefined,
-      })
+      });
 
       if (oauthError) {
-        setError(oauthError.message)
-        setIsGitHubSubmitting(false)
-        return
+        setError(oauthError.message);
+        setIsGitHubSubmitting(false);
+        return;
       }
 
-      setMessage("Redirecting to GitHub...")
-      setIsGitHubSubmitting(false)
+      setMessage("Redirecting to GitHub...");
+      setIsGitHubSubmitting(false);
     },
     [isSubmitting, isGitHubSubmitting]
-  )
+  );
 
   return {
     mode,
@@ -120,5 +120,5 @@ export function useEmailPasswordAuth() {
     error,
     submit,
     signInWithGitHub,
-  }
+  };
 }

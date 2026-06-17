@@ -1,6 +1,6 @@
-import { LogOutIcon, UserCircleIcon } from "lucide-react"
+import { LogOutIcon, UserCircleIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,14 +13,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
-import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation"
+import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation";
 
 type AppSidebarProps = {
   page: AppPage
@@ -37,7 +37,7 @@ export function AppSidebar({
   isAuthenticated,
   onSignOut,
 }: AppSidebarProps) {
-  const displayName = userEmail?.split("@")[0] ?? (isAuthenticated ? "User" : "Guest")
+  const displayName = userEmail?.split("@")[0] ?? (isAuthenticated ? "User" : "Guest");
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -114,7 +114,7 @@ export function AppSidebar({
                       aria-label="Odhlásit se"
                       disabled={!isAuthenticated}
                       onClick={() => {
-                        void onSignOut()
+                        void onSignOut();
                       }}
                     >
                       <LogOutIcon />
@@ -132,5 +132,5 @@ export function AppSidebar({
 
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

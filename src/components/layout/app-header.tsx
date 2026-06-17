@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type AppHeaderProps = {
   title: string
@@ -15,5 +15,5 @@ export function AppHeader({ title }: AppHeaderProps) {
         <h1 className="truncate text-sm font-semibold md:text-base">{title}</h1>
       </div>
     </header>
-  )
+  );
 }
