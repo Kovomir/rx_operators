@@ -36,5 +36,23 @@ export const STREAM_COLOR_STYLES: Record<
   },
 };
 
+export const DROPPED_STREAM_COLOR_STYLES: typeof STREAM_COLOR_STYLES = {
+  red: {
+    fill: "#e4d8d8",
+    stroke: "#a86b6b",
+    text: "#684343",
+  },
+  blue: {
+    fill: "#d4ddeb",
+    stroke: "#6485b7",
+    text: "#3b4f72",
+  },
+  green: {
+    fill: "#d7ded9",
+    stroke: "#6d9274",
+    text: "#405b46",
+  },
+};
+
 export const STREAM_SHAPES: StreamShape[] = ["circle", "square", "triangle"];
 export const STREAM_COLORS: StreamColor[] = ["red", "blue", "green"];
