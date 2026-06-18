@@ -16,9 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
 type AuthFormValues = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export function AuthForm() {
   const {
@@ -39,14 +39,18 @@ export function AuthForm() {
       password: "",
     },
   });
+  const title = mode === "login" ? "Vítejte zpět" : "Vytvořte si účet";
+  const description =
+    mode === "login"
+      ? "Přihlaste se a pokračujte ve studiu operátorů."
+      : "Zaregistrujte se a začněte studovat operátory.";
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Autentizace</h2>
-        <p className="text-sm text-muted-foreground">
-          Zadejte email a heslo pro{" "}
-          {mode === "login" ? "přihlášení" : "vytvoření nového účtu"}.
+    <div className="mx-auto flex min-w-0 w-full max-w-md flex-col gap-5 text-card-foreground">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold tracking-normal">{title}</h2>
+        <p className="text-sm leading-6 text-muted-foreground md:text-base">
+          {description}
         </p>
       </div>
 
@@ -54,6 +58,7 @@ export function AuthForm() {
         <Button
           type="button"
           variant={mode === "login" ? "default" : "outline"}
+          className="h-10"
           disabled={isBusy}
           onClick={() => setMode("login")}
         >
@@ -62,6 +67,7 @@ export function AuthForm() {
         <Button
           type="button"
           variant={mode === "register" ? "default" : "outline"}
+          className="h-10"
           disabled={isBusy}
           onClick={() => setMode("register")}
         >
@@ -89,13 +95,16 @@ export function AuthForm() {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-sm font-medium text-foreground">
+                  Email
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="email@example.com"
                     autoComplete="email"
                     disabled={isBusy}
+                    className="h-11 px-3 text-base placeholder:text-muted-foreground/85 md:text-base"
                     {...field}
                   />
                 </FormControl>
@@ -116,7 +125,9 @@ export function AuthForm() {
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Heslo</FormLabel>
+                <FormLabel className="text-sm font-medium text-foreground">
+                  Heslo
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"
@@ -125,6 +136,7 @@ export function AuthForm() {
                       mode === "login" ? "current-password" : "new-password"
                     }
                     disabled={isBusy}
+                    className="h-11 px-3 text-base placeholder:text-muted-foreground/85 md:text-base"
                     {...field}
                   />
                 </FormControl>
@@ -133,17 +145,17 @@ export function AuthForm() {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={isBusy}>
+          <Button type="submit" className="h-11 w-full text-base" disabled={isBusy}>
             {isSubmitting
-              ? "Please wait..."
+              ? "Čekejte..."
               : mode === "login"
                 ? "Přihlásit se"
                 : "Vytvořit účet"}
           </Button>
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Separator className="flex-1" />
-            <span>nebo se přihlašte pomocí</span>
+            <span className="shrink-0">nebo se přihlaste pomocí</span>
             <Separator className="flex-1" />
           </div>
 
@@ -151,12 +163,13 @@ export function AuthForm() {
             <Button
               type="button"
               variant="outline"
+              className="h-11 w-full text-base"
               disabled={isBusy}
               onClick={() => {
                 void signInWithGitHub();
               }}
             >
-              <GithubIcon />
+              <GithubIcon className="size-4" />
               {isGitHubSubmitting ? "Přesměrování..." : "GitHub"}
             </Button>
           </div>
