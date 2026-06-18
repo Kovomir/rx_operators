@@ -4,12 +4,15 @@ import { PlayIcon, RotateCcwIcon, ShuffleIcon } from "lucide-react";
 import { toArray } from "rxjs";
 
 import { Button } from "@/components/ui/button";
-import type { PipelineOperator } from "@/features/pipeline-editor";
-
 import {
-  SVG_HEIGHT,
-  TRACK_Y,
-} from "../constants";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import type { PipelineOperator } from "@/features/pipeline-editor";
+import { createDefaultStreamValues } from "@/features/stream-visualizer/simulation/create-default-values";
+
+import { SVG_HEIGHT, TRACK_Y } from "../constants";
 import {
   buildPipelineStages,
   buildSimulationTrace,
@@ -20,7 +23,6 @@ import { buildRxPipeline } from "../simulation/build-rx-pipeline";
 import type { StreamValue, ValueAnimation } from "../types";
 
 import { StreamValueGlyph } from "./StreamValueGlyph";
-import {createDefaultStreamValues} from "@/features/stream-visualizer/simulation/create-default-values.ts";
 
 type PipelineVisualizerProps = {
   operators: PipelineOperator[];
@@ -76,12 +78,22 @@ export function PipelineVisualizer({ operators }: PipelineVisualizerProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="rounded-md border bg-muted px-2 py-1 text-xs text-muted-foreground">
-            Vstup {sourceValues.length}
-          </div>
-          <div className="rounded-md border bg-muted px-2 py-1 text-xs text-muted-foreground">
-            Výstup {outputValues.length}
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="rounded-md border bg-muted px-2 py-1 text-xs text-muted-foreground">
+                Vstup: {sourceValues.length}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Počet hodnot na vstupu</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="rounded-md border bg-muted px-2 py-1 text-xs text-muted-foreground">
+                Výstup: {outputValues.length}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Počet hodnot na výstupu</TooltipContent>
+          </Tooltip>
           <Button type="button" variant="outline" size="sm" onClick={restart}>
             <PlayIcon />
             Přehrát
