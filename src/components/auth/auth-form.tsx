@@ -43,10 +43,10 @@ export function AuthForm() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
       <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Authentication</h2>
+        <h2 className="text-lg font-semibold">Autentizace</h2>
         <p className="text-sm text-muted-foreground">
-          Use email and password to{" "}
-          {mode === "login" ? "sign in" : "create an account"}.
+          Zadejte email a heslo pro{" "}
+          {mode === "login" ? "přihlášení" : "vytvoření nového účtu"}.
         </p>
       </div>
 
@@ -57,7 +57,7 @@ export function AuthForm() {
           disabled={isBusy}
           onClick={() => setMode("login")}
         >
-          Login
+          Přihlášení
         </Button>
         <Button
           type="button"
@@ -65,7 +65,7 @@ export function AuthForm() {
           disabled={isBusy}
           onClick={() => setMode("register")}
         >
-          Register
+          Registrace
         </Button>
       </div>
 
@@ -81,10 +81,10 @@ export function AuthForm() {
             control={form.control}
             name="email"
             rules={{
-              required: "Email is required.",
+              required: "Email je povinný.",
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Enter a valid email.",
+                message: "Zadejte validní email.",
               },
             }}
             render={({ field }) => (
@@ -93,7 +93,7 @@ export function AuthForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder="email@example.com"
                     autoComplete="email"
                     disabled={isBusy}
                     {...field}
@@ -108,19 +108,19 @@ export function AuthForm() {
             control={form.control}
             name="password"
             rules={{
-              required: "Password is required.",
+              required: "Heslo je povinné.",
               minLength: {
                 value: 6,
-                message: "Password must be at least 6 characters.",
+                message: "Heslo musí mít alespoň 6 znaků.",
               },
             }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Heslo</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Zadejte heslo"
                     autoComplete={
                       mode === "login" ? "current-password" : "new-password"
                     }
@@ -137,13 +137,13 @@ export function AuthForm() {
             {isSubmitting
               ? "Please wait..."
               : mode === "login"
-                ? "Sign In"
-                : "Create Account"}
+                ? "Přihlásit se"
+                : "Vytvořit účet"}
           </Button>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Separator className="flex-1" />
-            <span>or continue with</span>
+            <span>nebo se přihlašte pomocí</span>
             <Separator className="flex-1" />
           </div>
 
@@ -157,7 +157,7 @@ export function AuthForm() {
               }}
             >
               <GithubIcon />
-              {isGitHubSubmitting ? "Redirecting..." : "GitHub"}
+              {isGitHubSubmitting ? "Přesměrování..." : "GitHub"}
             </Button>
           </div>
         </form>

@@ -24,7 +24,7 @@ export function useEmailPasswordAuth() {
   const submit = useCallback(
     async ({ email, password }: AuthValues) => {
       if (!supabase) {
-        setError("Supabase is not configured.");
+        setError("Supabase není nastavena.");
         return;
       }
 
@@ -39,7 +39,7 @@ export function useEmailPasswordAuth() {
       const trimmedEmail = email.trim();
 
       if (!trimmedEmail || !password) {
-        setError("Email and password are required.");
+        setError("Email a heslo jsou povinné.");
         setIsSubmitting(false);
         return;
       }
@@ -54,7 +54,7 @@ export function useEmailPasswordAuth() {
           setError(signUpError.message);
         } else {
           setMessage(
-            "Registration successful. Check your email to confirm your account."
+            "Registrace úspěšná."
           );
         }
       } else {
@@ -66,7 +66,7 @@ export function useEmailPasswordAuth() {
         if (signInError) {
           setError(signInError.message);
         } else {
-          setMessage("Logged in successfully.");
+          setMessage("Přihlášení úspěšné.");
         }
       }
 
@@ -78,7 +78,7 @@ export function useEmailPasswordAuth() {
   const signInWithGitHub = useCallback(
     async () => {
       if (!supabase) {
-        setError("Supabase is not configured.");
+        setError("Supabase není nastavena.");
         return;
       }
 
@@ -105,7 +105,7 @@ export function useEmailPasswordAuth() {
         return;
       }
 
-      setMessage("Redirecting to GitHub...");
+      setMessage("Přesměrování na GitHub...");
       setIsGitHubSubmitting(false);
     },
     [isSubmitting, isGitHubSubmitting]

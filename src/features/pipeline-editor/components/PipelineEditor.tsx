@@ -338,12 +338,16 @@ function MapConfigControls({
             })
           }
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-xs font-normal">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {MAP_OPERATION_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className="text-xs"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -366,12 +370,16 @@ function MapConfigControls({
             })
           }
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-xs font-normal">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {MAP_OPERAND_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={String(option.value)}>
+              <SelectItem
+                key={option.value}
+                value={String(option.value)}
+                className="text-xs"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -412,12 +420,16 @@ function FilterConfigControls({
             })
           }
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-xs font-normal">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {FILTER_TARGET_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className="text-xs"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -433,13 +445,13 @@ function FilterConfigControls({
               type="button"
               variant="outline"
               size="default"
-              className="h-8 justify-between px-2 text-xs font-normal"
+              className="h-8 min-w-0 justify-between px-2 text-xs font-normal"
               disabled={disabled}
             >
-              <span className="truncate">{summary}</span>
+              <span className="min-w-0 truncate">{summary}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-52">
+          <DropdownMenuContent align="start" className="w-52 text-xs">
             <DropdownMenuLabel>
               {FILTER_TARGET_LABELS[operator.config.target]}
             </DropdownMenuLabel>
