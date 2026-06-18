@@ -18,7 +18,10 @@ import type {
   ValueAnimationSegment,
 } from "../types";
 
-import type { PipelineOperator } from "@/features/pipeline-editor";
+import {
+  getOperatorExpressionPreview,
+  type PipelineOperator,
+} from "@/features/pipeline-editor";
 
 import { applyMapOperator, passesFilterOperator } from "./apply-operator";
 
@@ -35,6 +38,7 @@ export function buildPipelineStages(
       id: operator.id,
       kind: "operator" as const,
       label: `${index + 1}. ${operator.type}`,
+      expression: getOperatorExpressionPreview(operator),
       operator,
     })),
     {

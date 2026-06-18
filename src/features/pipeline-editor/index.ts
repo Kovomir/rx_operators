@@ -1,4 +1,5 @@
 export { PipelineEditor } from "./components/PipelineEditor";
+export { getOperatorExpressionPreview } from "./operator-catalog";
 export type {
   FilterPipelineOperator,
   FilterOperatorConfig,

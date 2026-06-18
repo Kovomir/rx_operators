@@ -8,12 +8,12 @@ export const OPERATOR_PAUSE_MS = 220;
 export const MAP_PULSE_MS = 180;
 export const DROP_DURATION_MS = 320;
 
-export const SVG_HEIGHT = 220;
+export const SVG_HEIGHT = 440;
 export const SVG_PADDING_X = 72;
 export const STAGE_SPACING = 220;
-export const TRACK_Y = 112;
+export const TRACK_Y = 268;
 export const LANE_COUNT = 5;
-export const LANE_GAP = 20;
+export const LANE_GAP = 50;
 
 export const STREAM_COLOR_STYLES: Record<
   StreamColor,
