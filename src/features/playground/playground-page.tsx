@@ -4,6 +4,7 @@ import {
   PipelineEditor,
   type PipelineOperator,
 } from "@/features/pipeline-editor";
+import { PipelineVisualizer } from "@/features/stream-visualizer";
 
 export function PlaygroundPage() {
   const [operators, setOperators] = useState<PipelineOperator[]>([]);
@@ -24,6 +25,8 @@ export function PlaygroundPage() {
         onOperatorsChange={setOperators}
         mode="editable"
       />
+
+      <PipelineVisualizer operators={operators} />
     </main>
   );
 }
