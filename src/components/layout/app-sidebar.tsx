@@ -1,4 +1,5 @@
 import { LogOutIcon, UserCircleIcon } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,24 +20,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation";
+import { DEFAULT_APP_PATH, PRIMARY_NAV_ITEMS, type AppPage } from "./navigation";
 
 type AppSidebarProps = {
-  page: AppPage
-  onPageChange: (page: AppPage) => void
-  userEmail: string | null
-  isAuthenticated: boolean
-  onSignOut: () => Promise<void>
-}
+  page: AppPage;
+  userEmail: string | null;
+  isAuthenticated: boolean;
+  onSignOut: () => Promise<void>;
+};
 
 export function AppSidebar({
   page,
-  onPageChange,
   userEmail,
   isAuthenticated,
   onSignOut,
 }: AppSidebarProps) {
-  const displayName = userEmail?.split("@")[0] ?? (isAuthenticated ? "User" : "Guest");
+  const displayName =
+    userEmail?.split("@")[0] ?? (isAuthenticated ? "Uživatel" : "Host");
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
@@ -44,7 +44,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <button type="button" onClick={() => onPageChange("dashboard")}>
+              <NavLink to={DEFAULT_APP_PATH}>
                 <div className="flex size-8 items-center justify-center overflow-hidden rounded-lg bg-white text-foreground ring-1 ring-border">
                   <img
                     src="/rx-icon.png"
@@ -59,7 +59,7 @@ export function AppSidebar({
                     Interaktivní playground
                   </span>
                 </div>
-              </button>
+              </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -77,10 +77,10 @@ export function AppSidebar({
                     isActive={page === item.id}
                     tooltip={item.label}
                   >
-                    <button type="button" onClick={() => onPageChange(item.id)}>
+                    <NavLink to={item.path}>
                       <item.icon />
                       <span>{item.label}</span>
-                    </button>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -100,7 +100,7 @@ export function AppSidebar({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {userEmail ?? (isAuthenticated ? "Signed in" : "Not signed in")}
+                    {userEmail ?? (isAuthenticated ? "Přihlášen" : "Nepřihlášen")}
                   </span>
                 </div>
                 <Tooltip>

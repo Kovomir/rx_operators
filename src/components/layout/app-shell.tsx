@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { ActivityIcon } from "lucide-react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AuthForm } from "@/components/auth/auth-form";
 import { useAuthSession } from "@/hooks/use-auth-session";
@@ -9,10 +9,15 @@ import { PlaygroundPage } from "@/features/playground/playground-page";
 
 import { AppHeader } from "./app-header";
 import { AppSidebar } from "./app-sidebar";
-import { PRIMARY_NAV_ITEMS, type AppPage } from "./navigation";
+import {
+  DEFAULT_APP_PATH,
+  getPageByPath,
+  PRIMARY_NAV_ITEMS,
+  type AppPage,
+} from "./navigation";
 
 export function AppShell() {
-  const [page, setPage] = useState<AppPage>("dashboard");
+  const location = useLocation();
   const {
     isSupabaseConfigured,
     isAuthLoading,
@@ -30,9 +35,19 @@ export function AppShell() {
   }
 
   if (!isAuthenticated) {
-    return <GuestShell variant="sign-in" />;
+    return (
+      <Routes>
+        <Route path="/login" element={<GuestShell variant="sign-in" />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
   }
 
+  if (location.pathname === "/login") {
+    return <Navigate to={DEFAULT_APP_PATH} replace />;
+  }
+
+  const page = getPageByPath(location.pathname);
   const currentPageTitle =
     PRIMARY_NAV_ITEMS.find((item) => item.id === page)?.label ?? "Rx Operators";
 
@@ -40,25 +55,30 @@ export function AppShell() {
     <SidebarProvider defaultOpen>
       <AppSidebar
         page={page}
-        onPageChange={setPage}
         userEmail={userEmail}
         isAuthenticated={isAuthenticated}
         onSignOut={signOut}
       />
       <SidebarInset className="min-w-0 bg-linear-to-b from-muted/40 via-background to-background">
         <AppHeader title={currentPageTitle} />
-        <AppContent page={page} />
+        <Routes>
+          <Route path="/" element={<Navigate to={DEFAULT_APP_PATH} replace />} />
+          <Route path="/dashboard" element={<AppContent page="dashboard" />} />
+          <Route path="/playground" element={<AppContent page="playground" />} />
+          <Route path="/challenges" element={<AppContent page="challenges" />} />
+          <Route path="/operators" element={<AppContent page="operators" />} />
+          <Route path="/saved" element={<AppContent page="saved" />} />
+          <Route path="*" element={<Navigate to={DEFAULT_APP_PATH} replace />} />
+        </Routes>
       </SidebarInset>
     </SidebarProvider>
   );
 }
 
-function AppContent({page}: { page: AppPage }) {
+function AppContent({ page }: { page: AppPage }) {
   switch (page) {
     case "playground":
-      return (
-        <PlaygroundPage/>
-      );
+      return <PlaygroundPage />;
     case "dashboard":
     case "challenges":
     case "operators":
