@@ -108,7 +108,7 @@ export function PipelineVisualizer({ operators }: PipelineVisualizerProps) {
             Vizualizace streamu
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Deset hodnot postupně prochází skutečnou RxJS pipeline.
+            Vizualizace vaší Rx pipeline.
           </p>
         </div>
 
@@ -441,6 +441,7 @@ function AnimatedStreamValue({
       <StreamValueGlyph
         streamValue={animation.value}
         value={currentSegment.value}
+        status={currentSegment.status}
       />
     </motion.g>
   );
