@@ -1,10 +1,10 @@
-import { ActivityIcon } from "lucide-react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AuthForm } from "@/components/auth/auth-form";
 import { useAuthSession } from "@/hooks/use-auth-session";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PlaygroundPage } from "@/features/playground/playground-page";
 
 import { AppHeader } from "./app-header";
@@ -31,7 +31,7 @@ export function AppShell() {
   }
 
   if (isAuthLoading) {
-    return <GuestShell variant="loading" />;
+    return <AppShellSkeleton />;
   }
 
   if (!isAuthenticated) {
@@ -94,25 +94,18 @@ function AppContent({ page }: { page: AppPage }) {
 }
 
 type GuestShellProps = {
-  variant: "sign-in" | "loading" | "missing-config";
+  variant: "sign-in" | "missing-config";
 };
 
 function GuestShell({ variant }: GuestShellProps) {
   return (
     <main className="min-h-screen overflow-x-hidden bg-muted/30">
       <section className="mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid min-w-0 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-foreground/5 md:min-h-[33rem] md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:min-h-[35rem]">
+        <div className="grid min-w-0 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-foreground/5 md:min-h-132 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:min-h-140">
           <BrandPanel />
 
-          <div className="flex min-h-[28rem] min-w-0 items-center justify-center border-t bg-card p-8 text-card-foreground md:min-h-full md:border-t-0 md:border-l lg:p-10">
+          <div className="flex min-h-112 min-w-0 items-center justify-center border-t bg-card p-8 text-card-foreground md:min-h-full md:border-t-0 md:border-l lg:p-10">
             {variant === "sign-in" && <AuthForm />}
-
-            {variant === "loading" && (
-              <div className="flex w-full max-w-md items-center justify-center text-sm text-muted-foreground">
-                <ActivityIcon className="mr-2 size-4 animate-spin" />
-                Načítám relaci...
-              </div>
-            )}
 
             {variant === "missing-config" && (
               <div className="w-full max-w-md text-sm text-card-foreground">
@@ -133,11 +126,61 @@ function GuestShell({ variant }: GuestShellProps) {
   );
 }
 
+function AppShellSkeleton() {
+  return (
+    <main
+      className="flex min-h-screen bg-linear-to-b from-muted/40 via-background to-background"
+      aria-label="Načítání aplikace"
+    >
+      <aside className="hidden w-64 shrink-0 border-r bg-sidebar p-3 text-sidebar-foreground md:flex md:flex-col">
+        <div className="flex h-12 items-center gap-3 px-2">
+          <Skeleton className="size-9 rounded-lg" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-2">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-11/12" />
+          <Skeleton className="h-9 w-10/12" />
+        </div>
+
+        <div className="mt-auto flex items-center gap-3 rounded-md border bg-background/70 p-2">
+          <Skeleton className="size-8 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+        </div>
+      </aside>
+
+      <section className="flex min-w-0 flex-1 flex-col">
+        <header className="flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+          <Skeleton className="size-8 rounded-md md:hidden" />
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="ml-auto h-8 w-24 rounded-lg" />
+        </header>
+
+        <div className="min-w-0 flex-1 space-y-4 p-4 md:p-6">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <Skeleton className="h-72 rounded-lg" />
+            <Skeleton className="h-72 rounded-lg" />
+          </div>
+          <Skeleton className="h-96 rounded-lg" />
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function BrandPanel() {
   return (
     <div className="relative min-w-0 overflow-hidden bg-linear-to-br from-violet-500 via-indigo-500 to-sky-500 text-white">
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.18)_0%,transparent_38%,rgba(255,255,255,0.12)_100%)]" />
-      <div className="relative flex min-h-[22rem] flex-col justify-between gap-10 p-8 md:min-h-full lg:p-10 xl:p-12">
+      <div className="relative flex min-h-88 flex-col justify-between gap-10 p-8 md:min-h-full lg:p-10 xl:p-12">
         <div className="flex items-center gap-3">
           <div className="flex size-12 items-center justify-center overflow-hidden rounded-xl bg-white/95 text-foreground shadow-sm">
             <img
@@ -153,13 +196,13 @@ function BrandPanel() {
           </div>
         </div>
 
-        <div className="max-w-[32rem] space-y-4">
+        <div className="max-w-lg space-y-4">
           <h1 className="max-w-full text-2xl font-semibold leading-tight tracking-normal sm:text-4xl lg:text-5xl">
             <span className="block">Interaktivní samostudium</span>
             <span className="block">operátorů Reactive</span>
             <span className="block">Extensions</span>
           </h1>
-          <p className="max-w-[30rem] text-base leading-relaxed text-white/90 md:text-lg">
+          <p className="max-w-120 text-base leading-relaxed text-white/90 md:text-lg">
             Zjistěte, jak jednotlivé operátory fungují pomocí interaktivních
             vizualizací a procvičte si jejich použití ve cvičných úlohách.
           </p>
