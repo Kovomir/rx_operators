@@ -40,7 +40,7 @@ export function AppSidebar({
   const displayName = userEmail?.split("@")[0] ?? (isAuthenticated ? "User" : "Guest");
 
   return (
-    <Sidebar variant="inset" collapsible="icon">
+    <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
