@@ -1,5 +1,8 @@
 import type { StreamValue, ValueAnimationStatus } from "../types";
-import { STREAM_COLOR_STYLES } from "../constants";
+import {
+  DROPPED_STREAM_COLOR_STYLES,
+  STREAM_COLOR_STYLES,
+} from "../constants";
 
 type StreamValueGlyphProps = {
   streamValue: StreamValue;
@@ -12,8 +15,10 @@ export function StreamValueGlyph({
   value,
   status,
 }: StreamValueGlyphProps) {
-  const colorStyle = STREAM_COLOR_STYLES[streamValue.color];
   const isDropped = status === "dropped";
+  const colorStyle = isDropped
+    ? DROPPED_STREAM_COLOR_STYLES[streamValue.color]
+    : STREAM_COLOR_STYLES[streamValue.color];
 
   return (
     <g>

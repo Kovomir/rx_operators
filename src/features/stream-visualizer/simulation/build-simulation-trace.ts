@@ -168,7 +168,7 @@ export function buildSimulationTrace(
           pushSegment(DROP_DURATION_MS, {
             x: operatorPosition.x,
             y,
-            opacity: 0.68,
+            opacity: 1,
             scale: 0.9,
             value: currentValue.value,
             status: "dropped",
