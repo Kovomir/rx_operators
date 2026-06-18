@@ -12,7 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import {
   Tooltip,
@@ -95,7 +94,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <div>
-                <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-foreground">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-foreground group-data-[collapsible=icon]:hidden">
                   <UserCircleIcon />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -110,7 +109,7 @@ export function AppSidebar({
                       type="button"
                       variant="ghost"
                       size="icon-sm"
-                      className="ml-auto text-muted-foreground hover:text-destructive"
+                      className="ml-auto text-muted-foreground hover:text-destructive group-data-[collapsible=icon]:ml-0 group-data-[collapsible=icon]:size-8"
                       aria-label="Odhlásit se"
                       disabled={!isAuthenticated}
                       onClick={() => {
@@ -129,8 +128,6 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
-
-      <SidebarRail />
     </Sidebar>
   );
 }
