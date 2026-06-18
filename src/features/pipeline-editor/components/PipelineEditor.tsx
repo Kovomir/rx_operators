@@ -1,6 +1,7 @@
 import {
   ArrowRightIcon,
-  FilterIcon, FlagIcon,
+  FilterIcon,
+  FlagIcon,
   PlusIcon,
   RadioIcon,
   Trash2Icon,
@@ -9,32 +10,78 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 import {
+  FILTER_TARGET_LABELS,
   getOperatorCatalogItem,
+  getOperatorExpressionPreview,
   OPERATOR_CATALOG,
+  STREAM_COLOR_LABELS,
+  STREAM_SHAPE_LABELS,
+  STREAM_VALUE_KIND_LABELS,
 } from "../operator-catalog";
+import { createDefaultPipelineOperator } from "../operator-defaults";
 import type {
+  FilterPipelineOperator,
+  FilterTarget,
+  MapOperation,
+  MapPipelineOperator,
   PipelineEditorMode,
   PipelineOperator,
   PipelineOperatorType,
+  StreamColor,
+  StreamShape,
+  StreamValueKind,
 } from "../types";
 
 type PipelineEditorProps = {
-  operators: PipelineOperator[]
-  onOperatorsChange?: (operators: PipelineOperator[]) => void
-  mode?: PipelineEditorMode
-  maxOperators?: number
-  className?: string
-}
+  operators: PipelineOperator[];
+  onOperatorsChange?: (operators: PipelineOperator[]) => void;
+  mode?: PipelineEditorMode;
+  maxOperators?: number;
+  className?: string;
+};
+
+type SelectOption<TValue extends string | number> = {
+  value: TValue;
+  label: string;
+};
 
 const DEFAULT_MAX_OPERATORS = 6;
+
+const MAP_OPERATION_OPTIONS: SelectOption<MapOperation>[] = [
+  { value: "add", label: "+" },
+  { value: "subtract", label: "-" },
+  { value: "multiply", label: "*" },
+];
+
+const MAP_OPERAND_OPTIONS: SelectOption<number>[] = Array.from(
+  { length: 11 },
+  (_, value) => ({
+    value,
+    label: String(value),
+  })
+);
+
+const FILTER_TARGET_OPTIONS: SelectOption<FilterTarget>[] = [
+  { value: "color", label: "Barva" },
+  { value: "shape", label: "Tvar" },
+  { value: "value", label: "Hodnota" },
+];
 
 export function PipelineEditor({
   operators,
@@ -51,14 +98,21 @@ export function PipelineEditor({
       return;
     }
 
-    const nextOperator: PipelineOperator = {
-      id: createOperatorId(type),
-      type,
-    };
-
+    const nextOperator = createDefaultPipelineOperator(
+      crypto.randomUUID(),
+      type
+    );
     const nextOperators = [...operators];
     nextOperators.splice(insertIndex, 0, nextOperator);
     onOperatorsChange?.(nextOperators);
+  }
+
+  function updateOperator(updatedOperator: PipelineOperator) {
+    onOperatorsChange?.(
+      operators.map((operator) =>
+        operator.id === updatedOperator.id ? updatedOperator : operator
+      )
+    );
   }
 
   function removeOperator(operatorId: string) {
@@ -80,7 +134,7 @@ export function PipelineEditor({
             Rx pipeline
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Skládejte vlastní řetězce operátorů.
+            Skládejte vlastní řetězce operátorů a nastavujte jejich parametry.
           </p>
         </div>
 
@@ -92,7 +146,7 @@ export function PipelineEditor({
       </div>
 
       <div className="max-w-full overflow-x-auto scroll-smooth">
-        <div className="flex min-h-64 min-w-max items-center gap-3 px-5 py-8">
+        <div className="flex min-h-72 min-w-max items-center gap-3 px-5 py-8">
           <EndpointNode variant="source" />
 
           {isEditable ? (
@@ -109,6 +163,7 @@ export function PipelineEditor({
               <OperatorNode
                 operator={operator}
                 editable={isEditable}
+                onChange={updateOperator}
                 onRemove={() => removeOperator(operator.id)}
               />
 
@@ -131,53 +186,57 @@ export function PipelineEditor({
 }
 
 type EndpointNodeProps = {
-  variant: "source" | "subscriber"
-}
+  variant: "source" | "subscriber";
+};
 
 function EndpointNode({ variant }: EndpointNodeProps) {
   const isSource = variant === "source";
 
   return (
-    <div
-      className="flex h-28 w-40 shrink-0 flex-col justify-between rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
+    <div className="flex h-36 w-40 shrink-0 flex-col justify-between rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
       <div className="flex items-center gap-2">
-        {isSource ? (
-          <span
-            className={cn(
-              "flex size-8 items-center justify-center rounded-md bg-sky-100 text-sky-700"
-            )}>
-          <RadioIcon className="size-4"/>
+        <span
+          className={cn(
+            "flex size-8 items-center justify-center rounded-md",
+            isSource
+              ? "bg-sky-100 text-sky-700"
+              : "bg-emerald-100 text-emerald-700"
+          )}
+        >
+          {isSource ? (
+            <RadioIcon className="size-4" />
+          ) : (
+            <FlagIcon className="size-4" />
+          )}
         </span>
-        ) : (
-          <span
-            className={cn(
-              "flex size-8 items-center justify-center rounded-md bg-sky-100 text-sky-700"
-            )}>
-          <FlagIcon className="size-4"/>
-        </span>
-        )}
         <span className="text-sm font-semibold">
           {isSource ? "Source" : "Subscriber"}
         </span>
       </div>
       <p className="text-xs leading-5 text-muted-foreground">
-        {isSource ? "Vstup" : "Výstup"}
+        {isSource ? "Vstupní hodnoty" : "Výstup pipeline"}
       </p>
     </div>
   );
 }
 
 type OperatorNodeProps = {
-  operator: PipelineOperator
-  editable: boolean
-  onRemove: () => void
-}
+  operator: PipelineOperator;
+  editable: boolean;
+  onChange: (operator: PipelineOperator) => void;
+  onRemove: () => void;
+};
 
-function OperatorNode({ operator, editable, onRemove }: OperatorNodeProps) {
+function OperatorNode({
+  operator,
+  editable,
+  onChange,
+  onRemove,
+}: OperatorNodeProps) {
   const catalogItem = getOperatorCatalogItem(operator.type);
 
   return (
-    <div className="flex h-32 w-48 shrink-0 flex-col justify-between rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
+    <div className="flex h-48 w-64 shrink-0 flex-col justify-between rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <OperatorIcon type={operator.type} />
@@ -185,42 +244,314 @@ function OperatorNode({ operator, editable, onRemove }: OperatorNodeProps) {
             <div className="truncate text-sm font-semibold">
               {catalogItem?.label ?? operator.type}
             </div>
-              <div className="mt-0.5 text-xs text-muted-foreground">
-                Operátor
-              </div>
+            <div className="mt-0.5 text-xs text-muted-foreground">
+              Operátor
+            </div>
           </div>
         </div>
 
         {editable && (
           <Button
             type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="text-muted-foreground hover:text-destructive"
-              aria-label={`Odebrat operátor ${catalogItem?.label ?? operator.type}`}
-              onClick={onRemove}
-            >
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-destructive"
+            aria-label={`Odebrat operátor ${
+              catalogItem?.label ?? operator.type
+            }`}
+            onClick={onRemove}
+          >
             <Trash2Icon />
           </Button>
         )}
       </div>
 
-      <div>
-        <code className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-          {catalogItem?.expressionPreview}
-        </code>
-        <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
-          {catalogItem?.description}
-        </p>
+      <OperatorConfigControls
+        operator={operator}
+        disabled={!editable}
+        onChange={onChange}
+      />
+
+      <code className="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+        {getOperatorExpressionPreview(operator)}
+      </code>
+    </div>
+  );
+}
+
+type OperatorConfigControlsProps = {
+  operator: PipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function OperatorConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: OperatorConfigControlsProps) {
+  switch (operator.type) {
+    case "map":
+      return (
+        <MapConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
+    case "filter":
+      return (
+        <FilterConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
+  }
+}
+
+type MapConfigControlsProps = {
+  operator: MapPipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function MapConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: MapConfigControlsProps) {
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_5rem] gap-2">
+      <label className="grid gap-1 text-xs text-muted-foreground">
+        Operace
+        <Select
+          value={operator.config.operation}
+          disabled={disabled}
+          onValueChange={(operation) =>
+            onChange({
+              ...operator,
+              config: {
+                ...operator.config,
+                operation: operation as MapOperation,
+              },
+            })
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MAP_OPERATION_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+
+      <label className="grid gap-1 text-xs text-muted-foreground">
+        Číslo
+        <Select
+          value={String(operator.config.operand)}
+          disabled={disabled}
+          onValueChange={(operand) =>
+            onChange({
+              ...operator,
+              config: {
+                ...operator.config,
+                operand: Number(operand),
+              },
+            })
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {MAP_OPERAND_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={String(option.value)}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+    </div>
+  );
+}
+
+type FilterConfigControlsProps = {
+  operator: FilterPipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function FilterConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: FilterConfigControlsProps) {
+  const summary = getFilterSelectionSummary(operator);
+
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-2">
+      <label className="grid gap-1 text-xs text-muted-foreground">
+        Typ
+        <Select
+          value={operator.config.target}
+          disabled={disabled}
+          onValueChange={(target) =>
+            onChange({
+              ...operator,
+              config: {
+                ...operator.config,
+                target: target as FilterTarget,
+              },
+            })
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {FILTER_TARGET_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </label>
+
+      <div className="grid gap-1 text-xs text-muted-foreground">
+        Hodnoty
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="default"
+              className="h-8 justify-between px-2 text-xs font-normal"
+              disabled={disabled}
+            >
+              <span className="truncate">{summary}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuLabel>
+              {FILTER_TARGET_LABELS[operator.config.target]}
+            </DropdownMenuLabel>
+            <FilterChoiceItems operator={operator} onChange={onChange} />
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
 }
 
-type InsertSlotProps = {
-  disabled: boolean
-  onAddOperator: (type: PipelineOperatorType) => void
+type FilterChoiceItemsProps = {
+  operator: FilterPipelineOperator;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function FilterChoiceItems({ operator, onChange }: FilterChoiceItemsProps) {
+  switch (operator.config.target) {
+    case "color":
+      return (
+        <>
+          {Object.entries(STREAM_COLOR_LABELS).map(([color, label]) => (
+            <DropdownMenuCheckboxItem
+              key={color}
+              checked={operator.config.allowedColors.includes(
+                color as StreamColor
+              )}
+              onSelect={(event) => event.preventDefault()}
+              onCheckedChange={(checked) =>
+                onChange({
+                  ...operator,
+                  config: {
+                    ...operator.config,
+                    allowedColors: updateSelection(
+                      operator.config.allowedColors,
+                      color as StreamColor,
+                      checked
+                    ),
+                  },
+                })
+              }
+            >
+              {label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </>
+      );
+    case "shape":
+      return (
+        <>
+          {Object.entries(STREAM_SHAPE_LABELS).map(([shape, label]) => (
+            <DropdownMenuCheckboxItem
+              key={shape}
+              checked={operator.config.allowedShapes.includes(
+                shape as StreamShape
+              )}
+              onSelect={(event) => event.preventDefault()}
+              onCheckedChange={(checked) =>
+                onChange({
+                  ...operator,
+                  config: {
+                    ...operator.config,
+                    allowedShapes: updateSelection(
+                      operator.config.allowedShapes,
+                      shape as StreamShape,
+                      checked
+                    ),
+                  },
+                })
+              }
+            >
+              {label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </>
+      );
+    case "value":
+      return (
+        <>
+          {Object.entries(STREAM_VALUE_KIND_LABELS).map(([kind, label]) => (
+            <DropdownMenuCheckboxItem
+              key={kind}
+              checked={operator.config.allowedValueKinds.includes(
+                kind as StreamValueKind
+              )}
+              onSelect={(event) => event.preventDefault()}
+              onCheckedChange={(checked) =>
+                onChange({
+                  ...operator,
+                  config: {
+                    ...operator.config,
+                    allowedValueKinds: updateSelection(
+                      operator.config.allowedValueKinds,
+                      kind as StreamValueKind,
+                      checked
+                    ),
+                  },
+                })
+              }
+            >
+              {label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </>
+      );
+  }
 }
+
+type InsertSlotProps = {
+  disabled: boolean;
+  onAddOperator: (type: PipelineOperatorType) => void;
+};
 
 function InsertSlot({ disabled, onAddOperator }: InsertSlotProps) {
   return (
@@ -262,9 +593,6 @@ function InsertSlot({ disabled, onAddOperator }: InsertSlotProps) {
                     {operator.description}
                   </span>
                 </span>
-                <code className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-                  {operator.expressionPreview}
-                </code>
               </DropdownMenuItem>
             ))}
           </div>
@@ -291,25 +619,65 @@ function FlowConnector({ muted = false }: { muted?: boolean }) {
 }
 
 function OperatorIcon({ type }: { type: PipelineOperatorType }) {
-  if (type === "filter") {
-    return (
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
-        <FilterIcon className="size-4" />
-      </span>
-    );
+  switch (type) {
+    case "filter":
+      return (
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
+          <FilterIcon className="size-4" />
+        </span>
+      );
+    case "map":
+      return (
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
+          <span className="text-sm font-semibold">f</span>
+        </span>
+      );
   }
-
-  return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
-      <span className="text-sm font-semibold">f</span>
-    </span>
-  );
 }
 
-function createOperatorId(type: PipelineOperatorType) {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return `${type}-${crypto.randomUUID()}`;
+function getFilterSelectionSummary(operator: FilterPipelineOperator) {
+  switch (operator.config.target) {
+    case "color":
+      return summarizeSelection(
+        operator.config.allowedColors,
+        STREAM_COLOR_LABELS
+      );
+    case "shape":
+      return summarizeSelection(
+        operator.config.allowedShapes,
+        STREAM_SHAPE_LABELS
+      );
+    case "value":
+      return summarizeSelection(
+        operator.config.allowedValueKinds,
+        STREAM_VALUE_KIND_LABELS
+      );
+  }
+}
+
+function summarizeSelection<TValue extends string>(
+  values: TValue[],
+  labels: Record<TValue, string>
+) {
+  if (values.length === 0) {
+    return "Nic";
   }
 
-  return `${type}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  if (values.length === Object.keys(labels).length) {
+    return "Vše";
+  }
+
+  return values.map((value) => labels[value]).join(", ");
+}
+
+function updateSelection<TValue>(
+  values: TValue[],
+  value: TValue,
+  checked: boolean | "indeterminate"
+) {
+  if (checked === true) {
+    return values.includes(value) ? values : [...values, value];
+  }
+
+  return values.filter((currentValue) => currentValue !== value);
 }
