@@ -17,6 +17,7 @@ export type PipelineStage = {
   id: string;
   kind: PipelineStageKind;
   label: string;
+  expression?: string;
   operator?: PipelineOperator;
 };
 
