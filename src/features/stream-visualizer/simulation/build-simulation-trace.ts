@@ -167,9 +167,9 @@ export function buildSimulationTrace(
           });
           pushSegment(DROP_DURATION_MS, {
             x: operatorPosition.x,
-            y: y + 38,
-            opacity: 0,
-            scale: 0.45,
+            y,
+            opacity: 0.68,
+            scale: 0.9,
             value: currentValue.value,
             status: "dropped",
           });

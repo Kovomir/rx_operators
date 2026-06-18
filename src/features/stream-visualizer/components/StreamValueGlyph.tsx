@@ -1,20 +1,24 @@
-import type { StreamValue } from "../types";
+import type { StreamValue, ValueAnimationStatus } from "../types";
 import { STREAM_COLOR_STYLES } from "../constants";
 
 type StreamValueGlyphProps = {
   streamValue: StreamValue;
   value: number;
+  status?: ValueAnimationStatus;
 };
 
 export function StreamValueGlyph({
   streamValue,
   value,
+  status,
 }: StreamValueGlyphProps) {
   const colorStyle = STREAM_COLOR_STYLES[streamValue.color];
+  const isDropped = status === "dropped";
 
   return (
     <g>
-      <ShapeGlyph streamValue={streamValue} />
+      <ShapeGlyph streamValue={streamValue} colorStyle={colorStyle} />
+      {isDropped && <FilteredOutMark />}
 
       <text
         textAnchor="middle"
@@ -28,9 +32,33 @@ export function StreamValueGlyph({
   );
 }
 
-function ShapeGlyph({ streamValue }: { streamValue: StreamValue }) {
-  const colorStyle = STREAM_COLOR_STYLES[streamValue.color];
+function FilteredOutMark() {
+  return (
+    <g className="pointer-events-none">
+      <line
+        x1="-12"
+        y1="12"
+        x2="12"
+        y2="-12"
+        stroke="var(--muted-foreground)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
+    </g>
+  );
+}
 
+type ShapeGlyphProps = {
+  streamValue: StreamValue;
+  colorStyle: {
+    fill: string;
+    stroke: string;
+    text: string;
+  };
+};
+
+function ShapeGlyph({ streamValue, colorStyle }: ShapeGlyphProps) {
   switch (streamValue.shape) {
     case "circle":
       return (
