@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 
+import { AuthFlowBackground } from "@/components/auth/auth-flow-background";
+
 type GuestPageLayoutProps = {
   children: ReactNode;
 };
 
 export function GuestPageLayout({ children }: GuestPageLayoutProps) {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-muted/30">
-      <section className="mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
+    <main className="relative isolate min-h-screen overflow-hidden bg-muted/30">
+      <AuthFlowBackground />
+      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
         <div className="grid min-w-0 w-full overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-foreground/5 md:min-h-132 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:min-h-140">
           <BrandPanel />
 
