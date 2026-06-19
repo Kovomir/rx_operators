@@ -35,8 +35,10 @@ export function AppSidebar({
   isAuthenticated,
   onSignOut,
 }: AppSidebarProps) {
-  const displayName =
-    userEmail?.split("@")[0] ?? (isAuthenticated ? "Uživatel" : "Host");
+  const fallbackDisplayName = isAuthenticated ? "Uživatel" : "Host";
+  const fallbackAuthStatus = isAuthenticated ? "Přihlášen" : "Nepřihlášen";
+  const displayName = userEmail?.split("@")[0] ?? fallbackDisplayName;
+  const authStatus = userEmail ?? fallbackAuthStatus;
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
@@ -100,7 +102,7 @@ export function AppSidebar({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {userEmail ?? (isAuthenticated ? "Přihlášen" : "Nepřihlášen")}
+                    {authStatus}
                   </span>
                 </div>
                 <Tooltip>

@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { GithubIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { useEmailPasswordAuth } from "@/hooks/use-email-password-auth";
 
@@ -39,11 +40,16 @@ export function AuthForm() {
       password: "",
     },
   });
-  const title = mode === "login" ? "Vítejte zpět" : "Vytvořte si účet";
-  const description =
-    mode === "login"
-      ? "Přihlaste se a pokračujte ve studiu operátorů."
-      : "Zaregistrujte se a začněte studovat operátory.";
+  const isLoginMode = mode === "login";
+  const title = isLoginMode ? "Vítejte zpět" : "Vytvořte si účet";
+  const description = isLoginMode
+    ? "Přihlaste se a pokračujte ve studiu operátorů."
+    : "Zaregistrujte se a začněte studovat operátory.";
+  let submitButtonText = isLoginMode ? "Přihlásit se" : "Vytvořit účet";
+
+  if (isSubmitting) {
+    submitButtonText = "Čekejte...";
+  }
 
   return (
     <div className="mx-auto flex min-w-0 w-full max-w-md flex-col gap-5 text-card-foreground">
@@ -145,12 +151,16 @@ export function AuthForm() {
             )}
           />
 
+          {mode === "login" && (
+            <div className="flex justify-end">
+              <Button asChild variant="link" className="h-auto px-0 text-sm">
+                <Link to="/forgot-password">Zapomněli jste heslo?</Link>
+              </Button>
+            </div>
+          )}
+
           <Button type="submit" className="h-11 w-full text-base" disabled={isBusy}>
-            {isSubmitting
-              ? "Čekejte..."
-              : mode === "login"
-                ? "Přihlásit se"
-                : "Vytvořit účet"}
+            {submitButtonText}
           </Button>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -10,10 +10,18 @@ type AuthValues = {
   password: string;
 };
 
+type PasswordResetValues = {
+  email: string;
+};
+
 export function useEmailPasswordAuth() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGitHubSubmitting, setIsGitHubSubmitting] = useState(false);
+  const [isPasswordResetSubmitting, setIsPasswordResetSubmitting] =
+    useState(false);
+  const [isPasswordUpdateSubmitting, setIsPasswordUpdateSubmitting] =
+    useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +38,7 @@ export function useEmailPasswordAuth() {
         return;
       }
 
-      if (isSubmitting || isGitHubSubmitting) {
+      if (isSubmitting || isGitHubSubmitting || isPasswordResetSubmitting) {
         return;
       }
 
@@ -89,7 +97,90 @@ export function useEmailPasswordAuth() {
 
       setIsSubmitting(false);
     },
-    [isSubmitting, mode, isGitHubSubmitting]
+    [isSubmitting, mode, isGitHubSubmitting, isPasswordResetSubmitting]
+  );
+
+  const requestPasswordReset = useCallback(
+    async ({ email }: PasswordResetValues) => {
+      if (!supabase) {
+        setError("Supabase není nastavena.");
+        return false;
+      }
+
+      if (isSubmitting || isGitHubSubmitting || isPasswordResetSubmitting) {
+        return false;
+      }
+
+      setIsPasswordResetSubmitting(true);
+      setMessage(null);
+      setError(null);
+
+      const trimmedEmail = email.trim();
+
+      if (!trimmedEmail) {
+        setError("Email je povinný.");
+        setIsPasswordResetSubmitting(false);
+        return false;
+      }
+
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        trimmedEmail,
+        {
+          redirectTo: getPasswordResetRedirectUrl(),
+        }
+      );
+
+      if (resetError) {
+        setError(getAuthErrorMessage(resetError));
+        setIsPasswordResetSubmitting(false);
+        return false;
+      }
+
+      setMessage(
+        "Pokud účet s tímto emailem existuje, poslali jsme odkaz pro obnovu hesla."
+      );
+      setIsPasswordResetSubmitting(false);
+      return true;
+    },
+    [isSubmitting, isGitHubSubmitting, isPasswordResetSubmitting]
+  );
+
+  const updatePassword = useCallback(
+    async (password: string) => {
+      if (!supabase) {
+        setError("Supabase není nastavena.");
+        return false;
+      }
+
+      if (isPasswordUpdateSubmitting) {
+        return false;
+      }
+
+      setIsPasswordUpdateSubmitting(true);
+      setMessage(null);
+      setError(null);
+
+      if (!password) {
+        setError("Heslo je povinné.");
+        setIsPasswordUpdateSubmitting(false);
+        return false;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password,
+      });
+
+      if (updateError) {
+        setError(getAuthErrorMessage(updateError));
+        setIsPasswordUpdateSubmitting(false);
+        return false;
+      }
+
+      setMessage("Heslo bylo změněno. Přesměrováváme Vás do aplikace...");
+      setIsPasswordUpdateSubmitting(false);
+      return true;
+    },
+    [isPasswordUpdateSubmitting]
   );
 
   const signInWithGitHub = useCallback(async () => {
@@ -98,7 +189,7 @@ export function useEmailPasswordAuth() {
       return;
     }
 
-    if (isSubmitting || isGitHubSubmitting) {
+    if (isSubmitting || isGitHubSubmitting || isPasswordResetSubmitting) {
       return;
     }
 
@@ -106,9 +197,7 @@ export function useEmailPasswordAuth() {
     setMessage(null);
     setError(null);
 
-    const redirectTo =
-      import.meta.env.VITE_SUPABASE_OAUTH_REDIRECT_TO ??
-      (typeof window !== "undefined" ? window.location.origin : undefined);
+    const redirectTo = import.meta.env.VITE_SUPABASE_OAUTH_REDIRECT_TO;
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "github",
@@ -123,18 +212,28 @@ export function useEmailPasswordAuth() {
 
     setMessage("Přesměrování na GitHub...");
     setIsGitHubSubmitting(false);
-  }, [isSubmitting, isGitHubSubmitting]);
+  }, [isSubmitting, isGitHubSubmitting, isPasswordResetSubmitting]);
 
   return {
     mode,
     setMode: switchMode,
     isSubmitting,
     isGitHubSubmitting,
+    isPasswordResetSubmitting,
+    isPasswordUpdateSubmitting,
     message,
     error,
     submit,
+    requestPasswordReset,
+    updatePassword,
     signInWithGitHub,
   };
+}
+
+function getPasswordResetRedirectUrl() {
+  const baseUrl = import.meta.env.VITE_SUPABASE_OAUTH_REDIRECT_TO;
+
+  return new URL("/reset-password", baseUrl).toString();
 }
 
 function getAuthErrorMessage(error: AuthError) {
@@ -144,6 +243,10 @@ function getAuthErrorMessage(error: AuthError) {
       return "Uživatel s tímto emailem již existuje.";
     case "invalid_credentials":
       return "Neplatný email nebo heslo.";
+    case "same_password":
+      return "Nové heslo musí být jiné než současné.";
+    case "weak_password":
+      return "Zvolte silnější heslo.";
     default:
       return "Nepodařilo se dokončit autentizaci. Zkuste to prosím znovu, nebo kontaktujte administrátora.";
   }
