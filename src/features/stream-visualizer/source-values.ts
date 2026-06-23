@@ -2,8 +2,8 @@ import {
   DEFAULT_STREAM_VALUE_COUNT,
   STREAM_COLORS,
   STREAM_SHAPES,
-} from "../constants";
-import type { StreamValue } from "../types";
+} from "./constants";
+import type { StreamValue } from "./types";
 
 export function createDefaultStreamValues(
   count = DEFAULT_STREAM_VALUE_COUNT
