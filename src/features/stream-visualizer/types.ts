@@ -27,25 +27,20 @@ export type StagePosition = PipelineStage & {
 };
 
 export type ValueAnimationStatus =
-  | "queued"
   | "moving"
   | "mapped"
   | "passed"
   | "dropped"
   | "completed";
 
-export type ValueAnimationSegment = {
-  at: number;
-  durationMs: number;
+export type LiveVisualValue = {
+  id: string;
+  streamValue: StreamValue;
+  displayValue: number;
+  status: ValueAnimationStatus;
   x: number;
   y: number;
   opacity: number;
   scale: number;
-  value: number;
-  status: ValueAnimationStatus;
-};
-
-export type ValueAnimation = {
-  value: StreamValue;
-  segments: ValueAnimationSegment[];
+  transitionDurationMs: number;
 };
