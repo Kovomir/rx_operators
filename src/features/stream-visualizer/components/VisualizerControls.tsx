@@ -14,12 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  PLAYBACK_SPEED_OPTIONS,
-  type PlaybackSpeed,
-} from "../playback";
+import { PLAYBACK_SPEED_OPTIONS, type PlaybackSpeed } from "../playback";
 
 type VisualizerControlsProps = {
+  canEmitLiveValue?: boolean;
+  canRandomizeValues?: boolean;
   playbackSpeed: PlaybackSpeed;
   onEmitLiveValue: () => void;
   onPlaybackSpeedChange: (playbackSpeed: PlaybackSpeed) => void;
@@ -28,6 +27,8 @@ type VisualizerControlsProps = {
 };
 
 export function VisualizerControls({
+  canEmitLiveValue = true,
+  canRandomizeValues = true,
   playbackSpeed,
   onEmitLiveValue,
   onPlaybackSpeedChange,
@@ -40,10 +41,7 @@ export function VisualizerControls({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Select
-        value={String(playbackSpeed)}
-        onValueChange={changePlaybackSpeed}
-      >
+      <Select value={String(playbackSpeed)} onValueChange={changePlaybackSpeed}>
         <SelectTrigger
           aria-label="Rychlost animace"
           size="sm"
@@ -65,24 +63,28 @@ export function VisualizerControls({
         <RotateCcwIcon />
         Restart
       </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={onEmitLiveValue}
-      >
-        <MousePointerClickIcon />
-        Vložit hodnotu
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={onRandomizeValues}
-      >
-        <ShuffleIcon />
-        Nové hodnoty
-      </Button>
+      {canEmitLiveValue && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onEmitLiveValue}
+        >
+          <MousePointerClickIcon />
+          Vložit hodnotu
+        </Button>
+      )}
+      {canRandomizeValues && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onRandomizeValues}
+        >
+          <ShuffleIcon />
+          Nové hodnoty
+        </Button>
+      )}
     </div>
   );
 }
