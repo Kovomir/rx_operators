@@ -20,15 +20,33 @@ import { VisualizerCanvas } from "./VisualizerCanvas";
 import { VisualizerControls } from "./VisualizerControls";
 
 type PipelineVisualizerProps = {
+  canEmitLiveValue?: boolean;
+  canRandomizeValues?: boolean;
+  description?: string;
   operators: PipelineOperator[];
+  sourceValues?: StreamValue[];
+  title?: string;
 };
 
-export function PipelineVisualizer({ operators }: PipelineVisualizerProps) {
-  const [sourceValues, setSourceValues] = useState<StreamValue[]>(() =>
+export function PipelineVisualizer({
+  canEmitLiveValue,
+  canRandomizeValues,
+  description = "Vizualizace vaší Rx pipeline.",
+  operators,
+  sourceValues: providedSourceValues,
+  title = "Vizualizace streamu",
+}: PipelineVisualizerProps) {
+  const [localSourceValues, setLocalSourceValues] = useState<StreamValue[]>(() =>
     createDefaultStreamValues()
   );
   const [outputValues, setOutputValues] = useState<StreamValue[]>([]);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
+  const sourceValues = providedSourceValues ?? localSourceValues;
+  const usesControlledSourceValues = providedSourceValues !== undefined;
+  const canEmitLiveValueControl =
+    canEmitLiveValue ?? !usesControlledSourceValues;
+  const canRandomizeValuesControl =
+    canRandomizeValues ?? !usesControlledSourceValues;
 
   const stages = useMemo(() => buildPipelineStages(operators), [operators]);
   const stagePositions = useMemo(() => getStagePositions(stages), [stages]);
@@ -102,22 +120,24 @@ export function PipelineVisualizer({ operators }: PipelineVisualizerProps) {
   }
 
   function randomizeValues() {
-    setSourceValues(createDefaultStreamValues());
+    if (!usesControlledSourceValues) {
+      setLocalSourceValues(createDefaultStreamValues());
+    }
   }
 
   return (
     <section className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-foreground">
-            Vizualizace streamu
-          </h2>
+          <h2 className="text-sm font-semibold text-foreground">{title}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Vizualizace vaší Rx pipeline.
+            {description}
           </p>
         </div>
 
         <VisualizerControls
+          canEmitLiveValue={canEmitLiveValueControl}
+          canRandomizeValues={canRandomizeValuesControl}
           playbackSpeed={playbackSpeed}
           onEmitLiveValue={emitLiveValue}
           onPlaybackSpeedChange={setPlaybackSpeed}

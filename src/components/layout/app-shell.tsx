@@ -8,6 +8,7 @@ import { useAuthSession } from "@/hooks/use-auth-session";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LearningTasksPage } from "@/features/learning/learning-tasks-page";
 import { PlaygroundPage } from "@/features/playground/playground-page";
 
 import { AppHeader } from "./app-header";
@@ -88,8 +89,9 @@ function AppContent({ page }: { page: AppPage }) {
   switch (page) {
     case "playground":
       return <PlaygroundPage />;
-    case "dashboard":
     case "challenges":
+      return <LearningTasksPage />;
+    case "dashboard":
     case "operators":
     case "saved":
       return (
