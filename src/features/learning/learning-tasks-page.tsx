@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { LoadingState } from "@/components/ui/loading-state";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 
 import { LearningOperatorGroup } from "./components/LearningOperatorGroup";
@@ -35,47 +36,46 @@ export function LearningTasksPage() {
         </p>
       </section>
 
-      <ProgressSyncStatus
-        isLoading={isProgressLoading}
-        errorMessage={progressError}
-      />
+      <ProgressSyncError errorMessage={progressError} />
 
-      <section className="grid min-w-0 gap-3">
-        {LEARNING_OPERATORS.map((operator) => {
-          const isExpanded = expandedOperator === operator.type;
+      {isProgressLoading ? (
+        <LoadingState label="Načítání úloh" />
+      ) : (
+        <section className="grid min-w-0 gap-3">
+          {LEARNING_OPERATORS.map((operator) => {
+            const isExpanded = expandedOperator === operator.type;
 
-          return (
-            <LearningOperatorGroup
-              key={operator.type}
-              completedTaskIds={completedTaskIds}
-              completedTasks={getCompletedTaskCount(operator.type)}
-              isExpanded={isExpanded}
-              operator={operator}
-              onGetNextIncompleteTaskId={getNextIncompleteTaskId}
-              onMarkTaskCompleted={markTaskCompleted}
-              onToggle={() => toggleOperator(operator.type)}
-            />
-          );
-        })}
-      </section>
+            return (
+              <LearningOperatorGroup
+                key={operator.type}
+                completedTaskIds={completedTaskIds}
+                completedTasks={getCompletedTaskCount(operator.type)}
+                isExpanded={isExpanded}
+                operator={operator}
+                onGetNextIncompleteTaskId={getNextIncompleteTaskId}
+                onMarkTaskCompleted={markTaskCompleted}
+                onToggle={() => toggleOperator(operator.type)}
+              />
+            );
+          })}
+        </section>
+      )}
     </main>
   );
 }
 
-function ProgressSyncStatus({
-  isLoading,
+function ProgressSyncError({
   errorMessage,
 }: {
-  isLoading: boolean;
   errorMessage: string | null;
 }) {
-  if (!isLoading && !errorMessage) {
+  if (!errorMessage) {
     return null;
   }
 
   return (
     <div className="w-fit rounded-md border bg-muted/45 px-3 py-2 text-xs text-muted-foreground">
-      {errorMessage ?? "Načítám uložený postup..."}
+      {errorMessage}
     </div>
   );
 }
