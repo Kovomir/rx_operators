@@ -13,7 +13,9 @@ export function LearningTasksPage() {
     completedTaskIds,
     getCompletedTaskCount,
     getNextIncompleteTaskId,
+    isProgressLoading,
     markTaskCompleted,
+    progressError,
   } = useLearningTaskProgress();
 
   function toggleOperator(operatorType: PipelineOperatorType) {
@@ -32,6 +34,11 @@ export function LearningTasksPage() {
           Vyberte operátor a řešte výukové úlohy.
         </p>
       </section>
+
+      <ProgressSyncStatus
+        isLoading={isProgressLoading}
+        errorMessage={progressError}
+      />
 
       <section className="grid min-w-0 gap-3">
         {LEARNING_OPERATORS.map((operator) => {
@@ -52,5 +59,23 @@ export function LearningTasksPage() {
         })}
       </section>
     </main>
+  );
+}
+
+function ProgressSyncStatus({
+  isLoading,
+  errorMessage,
+}: {
+  isLoading: boolean;
+  errorMessage: string | null;
+}) {
+  if (!isLoading && !errorMessage) {
+    return null;
+  }
+
+  return (
+    <div className="w-fit rounded-md border bg-muted/45 px-3 py-2 text-xs text-muted-foreground">
+      {errorMessage ?? "Načítám uložený postup..."}
+    </div>
   );
 }
