@@ -190,3 +190,13 @@ export const TASKS_BY_OPERATOR: Record<
   map: MAP_TASKS,
   filter: FILTER_TASKS,
 };
+
+export const LEARNING_TASK_IDS = Object.values(TASKS_BY_OPERATOR)
+  .flat()
+  .map((task) => task.id);
+
+export function getLearningTaskOperatorType(taskId: string) {
+  return LEARNING_OPERATORS.find((operator) =>
+    TASKS_BY_OPERATOR[operator.type].some((task) => task.id === taskId)
+  )?.type;
+}
