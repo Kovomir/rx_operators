@@ -98,7 +98,7 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
             </Button>
             <Button type="button" variant="outline" onClick={resetTask}>
               <RotateCcwIcon />
-              Vymazat pipeline
+              Resetovat pipeline
             </Button>
           </div>
         </div>
