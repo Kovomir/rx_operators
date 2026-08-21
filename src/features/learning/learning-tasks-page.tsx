@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import { OperatorSearchList } from "@/components/operator-search-list";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -8,9 +9,18 @@ import { LearningOperatorGroup } from "./components/LearningOperatorGroup";
 import { useLearningTaskProgress } from "./hooks/use-learning-task-progress";
 import { LEARNING_OPERATORS } from "./learning-tasks";
 
+export type LearningTasksNavigationState = {
+  activeOperatorType?: PipelineOperatorType;
+  activeTaskId?: string;
+};
+
 export function LearningTasksPage() {
+  const location = useLocation();
+  const navigationState = location.state as LearningTasksNavigationState | null;
   const [expandedOperator, setExpandedOperator] =
-    useState<PipelineOperatorType | null>(null);
+    useState<PipelineOperatorType | null>(
+      navigationState?.activeOperatorType ?? null
+    );
   const {
     completedTaskIds,
     getCompletedTaskCount,
@@ -54,6 +64,11 @@ export function LearningTasksPage() {
                 key={operator.type}
                 completedTaskIds={completedTaskIds}
                 completedTasks={getCompletedTaskCount(operator.type)}
+                initialActiveTaskId={
+                  navigationState?.activeOperatorType === operator.type
+                    ? navigationState.activeTaskId
+                    : undefined
+                }
                 isExpanded={isExpanded}
                 operator={operator}
                 onGetNextIncompleteTaskId={getNextIncompleteTaskId}

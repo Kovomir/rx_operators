@@ -8,6 +8,7 @@ import { useAuthSession } from "@/hooks/use-auth-session";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardPage } from "@/features/dashboard/dashboard-page";
 import { LearningTasksPage } from "@/features/learning/learning-tasks-page";
 import { OperatorLibraryPage } from "@/features/operator-library/operator-library-page";
 import { PlaygroundPage } from "@/features/playground/playground-page";
@@ -95,6 +96,7 @@ function AppContent({ page }: { page: AppPage }) {
     case "operators":
       return <OperatorLibraryPage />;
     case "dashboard":
+      return <DashboardPage />;
     case "saved":
       return (
         <section className="flex flex-1 items-center justify-center p-4 md:p-6">

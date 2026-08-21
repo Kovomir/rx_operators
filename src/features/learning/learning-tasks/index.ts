@@ -20,6 +20,8 @@ export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
   | FilterOutputTestTaskDefinition;
 
+export const LEARNING_OPERATOR_ORDER = ["map", "filter"] satisfies PipelineOperatorType[];
+
 export const LEARNING_OPERATORS = [
   MAP_LEARNING_OPERATOR,
   FILTER_LEARNING_OPERATOR,

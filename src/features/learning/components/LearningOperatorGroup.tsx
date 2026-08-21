@@ -26,6 +26,7 @@ import { TASKS_BY_OPERATOR, type LearningOperator } from "../learning-tasks";
 type LearningOperatorGroupProps = {
   completedTaskIds: Set<string>;
   completedTasks: number;
+  initialActiveTaskId?: string;
   isExpanded: boolean;
   operator: LearningOperator;
   onGetNextIncompleteTaskId: (
@@ -38,13 +39,16 @@ type LearningOperatorGroupProps = {
 export function LearningOperatorGroup({
   completedTaskIds,
   completedTasks,
+  initialActiveTaskId,
   isExpanded,
   operator,
   onGetNextIncompleteTaskId,
   onMarkTaskCompleted,
   onToggle,
 }: LearningOperatorGroupProps) {
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(
+    initialActiveTaskId ?? null
+  );
   const tasks = TASKS_BY_OPERATOR[operator.type];
   const isCompleted = tasks.length > 0 && completedTasks === tasks.length;
   const canContinue = tasks.length > 0 && !isCompleted;
