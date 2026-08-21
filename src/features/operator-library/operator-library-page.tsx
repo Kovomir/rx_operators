@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
   Code2Icon,
   ExternalLinkIcon,
   FilterIcon,
+  GraduationCapIcon,
   ListChecksIcon,
 } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { OperatorSearchList } from "@/components/operator-search-list";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 import { PipelineVisualizer } from "@/features/stream-visualizer";
 import { cn } from "@/lib/utils";
@@ -18,9 +27,18 @@ import {
   type OperatorLibraryEntry,
 } from ".";
 
+type OperatorLibraryNavigationState = {
+  activeOperatorType?: PipelineOperatorType;
+};
+
 export function OperatorLibraryPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const navigationState = location.state as OperatorLibraryNavigationState | null;
   const [expandedOperator, setExpandedOperator] =
-    useState<PipelineOperatorType | null>("map");
+    useState<PipelineOperatorType | null>(
+      navigationState?.activeOperatorType ?? "map"
+    );
 
   function toggleOperator(operatorType: PipelineOperatorType) {
     setExpandedOperator((currentOperator) =>
@@ -48,6 +66,11 @@ export function OperatorLibraryPage() {
             key={operator.type}
             isExpanded={expandedOperator === operator.type}
             operator={operator}
+            onOpenLearningTasks={() =>
+              navigate("/challenges", {
+                state: { activeOperatorType: operator.type },
+              })
+            }
             onToggle={() => toggleOperator(operator.type)}
           />
         )}
@@ -59,12 +82,14 @@ export function OperatorLibraryPage() {
 type OperatorLibraryGroupProps = {
   isExpanded: boolean;
   operator: OperatorLibraryEntry;
+  onOpenLearningTasks: () => void;
   onToggle: () => void;
 };
 
 function OperatorLibraryGroup({
   isExpanded,
   operator,
+  onOpenLearningTasks,
   onToggle,
 }: OperatorLibraryGroupProps) {
   return (
@@ -86,6 +111,12 @@ function OperatorLibraryGroup({
             </span>
           </span>
         </button>
+
+        <RelatedPageButton
+          label="Úlohy"
+          icon={<GraduationCapIcon className="size-4" />}
+          onClick={onOpenLearningTasks}
+        />
 
         <button
           type="button"
@@ -115,6 +146,37 @@ function OperatorLibraryGroup({
         </div>
       )}
     </article>
+  );
+}
+
+function RelatedPageButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={label}
+            onClick={onClick}
+          >
+            {icon}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={6}>
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
