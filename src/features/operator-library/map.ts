@@ -67,5 +67,9 @@ export const MAP_OPERATOR_LIBRARY_ENTRY: MapOperatorLibraryEntry = {
     { id: "library-map-2", shape: "square", color: "blue", value: 3 },
     { id: "library-map-3", shape: "triangle", color: "green", value: 5 },
     { id: "library-map-4", shape: "circle", color: "blue", value: 7 },
+    { id: "library-map-5", shape: "square", color: "green", value: 2 },
+    { id: "library-map-6", shape: "triangle", color: "red", value: 4 },
+    { id: "library-map-7", shape: "circle", color: "green", value: 6 },
+    { id: "library-map-8", shape: "square", color: "red", value: 8 },
   ],
 };
