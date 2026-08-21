@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
   BookOpenIcon,
   CheckCircle2Icon,
@@ -6,8 +6,10 @@ import {
   ChevronRightIcon,
   CircleIcon,
   FilterIcon,
+  LibraryIcon,
   PlayIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +48,7 @@ export function LearningOperatorGroup({
   onMarkTaskCompleted,
   onToggle,
 }: LearningOperatorGroupProps) {
+  const navigate = useNavigate();
   const [activeTaskId, setActiveTaskId] = useState<string | null>(
     initialActiveTaskId ?? null
   );
@@ -92,6 +95,16 @@ export function LearningOperatorGroup({
           {isCompleted && <CompletedStatusIcon />}
           {canContinue && <ContinueTaskButton onContinue={handleContinue} />}
         </span>
+
+        <RelatedPageButton
+          label="Knihovna"
+          icon={<LibraryIcon className="size-4" />}
+          onClick={() =>
+            navigate("/operators", {
+              state: { activeOperatorType: operator.type },
+            })
+          }
+        />
 
         <button
           type="button"
@@ -165,6 +178,37 @@ function TaskWorkspace({
         />
       ) : null}
     </div>
+  );
+}
+
+function RelatedPageButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={label}
+            onClick={onClick}
+          >
+            {icon}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={6}>
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
