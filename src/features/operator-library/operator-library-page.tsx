@@ -3,6 +3,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   Code2Icon,
+  ExternalLinkIcon,
   FilterIcon,
   ListChecksIcon,
 } from "lucide-react";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 import {
   OPERATOR_LIBRARY,
   type OperatorLibraryEntry,
-} from "./operator-library";
+} from ".";
 
 export function OperatorLibraryPage() {
   const [expandedOperator, setExpandedOperator] =
@@ -34,8 +35,7 @@ export function OperatorLibraryPage() {
           Knihovna operátorů
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Přehled základních RxJS operátorů s krátkým vysvětlením a vizuální
-          ukázkou.
+          Knihovna základních Rx operátorů. Zjistěte, co jednotlivé operátory dělají a jaké mají typické použití.
         </p>
       </section>
 
@@ -159,6 +159,25 @@ function OperatorExample({ operator }: { operator: OperatorLibraryEntry }) {
       <pre className="mt-2 w-fit max-w-full min-w-0 whitespace-pre-wrap break-words rounded-md border bg-muted px-3 py-2 text-xs leading-6 text-foreground">
         <code>{operator.exampleCode}</code>
       </pre>
+      <div className="mt-3 grid gap-1.5">
+        <div className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
+          Další zdroje
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {operator.resources.map((resource) => (
+            <a
+              key={resource.href}
+              href={resource.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-7 items-center gap-1.5 rounded-md border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {resource.label}
+              <ExternalLinkIcon className="size-3" />
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
