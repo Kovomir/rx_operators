@@ -29,9 +29,9 @@ export function OperatorNode({
   const operatorLabel = catalogItem?.label ?? operator.type;
 
   return (
-    <div className="flex h-48 w-64 shrink-0 flex-col justify-between rounded-lg border bg-card p-3 text-card-foreground shadow-sm">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
+    <div className="flex h-44 w-48 shrink-0 flex-col justify-between rounded-md border bg-card p-2.5 text-card-foreground shadow-sm">
+      <div className="flex items-start justify-between gap-1.5">
+        <div className="flex min-w-0 items-center gap-1.5">
           <OperatorIcon type={operator.type} />
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">
@@ -63,7 +63,7 @@ export function OperatorNode({
         onChange={onChange}
       />
 
-      <code className="w-fit rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
+      <code className="block max-w-full truncate rounded-md bg-muted px-1.5 py-1 text-xs text-muted-foreground">
         {getOperatorExpressionPreview(operator)}
       </code>
     </div>
