@@ -35,8 +35,7 @@ export const OPERATOR_LIBRARY: OperatorLibraryEntry[] = [
   console.log(value);
 });`,
     visualizerTitle: "Ukázka map",
-    visualizerDescription:
-      "Každá hodnota projde operátorem map a její číslo se vynásobí dvěma.",
+    visualizerDescription: "Každá hodnota se vynásobí dvěma.",
     operators: [
       {
         id: "library-map-double",
@@ -72,7 +71,7 @@ export const OPERATOR_LIBRARY: OperatorLibraryEntry[] = [
 });`,
     visualizerTitle: "Ukázka filter",
     visualizerDescription:
-      "Filter propustí pouze sudé hodnoty. Liché hodnoty jsou viditelně odfiltrovány.",
+      "Filter propustí pouze sudé hodnoty. Liché hodnoty jsou odfiltrovány.",
     operators: [
       {
         id: "library-filter-even",
