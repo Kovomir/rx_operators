@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
+import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
 
 import { EMIT_GAP_MS } from "../constants";
 import { usePipelineRuntime } from "../hooks/use-pipeline-runtime";
@@ -39,9 +40,12 @@ export function PipelineVisualizer({
   const [localSourceValues, setLocalSourceValues] = useState<StreamValue[]>(() =>
     createDefaultStreamValues()
   );
-  const [outputValues, setOutputValues] = useState<StreamValue[]>([]);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
   const sourceValues = providedSourceValues ?? localSourceValues;
+  const expectedOutputValues = useMemo(
+    () => evaluatePipelineOutput(sourceValues, operators),
+    [operators, sourceValues]
+  );
   const usesControlledSourceValues = providedSourceValues !== undefined;
   const canEmitLiveValueControl =
     canEmitLiveValue ?? !usesControlledSourceValues;
@@ -70,18 +74,15 @@ export function PipelineVisualizer({
     stagePositionById,
   });
 
-  const appendOutputValue = useCallback((value: StreamValue) => {
-    setOutputValues((currentValues) => [...currentValues, value]);
-  }, []);
+  const handleOutputValue = useCallback(() => undefined, []);
 
   const resetRunState = useCallback(() => {
     resetVisualValues();
-    setOutputValues([]);
   }, [resetVisualValues]);
 
   const { emitValue } = usePipelineRuntime({
     operators,
-    onOutputValue: appendOutputValue,
+    onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
     onVisualEvent: handleVisualEvent,
   });
@@ -154,7 +155,7 @@ export function PipelineVisualizer({
         <StageLayer
           stagePositions={stagePositions}
           sourceValueCount={sourceValues.length}
-          outputValueCount={outputValues.length}
+          outputValueCount={expectedOutputValues.length}
         />
         <ValueLayer visualValues={visualValues} />
       </VisualizerCanvas>
