@@ -23,7 +23,7 @@ export type FilterOperatorResourceLink = {
 export const FILTER_OPERATOR_LIBRARY_ENTRY: FilterOperatorLibraryEntry = {
   type: "filter",
   label: "filter",
-  description: "Propouštění jen hodnot, které splní podmínku.",
+  description: "Propouštění pouze hodnot, které splní podmínku.",
   summary:
     "Operátor filter testuje každou hodnotu ve streamu, zda splňuje definovanou podmínku. Dále pokračují pouze hodnoty, které podmínku splní, ostatní jsou ze streamu odfiltrovány.",
   usage: [
