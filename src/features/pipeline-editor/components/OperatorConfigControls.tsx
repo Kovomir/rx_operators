@@ -99,7 +99,7 @@ function MapConfigControls({
   onChange,
 }: MapConfigControlsProps) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_5rem] gap-2">
+    <div className="grid grid-cols-[minmax(0,1fr)_3.75rem] gap-1.5">
       <label className="grid gap-1 text-xs text-muted-foreground">
         Operace
         <Select
@@ -181,7 +181,7 @@ function FilterConfigControls({
   const summary = getFilterSelectionSummary(operator);
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-2">
+    <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-1.5">
       <label className="grid gap-1 text-xs text-muted-foreground">
         Typ
         <Select

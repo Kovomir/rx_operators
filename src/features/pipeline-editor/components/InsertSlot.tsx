@@ -21,14 +21,14 @@ type InsertSlotProps = {
 
 export function InsertSlot({ disabled, onAddOperator }: InsertSlotProps) {
   return (
-    <div className="group/slot flex shrink-0 items-center gap-3">
+    <div className="group/slot flex shrink-0 items-center gap-1">
       <FlowConnector muted arrow={false} />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
             variant="outline"
-            size="icon-lg"
+            size="icon"
             className="relative z-10 rounded-full border-dashed bg-background shadow-sm transition-colors group-hover/slot:border-primary/45 group-hover/slot:text-primary"
             aria-label="Přidat operátor"
             disabled={disabled}

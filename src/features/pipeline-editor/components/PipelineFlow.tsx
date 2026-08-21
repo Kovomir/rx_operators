@@ -25,7 +25,7 @@ export function PipelineFlow({
 }: PipelineFlowProps) {
   return (
     <div className="max-w-full overflow-x-auto scroll-smooth">
-      <div className="flex min-h-72 min-w-max items-center gap-3 px-5 py-8">
+      <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
         <EndpointNode variant="source" />
 
         {isEditable ? (
@@ -38,7 +38,7 @@ export function PipelineFlow({
         )}
 
         {operators.map((operator, index) => (
-          <div key={operator.id} className="flex items-center gap-3">
+          <div key={operator.id} className="flex items-center gap-1.5">
             <OperatorNode
               operator={operator}
               editable={isEditable}
