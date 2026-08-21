@@ -27,6 +27,8 @@ import {
   type OperatorLibraryEntry,
 } from ".";
 
+const OPERATOR_LIBRARY_PLAYBACK_SPEED = 0.5;
+
 type OperatorLibraryNavigationState = {
   activeOperatorType?: PipelineOperatorType;
 };
@@ -138,6 +140,7 @@ function OperatorLibraryGroup({
           <PipelineVisualizer
             canEmitLiveValue={false}
             canRandomizeValues={false}
+            defaultPlaybackSpeed={OPERATOR_LIBRARY_PLAYBACK_SPEED}
             description={operator.visualizerDescription}
             operators={operator.operators}
             sourceValues={operator.sourceValues}

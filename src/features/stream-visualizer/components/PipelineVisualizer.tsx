@@ -6,7 +6,7 @@ import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
 import { EMIT_GAP_MS } from "../constants";
 import { usePipelineRuntime } from "../hooks/use-pipeline-runtime";
 import { useVisualScheduler } from "../hooks/use-visual-scheduler";
-import type { PlaybackSpeed } from "../playback";
+import { DEFAULT_PLAYBACK_SPEED, type PlaybackSpeed } from "../playback";
 import {
   buildPipelineStages,
   getStagePositions,
@@ -23,6 +23,7 @@ import { VisualizerControls } from "./VisualizerControls";
 type PipelineVisualizerProps = {
   canEmitLiveValue?: boolean;
   canRandomizeValues?: boolean;
+  defaultPlaybackSpeed?: PlaybackSpeed;
   description?: string;
   operators: PipelineOperator[];
   sourceValues?: StreamValue[];
@@ -32,6 +33,7 @@ type PipelineVisualizerProps = {
 export function PipelineVisualizer({
   canEmitLiveValue,
   canRandomizeValues,
+  defaultPlaybackSpeed = DEFAULT_PLAYBACK_SPEED,
   description = "Vizualizace vaší Rx pipeline.",
   operators,
   sourceValues: providedSourceValues,
@@ -40,7 +42,9 @@ export function PipelineVisualizer({
   const [localSourceValues, setLocalSourceValues] = useState<StreamValue[]>(() =>
     createDefaultStreamValues()
   );
-  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(
+    defaultPlaybackSpeed
+  );
   const sourceValues = providedSourceValues ?? localSourceValues;
   const expectedOutputValues = useMemo(
     () => evaluatePipelineOutput(sourceValues, operators),

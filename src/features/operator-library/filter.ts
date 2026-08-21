@@ -71,5 +71,8 @@ export const FILTER_OPERATOR_LIBRARY_ENTRY: FilterOperatorLibraryEntry = {
     { id: "library-filter-3", shape: "triangle", color: "green", value: 3 },
     { id: "library-filter-4", shape: "circle", color: "blue", value: 4 },
     { id: "library-filter-5", shape: "square", color: "red", value: 5 },
+    { id: "library-filter-6", shape: "triangle", color: "blue", value: 6 },
+    { id: "library-filter-7", shape: "circle", color: "green", value: 7 },
+    { id: "library-filter-8", shape: "square", color: "green", value: 8 },
   ],
 };
