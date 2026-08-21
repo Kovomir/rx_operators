@@ -48,12 +48,6 @@ Produkční build:
 npm run build
 ```
 
-Náhled produkčního buildu:
-
-```powershell
-npm run preview
-```
-
 ## Environment variables
 
 Projekt používá Supabase. Lokální proměnné prostředí nastavte v souboru `.env` podle `.env.example`.
