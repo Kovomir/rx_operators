@@ -1,53 +1,27 @@
-import type {
-  PipelineOperator,
-  PipelineOperatorType,
-} from "@/features/pipeline-editor";
+import type { PipelineOperator } from "@/features/pipeline-editor";
+import type { PipelineOperatorType } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/features/stream-visualizer";
 
-import type { OutputTestTaskDefinition } from "./components/OutputTestTask";
+import type { OutputTestTaskDefinition } from "../components/OutputTestTask";
 
-export type LearningOperator = {
-  type: PipelineOperatorType;
+export type FilterLearningOperator = {
+  type: Extract<PipelineOperatorType, "filter">;
   label: string;
   description: string;
 };
 
-export const LEARNING_OPERATORS: LearningOperator[] = [
-  {
-    type: "map",
-    label: "map",
-    description: "Transformace každé hodnoty ve streamu.",
-  },
-  {
-    type: "filter",
-    label: "filter",
-    description: "Filtrování hodnot podle podmínky.",
-  },
-];
+export type FilterOutputTestTaskDefinition = OutputTestTaskDefinition & {
+  id:
+    | "filter-even-values"
+    | "filter-even-green-triangles"
+    | "filter-empty-after-map";
+};
 
-const MAP_TASK_SOURCE_VALUES: StreamValue[] = [
-  { id: "map-task-source-1", shape: "circle", color: "red", value: 1 },
-  { id: "map-task-source-2", shape: "square", color: "blue", value: 3 },
-  { id: "map-task-source-3", shape: "triangle", color: "green", value: 5 },
-  { id: "map-task-source-4", shape: "circle", color: "blue", value: 7 },
-];
-
-const MAP_CONSTANT_TASK_SOURCE_VALUES: StreamValue[] = [
-  { id: "map-constant-task-source-1", shape: "circle", color: "red", value: 2 },
-  { id: "map-constant-task-source-2", shape: "square", color: "blue", value: 4 },
-  {
-    id: "map-constant-task-source-3",
-    shape: "triangle",
-    color: "green",
-    value: 6,
-  },
-  {
-    id: "map-constant-task-source-4",
-    shape: "circle",
-    color: "blue",
-    value: 8,
-  },
-];
+export const FILTER_LEARNING_OPERATOR: FilterLearningOperator = {
+  type: "filter",
+  label: "filter",
+  description: "Filtrování hodnot podle podmínky.",
+};
 
 const FILTER_VALUE_TASK_SOURCE_VALUES: StreamValue[] = [
   { id: "filter-value-task-source-1", shape: "circle", color: "red", value: 1 },
@@ -131,26 +105,7 @@ const FILTER_EMPTY_INITIAL_OPERATORS: PipelineOperator[] = [
   },
 ];
 
-const MAP_TASKS: OutputTestTaskDefinition[] = [
-  {
-    id: "map-output",
-    taskNumber: 1,
-    title: "Transformujte hodnoty pomocí map",
-    sourceValues: MAP_TASK_SOURCE_VALUES,
-    expectedOutputValues: [3, 5, 7, 9],
-    maxOperators: 1,
-  },
-  {
-    id: "map-constant-minus-five",
-    taskNumber: 2,
-    title: "Transformujte hodnoty pomocí map",
-    sourceValues: MAP_CONSTANT_TASK_SOURCE_VALUES,
-    expectedOutputValues: [-5, -5, -5, -5],
-    maxOperators: 2,
-  },
-];
-
-const FILTER_TASKS: OutputTestTaskDefinition[] = [
+export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
   {
     id: "filter-even-values",
     taskNumber: 1,
@@ -182,21 +137,3 @@ const FILTER_TASKS: OutputTestTaskDefinition[] = [
     maxOperators: 2,
   },
 ];
-
-export const TASKS_BY_OPERATOR: Record<
-  PipelineOperatorType,
-  OutputTestTaskDefinition[]
-> = {
-  map: MAP_TASKS,
-  filter: FILTER_TASKS,
-};
-
-export const LEARNING_TASK_IDS = Object.values(TASKS_BY_OPERATOR)
-  .flat()
-  .map((task) => task.id);
-
-export function getLearningTaskOperatorType(taskId: string) {
-  return LEARNING_OPERATORS.find((operator) =>
-    TASKS_BY_OPERATOR[operator.type].some((task) => task.id === taskId)
-  )?.type;
-}
