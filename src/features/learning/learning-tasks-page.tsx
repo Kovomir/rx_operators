@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { OperatorSearchList } from "@/components/operator-search-list";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 
@@ -41,8 +42,11 @@ export function LearningTasksPage() {
       {isProgressLoading ? (
         <LoadingState label="Načítání úloh" />
       ) : (
-        <section className="grid min-w-0 gap-3">
-          {LEARNING_OPERATORS.map((operator) => {
+        <OperatorSearchList
+          operators={LEARNING_OPERATORS}
+          placeholder="Hledat operátor"
+          ariaLabel="Hledat operátor"
+          renderOperator={(operator) => {
             const isExpanded = expandedOperator === operator.type;
 
             return (
@@ -57,8 +61,8 @@ export function LearningTasksPage() {
                 onToggle={() => toggleOperator(operator.type)}
               />
             );
-          })}
-        </section>
+          }}
+        />
       )}
     </main>
   );
