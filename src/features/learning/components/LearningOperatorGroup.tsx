@@ -8,6 +8,7 @@ import {
   FilterIcon,
   LibraryIcon,
   PlayIcon,
+  SkipForwardIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -318,6 +319,12 @@ function OperatorIcon({ type }: { type: PipelineOperatorType }) {
       return (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
           <span className="text-sm font-semibold">f</span>
+        </span>
+      );
+    case "skip":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-sky-100 text-sky-700">
+          <SkipForwardIcon className="size-4" />
         </span>
       );
   }

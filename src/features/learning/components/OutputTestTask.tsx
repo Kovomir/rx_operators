@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   PipelineEditor,
   type PipelineOperator,
+  type PipelineOperatorType,
 } from "@/features/pipeline-editor";
 import {
   PipelineVisualizer,
@@ -27,6 +28,7 @@ export type OutputTestTaskDefinition = {
   expectedOutputValues: ExpectedOutputValue[];
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];
+  enabledOperatorTypes?: PipelineOperatorType[];
   lockedOperatorIds?: string[];
   maxOperators: number;
 };
@@ -115,6 +117,7 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
       </section>
 
       <PipelineEditor
+        enabledOperatorTypes={task.enabledOperatorTypes}
         lockedOperatorIds={task.lockedOperatorIds}
         operators={operators}
         onOperatorsChange={handleOperatorsChange}
