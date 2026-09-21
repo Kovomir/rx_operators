@@ -154,29 +154,18 @@ function TaskWorkspace({
   onMarkTaskCompleted,
   onSelectTask,
 }: TaskWorkspaceProps) {
-  const activeTask = tasks.find((task) => task.id === activeTaskId);
-
   return (
-    <div className="grid gap-5">
-      <div className="grid gap-2">
-        {tasks.map((task) => (
-          <TaskListRow
-            key={task.id}
-            isActive={activeTaskId === task.id}
-            isCompleted={completedTaskIds.has(task.id)}
-            task={task}
-            onSelect={() => onSelectTask(task.id)}
-          />
-        ))}
-      </div>
-
-      {activeTask ? (
-        <OutputTestTask
-          key={activeTask.id}
-          task={activeTask}
-          onSolved={() => onMarkTaskCompleted(activeTask.id)}
+    <div className="grid gap-2">
+      {tasks.map((task) => (
+        <TaskAccordionItem
+          key={task.id}
+          isActive={activeTaskId === task.id}
+          isCompleted={completedTaskIds.has(task.id)}
+          task={task}
+          onMarkTaskCompleted={onMarkTaskCompleted}
+          onSelect={() => onSelectTask(task.id)}
         />
-      ) : null}
+      ))}
     </div>
   );
 }
@@ -251,34 +240,49 @@ type TaskListRowProps = {
   isActive: boolean;
   isCompleted: boolean;
   task: OutputTestTaskDefinition;
+  onMarkTaskCompleted: (taskId: string) => void;
   onSelect: () => void;
 };
 
-function TaskListRow({
+function TaskAccordionItem({
   isActive,
   isCompleted,
+  onMarkTaskCompleted,
   task,
   onSelect,
 }: TaskListRowProps) {
   return (
-    <button
-      type="button"
-      className={cn(
-        "flex min-h-14 w-full min-w-0 items-center gap-3 rounded-lg border bg-background px-3 py-2 text-left transition-colors hover:bg-muted/45",
-        isActive && "border-primary bg-primary/5"
-      )}
-      onClick={onSelect}
-    >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-        <BookOpenIcon className="size-4" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-foreground">
-          Úloha {task.taskNumber}
+    <div className="min-w-0">
+      <button
+        type="button"
+        className={cn(
+          "flex min-h-14 w-full min-w-0 items-center gap-3 rounded-lg border bg-background px-3 py-2 text-left transition-colors hover:bg-muted/45",
+          isActive && "rounded-b-none border-primary bg-primary/5"
+        )}
+        aria-expanded={isActive}
+        onClick={onSelect}
+      >
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+          <BookOpenIcon className="size-4" />
         </span>
-      </span>
-      {isCompleted ? <CompletedStatusIcon /> : <IncompleteStatusIcon />}
-    </button>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-foreground">
+            Úloha {task.taskNumber}
+          </span>
+        </span>
+        {isCompleted ? <CompletedStatusIcon /> : <IncompleteStatusIcon />}
+      </button>
+
+      {isActive && (
+        <div className="rounded-b-lg border border-t-0 border-primary bg-background px-3 py-4 md:px-4">
+          <OutputTestTask
+            key={task.id}
+            task={task}
+            onSolved={() => onMarkTaskCompleted(task.id)}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
