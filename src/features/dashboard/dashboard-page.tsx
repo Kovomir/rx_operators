@@ -4,6 +4,7 @@ import {
   GraduationCapIcon,
   LibraryIcon,
   PlayIcon,
+  SaveIcon,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -100,6 +101,13 @@ export function DashboardPage() {
             icon={PlayIcon}
             title="Playground"
             onOpen={() => navigate("/playground")}
+          />
+
+          <DashboardLinkCard
+            description="Vraťte se k rozpracovaným pipeline uloženým z playgroundu."
+            icon={SaveIcon}
+            title="Uložené projekty"
+            onOpen={() => navigate("/saved")}
           />
 
           <DashboardLinkCard
