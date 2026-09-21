@@ -118,7 +118,7 @@ export function SavedPipelinesPage() {
             Uložené projekty
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Obnovte rozpracovaný playground nebo odstraňte uložené pipeline, které už nepotřebujete.
+            Navraťte se k rozpracované práci.
           </p>
         </div>
 
