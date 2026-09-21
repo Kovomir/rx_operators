@@ -58,7 +58,7 @@ export function AppSidebar({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Rx Operators</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    Interaktivní playground
+                    Interaktivní výuka Rx
                   </span>
                 </div>
               </NavLink>
