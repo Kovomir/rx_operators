@@ -12,6 +12,7 @@ import { DashboardPage } from "@/features/dashboard/dashboard-page";
 import { LearningTasksPage } from "@/features/learning/learning-tasks-page";
 import { OperatorLibraryPage } from "@/features/operator-library/operator-library-page";
 import { PlaygroundPage } from "@/features/playground/playground-page";
+import { SavedPipelinesPage } from "@/features/saved-pipelines/saved-pipelines-page";
 
 import { AppHeader } from "./app-header";
 import { AppSidebar } from "./app-sidebar";
@@ -98,13 +99,7 @@ function AppContent({ page }: { page: AppPage }) {
     case "dashboard":
       return <DashboardPage />;
     case "saved":
-      return (
-        <section className="flex flex-1 items-center justify-center p-4 md:p-6">
-          <div className="text-sm text-muted-foreground">
-            Neimplementováno, zvolte jiný modul.
-          </div>
-        </section>
-      );
+      return <SavedPipelinesPage />;
   }
 }
 
