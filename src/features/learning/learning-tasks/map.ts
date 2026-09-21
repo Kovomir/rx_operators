@@ -50,6 +50,7 @@ export const MAP_TASKS: MapOutputTestTaskDefinition[] = [
     title: "Transformujte hodnoty pomocí map",
     sourceValues: MAP_TASK_SOURCE_VALUES,
     expectedOutputValues: [3, 5, 7, 9],
+    enabledOperatorTypes: ["map"],
     maxOperators: 1,
   },
   {
@@ -58,6 +59,7 @@ export const MAP_TASKS: MapOutputTestTaskDefinition[] = [
     title: "Transformujte hodnoty pomocí map",
     sourceValues: MAP_CONSTANT_TASK_SOURCE_VALUES,
     expectedOutputValues: [-5, -5, -5, -5],
+    enabledOperatorTypes: ["map"],
     maxOperators: 2,
   },
 ];

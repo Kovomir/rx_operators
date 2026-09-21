@@ -1,4 +1,3 @@
-import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
@@ -93,18 +92,6 @@ const FILTER_EMPTY_AFTER_MAP_TASK_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
-const FILTER_EMPTY_INITIAL_MAP_OPERATOR_ID = "filter-empty-initial-map";
-const FILTER_EMPTY_INITIAL_OPERATORS: PipelineOperator[] = [
-  {
-    id: FILTER_EMPTY_INITIAL_MAP_OPERATOR_ID,
-    type: "map",
-    config: {
-      operation: "multiply",
-      operand: 2,
-    },
-  },
-];
-
 export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
   {
     id: "filter-even-values",
@@ -112,6 +99,7 @@ export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
     title: "Filtrujte hodnoty pomocí filter",
     sourceValues: FILTER_VALUE_TASK_SOURCE_VALUES,
     expectedOutputValues: [2, 4, 6],
+    enabledOperatorTypes: ["filter"],
     maxOperators: 1,
   },
   {
@@ -124,16 +112,16 @@ export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
       { shape: "triangle", color: "green", value: 10 },
     ],
     showSourceValueDetails: true,
+    enabledOperatorTypes: ["filter"],
     maxOperators: 3,
   },
   {
     id: "filter-empty-after-map",
     taskNumber: 3,
-    title: "Zkombinujte map a filter",
+    title: "Zajistěte, aby nic neprošlo",
     sourceValues: FILTER_EMPTY_AFTER_MAP_TASK_SOURCE_VALUES,
     expectedOutputValues: [],
-    initialOperators: FILTER_EMPTY_INITIAL_OPERATORS,
-    lockedOperatorIds: [FILTER_EMPTY_INITIAL_MAP_OPERATOR_ID],
-    maxOperators: 2,
+    enabledOperatorTypes: ["filter"],
+    maxOperators: 1,
   },
 ];
