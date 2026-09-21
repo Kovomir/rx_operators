@@ -1,20 +1,27 @@
 import { Subject } from "rxjs";
 
-import type { StreamValue } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
+
+import type { PipelineTraceSource } from "./pipeline-trace";
+
+export type SourceEmission = {
+  source: PipelineTraceSource;
+  value: StreamValue;
+};
 
 export type ManualSourceRuntime = {
-  source$: Subject<StreamValue>;
-  emit: (value: StreamValue) => void;
+  source$: Subject<SourceEmission>;
+  emit: (value: StreamValue, source?: PipelineTraceSource) => void;
   complete: () => void;
 };
 
 export function createManualSourceRuntime(): ManualSourceRuntime {
-  const source$ = new Subject<StreamValue>();
+  const source$ = new Subject<SourceEmission>();
 
   return {
     source$,
-    emit(value) {
-      source$.next(value);
+    emit(value, source = "live") {
+      source$.next({ source, value });
     },
     complete() {
       source$.complete();

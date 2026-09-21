@@ -1,15 +1,9 @@
 import type {
   PipelineOperator,
-  StreamColor,
-  StreamShape,
 } from "@/features/pipeline-editor";
+import type { StreamId, StreamValue } from "@/types/stream";
 
-export type StreamValue = {
-  id: string;
-  shape: StreamShape;
-  color: StreamColor;
-  value: number;
-};
+export type { StreamId, StreamValue };
 
 export type PipelineStageKind = "source" | "operator" | "subscriber";
 
@@ -26,6 +20,12 @@ export type StagePosition = PipelineStage & {
   y: number;
 };
 
+export type StreamLane = {
+  streamId: StreamId;
+  index: number;
+  y: number;
+};
+
 export type ValueAnimationStatus =
   | "moving"
   | "mapped"
@@ -35,6 +35,8 @@ export type ValueAnimationStatus =
 
 export type LiveVisualValue = {
   id: string;
+  animationKey: string;
+  streamId: StreamId;
   streamValue: StreamValue;
   displayValue: number;
   status: ValueAnimationStatus;

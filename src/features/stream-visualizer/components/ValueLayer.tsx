@@ -10,7 +10,7 @@ export function ValueLayer({ visualValues }: ValueLayerProps) {
     <>
       {visualValues.map((visualValue) => (
         <VisualValueAnimator
-          key={visualValue.id}
+          key={visualValue.animationKey}
           visualValue={visualValue}
         />
       ))}

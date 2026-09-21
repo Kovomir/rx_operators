@@ -3,4 +3,4 @@ export {
   ValueSequence,
   type DisplayStreamValue,
 } from "./components/ValueSequence";
-export type { StreamValue } from "./types";
+export type { StreamId, StreamValue } from "./types";

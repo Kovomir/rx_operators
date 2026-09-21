@@ -33,11 +33,14 @@ export function buildPipelineStages(
   ];
 }
 
-export function getStagePositions(stages: PipelineStage[]): StagePosition[] {
+export function getStagePositions(
+  stages: PipelineStage[],
+  streamY = TRACK_Y
+): StagePosition[] {
   return stages.map((stage, index) => ({
     ...stage,
     x: SVG_PADDING_X + index * STAGE_SPACING,
-    y: TRACK_Y,
+    y: streamY,
   }));
 }
 
