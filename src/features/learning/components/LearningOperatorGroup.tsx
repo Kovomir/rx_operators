@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import {type ReactNode, useState} from "react";
 import {
   BookOpenIcon,
   CheckCircle2Icon,
@@ -7,25 +7,20 @@ import {
   CircleIcon,
   FilterIcon,
   LibraryIcon,
-  ListStartIcon,
+  PauseIcon,
   PlayIcon,
   SkipForwardIcon,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import type { PipelineOperatorType } from "@/features/pipeline-editor";
-import { cn } from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import type {PipelineOperatorType} from "@/features/pipeline-editor";
+import {cn} from "@/lib/utils";
 
-import type { OutputTestTaskDefinition } from "./OutputTestTask";
-import { OutputTestTask } from "./OutputTestTask";
-import { TASKS_BY_OPERATOR, type LearningOperator } from "../learning-tasks";
+import type {OutputTestTaskDefinition} from "./OutputTestTask";
+import {OutputTestTask} from "./OutputTestTask";
+import {type LearningOperator, TASKS_BY_OPERATOR} from "../learning-tasks";
 
 type LearningOperatorGroupProps = {
   completedTaskIds: Set<string>;
@@ -331,7 +326,7 @@ function OperatorIcon({ type }: { type: PipelineOperatorType }) {
     case "take":
       return (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
-          <ListStartIcon className="size-4" />
+          <PauseIcon className="size-4" />
         </span>
       );
   }

@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import {type ReactNode, useState} from "react";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -7,26 +7,18 @@ import {
   FilterIcon,
   GraduationCapIcon,
   ListChecksIcon,
-  ListStartIcon,
+  PauseIcon,
   SkipForwardIcon,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
-import { OperatorSearchList } from "@/components/operator-search-list";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import type { PipelineOperatorType } from "@/features/pipeline-editor";
-import { PipelineVisualizer } from "@/features/stream-visualizer";
+import {OperatorSearchList} from "@/components/operator-search-list";
+import {Button} from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
+import type {PipelineOperatorType} from "@/features/pipeline-editor";
+import {PipelineVisualizer} from "@/features/stream-visualizer";
 
-import {
-  OPERATOR_LIBRARY,
-  type OperatorLibraryEntry,
-} from ".";
+import {OPERATOR_LIBRARY, type OperatorLibraryEntry,} from ".";
 
 const OPERATOR_LIBRARY_PLAYBACK_SPEED = 0.5;
 
@@ -271,7 +263,7 @@ function OperatorIcon({ type }: { type: PipelineOperatorType }) {
     case "take":
       return (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
-          <ListStartIcon className="size-4" />
+          <PauseIcon className="size-4" />
         </span>
       );
   }
