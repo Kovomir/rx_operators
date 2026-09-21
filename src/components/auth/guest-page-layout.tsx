@@ -39,7 +39,7 @@ function BrandPanel() {
           </div>
           <div>
             <div className="text-lg font-semibold">Rx Operators</div>
-            <div className="text-sm text-white/80">Interaktivní playground</div>
+            <div className="text-sm text-white/80">Interaktivní výuka Rx</div>
           </div>
         </div>
 

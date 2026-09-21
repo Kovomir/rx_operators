@@ -27,9 +27,9 @@ export const MAP_OPERATOR_LIBRARY_ENTRY: MapOperatorLibraryEntry = {
   summary:
     "Operátor map vezme každou hodnotu ze vstupního streamu, upraví ji podle zadané funkce a pošle dál novou hodnotu. Počet hodnot ve streamu se nemění.",
   usage: [
-    "Používá se, když potřebujete převést každou vstupní hodnotu do jiné podoby.",
+    "Používá se, když je potřeba převést každou vstupní hodnotu do jiné podoby.",
     "Každá vstupní hodnota projde transformační funkcí přesně jednou.",
-    "Pomocí map se běžně transformují odpovědi z volání externích služeb, čísla, texty nebo objekty do tvaru, který potřebujeme v další části pipeline.",
+    "Pomocí map se běžně transformují odpovědi z volání externích služeb, čísla, texty nebo objekty do tvaru, který je potřeba v další části pipeline.",
   ],
   exampleCode: `source$.pipe(
   map(value => value * 2) // Vynásobí hodnoty dvěma
