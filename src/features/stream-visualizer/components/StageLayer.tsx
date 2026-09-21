@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   FilterIcon,
   FlagIcon,
+  ListStartIcon,
   RadioIcon,
   SkipForwardIcon,
 } from "lucide-react";
@@ -211,6 +212,18 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
             width={16}
             height={16}
             className="stroke-sky-700"
+          />
+        </StageIconFrame>
+      );
+    case "take":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-emerald-100">
+          <ListStartIcon
+            x={x + 7}
+            y={y + 7}
+            width={16}
+            height={16}
+            className="stroke-emerald-700"
           />
         </StageIconFrame>
       );

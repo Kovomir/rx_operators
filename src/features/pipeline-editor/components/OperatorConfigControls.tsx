@@ -30,6 +30,7 @@ import type {
   StreamColor,
   StreamShape,
   StreamValueKind,
+  TakePipelineOperator,
 } from "../types";
 
 type OperatorConfigControlsProps = {
@@ -71,6 +72,14 @@ const SKIP_COUNT_OPTIONS: SelectOption<number>[] = Array.from(
   })
 );
 
+const TAKE_COUNT_OPTIONS: SelectOption<number>[] = Array.from(
+  { length: 11 },
+  (_, value) => ({
+    value,
+    label: String(value),
+  })
+);
+
 export function OperatorConfigControls({
   operator,
   disabled,
@@ -96,6 +105,14 @@ export function OperatorConfigControls({
     case "skip":
       return (
         <SkipConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
+    case "take":
+      return (
+        <TakeConfigControls
           operator={operator}
           disabled={disabled}
           onChange={onChange}
@@ -289,6 +306,52 @@ function SkipConfigControls({
         </SelectTrigger>
         <SelectContent>
           {SKIP_COUNT_OPTIONS.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={String(option.value)}
+              className="text-xs"
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </label>
+  );
+}
+
+type TakeConfigControlsProps = {
+  operator: TakePipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function TakeConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: TakeConfigControlsProps) {
+  return (
+    <label className="grid gap-1 text-xs text-muted-foreground">
+      Počet
+      <Select
+        value={String(operator.config.count)}
+        disabled={disabled}
+        onValueChange={(count) =>
+          onChange({
+            ...operator,
+            config: {
+              ...operator.config,
+              count: Number(count),
+            },
+          })
+        }
+      >
+        <SelectTrigger className="w-full text-xs font-normal">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {TAKE_COUNT_OPTIONS.map((option) => (
             <SelectItem
               key={option.value}
               value={String(option.value)}

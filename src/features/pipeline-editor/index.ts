@@ -13,4 +13,6 @@ export type {
   StreamColor,
   StreamShape,
   StreamValueKind,
+  TakeOperatorConfig,
+  TakePipelineOperator,
 } from "./types";

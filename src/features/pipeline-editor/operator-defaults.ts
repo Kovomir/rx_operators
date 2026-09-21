@@ -4,6 +4,7 @@ import type {
   PipelineOperator,
   PipelineOperatorType,
   SkipOperatorConfig,
+  TakeOperatorConfig,
 } from "./types";
 
 export const DEFAULT_MAP_CONFIG: MapOperatorConfig = {
@@ -19,6 +20,10 @@ export const DEFAULT_FILTER_CONFIG: FilterOperatorConfig = {
 };
 
 export const DEFAULT_SKIP_CONFIG: SkipOperatorConfig = {
+  count: 1,
+};
+
+export const DEFAULT_TAKE_CONFIG: TakeOperatorConfig = {
   count: 1,
 };
 
@@ -49,6 +54,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_SKIP_CONFIG },
+      };
+    case "take":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_TAKE_CONFIG },
       };
   }
 }

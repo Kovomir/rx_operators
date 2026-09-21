@@ -21,7 +21,7 @@ export function PlaygroundPage() {
       </section>
 
       <PipelineEditor
-        enabledOperatorTypes={["map", "filter", "skip"]}
+        enabledOperatorTypes={["map", "filter", "skip", "take"]}
         operators={operators}
         onOperatorsChange={setOperators}
         mode="editable"

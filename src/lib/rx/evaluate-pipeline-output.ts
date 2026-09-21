@@ -4,6 +4,7 @@ import type { StreamValue } from "@/types/stream";
 import {
   applyMapOperator,
   applySkipOperator,
+  applyTakeOperator,
   passesFilterOperator,
 } from "./operator-semantics";
 
@@ -28,5 +29,7 @@ function applyPipelineOperator(
       return values.filter((value) => passesFilterOperator(value, operator));
     case "skip":
       return applySkipOperator(values, operator);
+    case "take":
+      return applyTakeOperator(values, operator);
   }
 }

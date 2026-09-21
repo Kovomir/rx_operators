@@ -1,4 +1,4 @@
-import { FilterIcon, SkipForwardIcon } from "lucide-react";
+import { FilterIcon, ListStartIcon, SkipForwardIcon } from "lucide-react";
 
 import type { PipelineOperatorType } from "../types";
 
@@ -20,6 +20,12 @@ export function OperatorIcon({ type }: { type: PipelineOperatorType }) {
       return (
         <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sky-100 text-sky-700">
           <SkipForwardIcon className="size-4" />
+        </span>
+      );
+    case "take":
+      return (
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
+          <ListStartIcon className="size-4" />
         </span>
       );
   }
