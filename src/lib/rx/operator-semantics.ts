@@ -2,7 +2,7 @@ import type {
   FilterPipelineOperator,
   MapPipelineOperator,
 } from "@/features/pipeline-editor";
-import type { StreamValue } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
 
 export function applyMapOperator(
   streamValue: StreamValue,

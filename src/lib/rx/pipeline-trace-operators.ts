@@ -5,35 +5,39 @@ import type {
   MapPipelineOperator,
   PipelineOperator,
 } from "@/features/pipeline-editor";
-import type { StreamValue } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
 
 import {
   applyMapOperator,
   passesFilterOperator,
 } from "./operator-semantics";
-import type { VisualRecorder } from "./visual-recorder";
+import type { PipelineTraceRecorder } from "./pipeline-trace-recorder";
+import type { StreamId } from "./stream-identity";
 
-export function buildVisualOperator(
+export function buildTracedOperator(
   operator: PipelineOperator,
-  recorder: VisualRecorder
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
 ): OperatorFunction<StreamValue, StreamValue> {
   switch (operator.type) {
     case "map":
-      return visualMap(operator, recorder);
+      return tracedMap(operator, recorder, streamId);
     case "filter":
-      return visualFilter(operator, recorder);
+      return tracedFilter(operator, recorder, streamId);
   }
 }
 
-function visualMap(
+function tracedMap(
   operator: MapPipelineOperator,
-  recorder: VisualRecorder
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
 ): OperatorFunction<StreamValue, StreamValue> {
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
       const subscription = source$.subscribe({
         next(value) {
           recorder.record({
+            streamId,
             type: "operator-enter",
             stageId: operator.id,
             value,
@@ -42,6 +46,7 @@ function visualMap(
           const mappedValue = applyMapOperator(value, operator);
 
           recorder.record({
+            streamId,
             type: "operator-map",
             stageId: operator.id,
             before: value,
@@ -62,15 +67,17 @@ function visualMap(
     });
 }
 
-function visualFilter(
+function tracedFilter(
   operator: FilterPipelineOperator,
-  recorder: VisualRecorder
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
 ): OperatorFunction<StreamValue, StreamValue> {
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
       const subscription = source$.subscribe({
         next(value) {
           recorder.record({
+            streamId,
             type: "operator-enter",
             stageId: operator.id,
             value,
@@ -78,6 +85,7 @@ function visualFilter(
 
           if (passesFilterOperator(value, operator)) {
             recorder.record({
+              streamId,
               type: "operator-pass",
               stageId: operator.id,
               value,
@@ -87,6 +95,7 @@ function visualFilter(
           }
 
           recorder.record({
+            streamId,
             type: "operator-drop",
             stageId: operator.id,
             value,

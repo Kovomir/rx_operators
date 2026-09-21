@@ -1,5 +1,5 @@
 import { StreamValueGlyph } from "@/features/stream-visualizer/components/StreamValueGlyph";
-import type { StreamValue } from "@/features/stream-visualizer/types";
+import type { StreamValue } from "@/types/stream";
 
 const BACKGROUND_WIDTH = 1440;
 const BACKGROUND_HEIGHT = 900;

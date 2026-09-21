@@ -1,5 +1,5 @@
 import type { PipelineOperator } from "@/features/pipeline-editor";
-import type { StreamValue } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
 
 import { applyMapOperator, passesFilterOperator } from "./operator-semantics";
 

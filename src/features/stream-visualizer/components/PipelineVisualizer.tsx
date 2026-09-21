@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
 
-import { EMIT_GAP_MS } from "../constants";
 import { usePipelineRuntime } from "../hooks/use-pipeline-runtime";
 import { useVisualScheduler } from "../hooks/use-visual-scheduler";
 import { DEFAULT_PLAYBACK_SPEED, type PlaybackSpeed } from "../playback";
@@ -13,6 +12,11 @@ import {
   getVisualizerWidth,
 } from "../pipeline-layout";
 import { createDefaultStreamValues } from "../source-values";
+import {
+  buildStreamLanes,
+  getStreamY,
+} from "../stream-layout";
+import { MAIN_STREAM_ID } from "@/lib/rx/stream-identity";
 import type { StreamValue } from "../types";
 import { StageLayer } from "./StageLayer";
 import { TrackLayer } from "./TrackLayer";
@@ -57,7 +61,12 @@ export function PipelineVisualizer({
     canRandomizeValues ?? !usesControlledSourceValues;
 
   const stages = useMemo(() => buildPipelineStages(operators), [operators]);
-  const stagePositions = useMemo(() => getStagePositions(stages), [stages]);
+  const streamLanes = useMemo(() => buildStreamLanes([MAIN_STREAM_ID]), []);
+  const mainStreamY = getStreamY(streamLanes, MAIN_STREAM_ID);
+  const stagePositions = useMemo(
+    () => getStagePositions(stages, mainStreamY),
+    [mainStreamY, stages]
+  );
   const stagePositionById = useMemo(
     () =>
       new Map(
@@ -68,14 +77,13 @@ export function PipelineVisualizer({
   const visualizerWidth = getVisualizerWidth(stages.length);
   const {
     clearScheduledTimeouts,
-    getScaledDuration,
-    handleVisualEvent,
+    handleTraceEvent,
     resetVisualValues,
-    scheduleTimeout,
     visualValues,
   } = useVisualScheduler({
     playbackSpeed,
     stagePositionById,
+    streamLanes,
   });
 
   const handleOutputValue = useCallback(() => undefined, []);
@@ -88,22 +96,18 @@ export function PipelineVisualizer({
     operators,
     onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
-    onVisualEvent: handleVisualEvent,
+    onTraceEvent: handleTraceEvent,
   });
 
   const runSourceValues = useCallback(
     (values: StreamValue[]) => {
       resetRunState();
 
-      const emitGapMs = getScaledDuration(EMIT_GAP_MS);
-
-      values.forEach((value, index) => {
-        scheduleTimeout(() => {
-          emitValue(value);
-        }, index * emitGapMs);
+      values.forEach((value) => {
+        emitValue(value, "demo");
       });
     },
-    [emitValue, getScaledDuration, resetRunState, scheduleTimeout]
+    [emitValue, resetRunState]
   );
 
   useEffect(() => {
@@ -120,7 +124,7 @@ export function PipelineVisualizer({
     const [nextValue] = createDefaultStreamValues(1);
 
     if (nextValue) {
-      emitValue(nextValue);
+      emitValue(nextValue, "live");
     }
   }
 
@@ -154,6 +158,7 @@ export function PipelineVisualizer({
       <VisualizerCanvas width={visualizerWidth}>
         <TrackLayer
           stagePositions={stagePositions}
+          streamLanes={streamLanes}
           visualizerWidth={visualizerWidth}
         />
         <StageLayer

@@ -1,46 +1,39 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import type { VisualEvent } from "@/lib/rx/visual-recorder";
-
 import {
-  DROP_DURATION_MS,
-  LANE_COUNT,
-  LANE_GAP,
-  MAP_PULSE_MS,
-  MOVE_DURATION_MS,
-  OPERATOR_PAUSE_MS,
-  TRACK_Y,
-} from "../constants";
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+
+import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
+
 import type { PlaybackSpeed } from "../playback";
+import type { LiveVisualValue, StagePosition, StreamLane } from "../types";
 import {
-  SOURCE_STAGE_ID,
-  SUBSCRIBER_STAGE_ID,
-} from "../pipeline-layout";
-import type { LiveVisualValue, StagePosition } from "../types";
+  createVisualTracePlayer,
+  type VisualTracePlayerAction,
+} from "../visual-trace-player";
 
 type UseVisualSchedulerArgs = {
   playbackSpeed: PlaybackSpeed;
   stagePositionById: Map<string, StagePosition>;
+  streamLanes: StreamLane[];
 };
-
-const SOURCE_APPEAR_DURATION_MS = 140;
-const PASS_RESET_DURATION_MS = 120;
-const REMOVE_DROPPED_VALUE_DELAY_MS = 180;
 
 export function useVisualScheduler({
   playbackSpeed,
   stagePositionById,
+  streamLanes,
 }: UseVisualSchedulerArgs) {
   const [visualValues, setVisualValues] = useState<LiveVisualValue[]>([]);
   const scheduledTimeoutsRef = useRef<number[]>([]);
-  const visualClockByValueRef = useRef<Map<string, number>>(new Map());
-  const laneByValueRef = useRef<Map<string, number>>(new Map());
-  const emissionIndexRef = useRef(0);
-  const playbackSpeedRef = useRef(playbackSpeed);
-
-  useEffect(() => {
-    playbackSpeedRef.current = playbackSpeed;
-  }, [playbackSpeed]);
+  const runIdRef = useRef(0);
+  const runStartedAtMsRef = useRef(getAnimationNowMs());
+  const playerRef = useRef<ReturnType<typeof createVisualTracePlayer> | null>(
+    null
+  );
 
   const clearScheduledTimeouts = useCallback(() => {
     for (const timeoutId of scheduledTimeoutsRef.current) {
@@ -50,288 +43,99 @@ export function useVisualScheduler({
     scheduledTimeoutsRef.current = [];
   }, []);
 
-  const scheduleTimeout = useCallback(
-    (callback: () => void, delayMs: number) => {
-      const timeoutId = window.setTimeout(callback, Math.max(0, delayMs));
-      scheduledTimeoutsRef.current.push(timeoutId);
-    },
-    []
+  const createPlayer = useCallback(
+    () =>
+      createVisualTracePlayer({
+        playbackSpeed,
+        runId: runIdRef.current,
+        stagePositionById,
+        streamLanes,
+      }),
+    [playbackSpeed, stagePositionById, streamLanes]
   );
 
-  const getScaledDuration = useCallback((durationMs: number) => {
-    return durationMs / playbackSpeedRef.current;
-  }, []);
+  useEffect(() => {
+    playerRef.current = createPlayer();
+    runStartedAtMsRef.current = getAnimationNowMs();
+  }, [createPlayer]);
 
   const resetVisualValues = useCallback(() => {
     clearScheduledTimeouts();
-    visualClockByValueRef.current.clear();
-    laneByValueRef.current.clear();
-    emissionIndexRef.current = 0;
+    runIdRef.current += 1;
+    runStartedAtMsRef.current = getAnimationNowMs();
+    playerRef.current = createPlayer();
     setVisualValues([]);
-  }, [clearScheduledTimeouts]);
+  }, [clearScheduledTimeouts, createPlayer]);
 
-  const updateVisualValue = useCallback(
-    (valueId: string, update: Partial<LiveVisualValue>) => {
-      setVisualValues((currentValues) =>
-        currentValues.map((visualValue) =>
-          visualValue.id === valueId
-            ? { ...visualValue, ...update }
-            : visualValue
-        )
-      );
-    },
-    []
-  );
+  const scheduleAction = useCallback((action: VisualTracePlayerAction) => {
+    const elapsedMs = getAnimationNowMs() - runStartedAtMsRef.current;
+    const delayMs = Math.max(0, action.atMs - elapsedMs);
+    const timeoutId = window.setTimeout(() => {
+      applyVisualAction(action, setVisualValues);
 
-  const removeVisualValue = useCallback((valueId: string) => {
-    setVisualValues((currentValues) =>
-      currentValues.filter((visualValue) => visualValue.id !== valueId)
-    );
-    visualClockByValueRef.current.delete(valueId);
-    laneByValueRef.current.delete(valueId);
+      if (action.type === "remove-value") {
+        playerRef.current?.removeValue(action.valueId);
+      }
+    }, delayMs);
+
+    scheduledTimeoutsRef.current.push(timeoutId);
   }, []);
 
-  const reserveVisualTime = useCallback((valueId: string, durationMs: number) => {
-    const now = performance.now();
-    const currentValueTime = visualClockByValueRef.current.get(valueId) ?? now;
-    const startTime = Math.max(now, currentValueTime);
+  const handleTraceEvent = useCallback(
+    (event: PipelineTraceEvent) => {
+      if (!playerRef.current) {
+        playerRef.current = createPlayer();
+        runStartedAtMsRef.current = getAnimationNowMs();
+      }
 
-    visualClockByValueRef.current.set(valueId, startTime + durationMs);
+      const elapsedMs = getAnimationNowMs() - runStartedAtMsRef.current;
+      const actions = playerRef.current.play(event, elapsedMs);
 
-    return startTime - now;
-  }, []);
-
-  const reserveCompoundVisualTime = useCallback(
-    (valueId: string, durationMs: number) => {
-      const now = performance.now();
-      const currentValueTime = visualClockByValueRef.current.get(valueId) ?? now;
-      const startTime = Math.max(now, currentValueTime);
-
-      visualClockByValueRef.current.set(valueId, startTime + durationMs);
-
-      return startTime - now;
-    },
-    []
-  );
-
-  const getValueLaneY = useCallback((valueId: string) => {
-    return laneByValueRef.current.get(valueId) ?? TRACK_Y;
-  }, []);
-
-  const handleVisualEvent = useCallback(
-    (event: VisualEvent) => {
-      switch (event.type) {
-        case "source-next": {
-          const sourcePosition = stagePositionById.get(SOURCE_STAGE_ID);
-
-          if (!sourcePosition) {
-            return;
-          }
-
-          const transitionDurationMs = getScaledDuration(
-            SOURCE_APPEAR_DURATION_MS
-          );
-          const y = getLaneY(emissionIndexRef.current);
-          emissionIndexRef.current += 1;
-          laneByValueRef.current.set(event.value.id, y);
-          visualClockByValueRef.current.set(
-            event.value.id,
-            performance.now() + transitionDurationMs
-          );
-
-          setVisualValues((currentValues) => [
-            ...currentValues.filter(
-              (visualValue) => visualValue.id !== event.value.id
-            ),
-            {
-              id: event.value.id,
-              streamValue: event.value,
-              displayValue: event.value.value,
-              status: "moving",
-              x: sourcePosition.x,
-              y,
-              opacity: 1,
-              scale: 1,
-              transitionDurationMs,
-            },
-          ]);
-          break;
-        }
-        case "operator-enter": {
-          const operatorPosition = stagePositionById.get(event.stageId);
-
-          if (!operatorPosition) {
-            return;
-          }
-
-          const transitionDurationMs = getScaledDuration(MOVE_DURATION_MS);
-          const delayMs = reserveVisualTime(
-            event.value.id,
-            transitionDurationMs
-          );
-
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              displayValue: event.value.value,
-              status: "moving",
-              x: operatorPosition.x,
-              y: getValueLaneY(event.value.id),
-              opacity: 1,
-              scale: 1,
-              transitionDurationMs,
-            });
-          }, delayMs);
-          break;
-        }
-        case "operator-map": {
-          const pulseDurationMs = getScaledDuration(MAP_PULSE_MS);
-          const pauseDurationMs = getScaledDuration(OPERATOR_PAUSE_MS);
-          const totalDurationMs = pulseDurationMs + pauseDurationMs;
-          const delayMs = reserveCompoundVisualTime(
-            event.after.id,
-            totalDurationMs
-          );
-
-          scheduleTimeout(() => {
-            updateVisualValue(event.after.id, {
-              streamValue: event.after,
-              displayValue: event.after.value,
-              status: "mapped",
-              scale: 1.16,
-              transitionDurationMs: pulseDurationMs,
-            });
-          }, delayMs);
-          scheduleTimeout(() => {
-            updateVisualValue(event.after.id, {
-              scale: 1,
-              transitionDurationMs: pauseDurationMs,
-            });
-          }, delayMs + pulseDurationMs);
-          break;
-        }
-        case "operator-pass": {
-          const pauseDurationMs = getScaledDuration(OPERATOR_PAUSE_MS);
-          const resetDurationMs = getScaledDuration(PASS_RESET_DURATION_MS);
-          const totalDurationMs = pauseDurationMs + resetDurationMs;
-          const delayMs = reserveCompoundVisualTime(
-            event.value.id,
-            totalDurationMs
-          );
-
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              status: "passed",
-              scale: 1.08,
-              transitionDurationMs: pauseDurationMs,
-            });
-          }, delayMs);
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              scale: 1,
-              transitionDurationMs: resetDurationMs,
-            });
-          }, delayMs + pauseDurationMs);
-          break;
-        }
-        case "operator-drop": {
-          const pauseDurationMs = getScaledDuration(OPERATOR_PAUSE_MS);
-          const dropDurationMs = getScaledDuration(DROP_DURATION_MS);
-          const removeDelayMs = getScaledDuration(REMOVE_DROPPED_VALUE_DELAY_MS);
-          const totalDurationMs = pauseDurationMs + dropDurationMs;
-          const delayMs = reserveCompoundVisualTime(
-            event.value.id,
-            totalDurationMs
-          );
-
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              status: "dropped",
-              scale: 0.9,
-              transitionDurationMs: pauseDurationMs,
-            });
-          }, delayMs);
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              opacity: 0,
-              scale: 0.75,
-              transitionDurationMs: dropDurationMs,
-            });
-          }, delayMs + pauseDurationMs);
-          scheduleTimeout(() => {
-            removeVisualValue(event.value.id);
-          }, delayMs + pauseDurationMs + dropDurationMs + removeDelayMs);
-          break;
-        }
-        case "subscriber-next": {
-          const subscriberPosition = stagePositionById.get(SUBSCRIBER_STAGE_ID);
-
-          if (!subscriberPosition) {
-            return;
-          }
-
-          const moveDurationMs = getScaledDuration(MOVE_DURATION_MS);
-          const pulseDurationMs = getScaledDuration(MAP_PULSE_MS);
-          const pauseDurationMs = getScaledDuration(OPERATOR_PAUSE_MS);
-          const totalDurationMs =
-            moveDurationMs + pulseDurationMs + pauseDurationMs;
-          const delayMs = reserveCompoundVisualTime(
-            event.value.id,
-            totalDurationMs
-          );
-
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              streamValue: event.value,
-              displayValue: event.value.value,
-              status: "moving",
-              x: subscriberPosition.x,
-              y: getValueLaneY(event.value.id),
-              opacity: 1,
-              scale: 1,
-              transitionDurationMs: moveDurationMs,
-            });
-          }, delayMs);
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              status: "completed",
-              scale: 1.14,
-              transitionDurationMs: pulseDurationMs,
-            });
-          }, delayMs + moveDurationMs);
-          scheduleTimeout(() => {
-            updateVisualValue(event.value.id, {
-              scale: 1,
-              transitionDurationMs: pauseDurationMs,
-            });
-          }, delayMs + moveDurationMs + pulseDurationMs);
-          break;
-        }
+      for (const action of actions) {
+        scheduleAction(action);
       }
     },
-    [
-      getScaledDuration,
-      getValueLaneY,
-      removeVisualValue,
-      reserveCompoundVisualTime,
-      reserveVisualTime,
-      scheduleTimeout,
-      stagePositionById,
-      updateVisualValue,
-    ]
+    [createPlayer, scheduleAction]
   );
 
   return {
     visualValues,
     clearScheduledTimeouts,
-    getScaledDuration,
-    handleVisualEvent,
+    handleTraceEvent,
     resetVisualValues,
-    scheduleTimeout,
   };
 }
 
-function getLaneY(valueIndex: number) {
-  const lane = valueIndex % LANE_COUNT;
-  const centeredLane = lane - (LANE_COUNT - 1) / 2;
-  return TRACK_Y + centeredLane * LANE_GAP;
+function applyVisualAction(
+  action: VisualTracePlayerAction,
+  setVisualValues: Dispatch<SetStateAction<LiveVisualValue[]>>
+) {
+  switch (action.type) {
+    case "upsert-value":
+      setVisualValues((currentValues) => [
+        ...currentValues.filter(
+          (visualValue) => visualValue.id !== action.value.id
+        ),
+        action.value,
+      ]);
+      break;
+    case "update-value":
+      setVisualValues((currentValues) =>
+        currentValues.map((visualValue) =>
+          visualValue.id === action.valueId
+            ? { ...visualValue, ...action.update }
+            : visualValue
+        )
+      );
+      break;
+    case "remove-value":
+      setVisualValues((currentValues) =>
+        currentValues.filter((visualValue) => visualValue.id !== action.valueId)
+      );
+      break;
+  }
+}
+
+function getAnimationNowMs() {
+  return performance.now();
 }

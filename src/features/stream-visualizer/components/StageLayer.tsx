@@ -3,7 +3,6 @@ import { FilterIcon, FlagIcon, RadioIcon } from "lucide-react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 
-import { TRACK_Y } from "../constants";
 import type { StagePosition } from "../types";
 
 type StageLayerProps = {
@@ -41,7 +40,7 @@ export function StageLayer({
           />
           <circle
             cx={stagePosition.x}
-            cy={TRACK_Y}
+            cy={stagePosition.y}
             r="4"
             fill="var(--background)"
             stroke="var(--border)"
