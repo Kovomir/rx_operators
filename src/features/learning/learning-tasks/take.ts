@@ -16,7 +16,7 @@ export type TakeOutputTestTaskDefinition = OutputTestTaskDefinition & {
 export const TAKE_LEARNING_OPERATOR: TakeLearningOperator = {
   type: "take",
   label: "take",
-  description: "Výběr úvodních hodnot ze streamu.",
+  description: "Výběr pouze počátečních hodnot streamu.",
 };
 
 const TAKE_FIRST_VALUES_SOURCE_VALUES: StreamValue[] = [

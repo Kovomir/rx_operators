@@ -1,15 +1,9 @@
-import type { ReactNode } from "react";
-import {
-  FilterIcon,
-  FlagIcon,
-  ListStartIcon,
-  RadioIcon,
-  SkipForwardIcon,
-} from "lucide-react";
+import type {ReactNode} from "react";
+import {FilterIcon, FlagIcon, PauseIcon, RadioIcon, SkipForwardIcon,} from "lucide-react";
 
-import type { PipelineOperator } from "@/features/pipeline-editor";
+import type {PipelineOperator} from "@/features/pipeline-editor";
 
-import type { StagePosition } from "../types";
+import type {StagePosition} from "../types";
 
 type StageLayerProps = {
   outputValueCount: number;
@@ -218,7 +212,7 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
     case "take":
       return (
         <StageIconFrame x={x} y={y} className="fill-emerald-100">
-          <ListStartIcon
+          <PauseIcon
             x={x + 7}
             y={y + 7}
             width={16}

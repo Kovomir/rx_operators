@@ -16,7 +16,7 @@ export type SkipOutputTestTaskDefinition = OutputTestTaskDefinition & {
 export const SKIP_LEARNING_OPERATOR: SkipLearningOperator = {
   type: "skip",
   label: "skip",
-  description: "Přeskočení úvodních hodnot ve streamu.",
+  description: "Přeskočení počátečních hodnot streamu.",
 };
 
 const SKIP_FIRST_VALUES_SOURCE_VALUES: StreamValue[] = [
