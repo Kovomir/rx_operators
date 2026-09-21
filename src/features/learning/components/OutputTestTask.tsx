@@ -207,6 +207,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
             allowedValueKinds: [...operator.config.allowedValueKinds],
           },
         };
+      case "skip":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }

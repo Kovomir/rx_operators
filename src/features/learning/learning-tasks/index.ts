@@ -30,7 +30,7 @@ export const LEARNING_OPERATORS = [
 export const TASKS_BY_OPERATOR = {
   map: MAP_TASKS,
   filter: FILTER_TASKS,
-} satisfies Record<PipelineOperatorType, OutputTestTaskDefinition[]>;
+} satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export const LEARNING_TASK_IDS = Object.values(TASKS_BY_OPERATOR)
   .flat()

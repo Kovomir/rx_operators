@@ -3,6 +3,7 @@ import type {
   MapOperatorConfig,
   PipelineOperator,
   PipelineOperatorType,
+  SkipOperatorConfig,
 } from "./types";
 
 export const DEFAULT_MAP_CONFIG: MapOperatorConfig = {
@@ -15,6 +16,10 @@ export const DEFAULT_FILTER_CONFIG: FilterOperatorConfig = {
   allowedColors: ["red", "blue", "green"],
   allowedShapes: ["circle", "square", "triangle"],
   allowedValueKinds: ["even"],
+};
+
+export const DEFAULT_SKIP_CONFIG: SkipOperatorConfig = {
+  count: 1,
 };
 
 export function createDefaultPipelineOperator(
@@ -38,6 +43,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_MAP_CONFIG },
+      };
+    case "skip":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_SKIP_CONFIG },
       };
   }
 }

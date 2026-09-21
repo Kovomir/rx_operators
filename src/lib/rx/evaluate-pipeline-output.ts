@@ -1,7 +1,11 @@
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
-import { applyMapOperator, passesFilterOperator } from "./operator-semantics";
+import {
+  applyMapOperator,
+  applySkipOperator,
+  passesFilterOperator,
+} from "./operator-semantics";
 
 export function evaluatePipelineOutput(
   sourceValues: StreamValue[],
@@ -22,5 +26,7 @@ function applyPipelineOperator(
       return values.map((value) => applyMapOperator(value, operator));
     case "filter":
       return values.filter((value) => passesFilterOperator(value, operator));
+    case "skip":
+      return applySkipOperator(values, operator);
   }
 }

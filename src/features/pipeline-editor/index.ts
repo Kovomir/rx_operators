@@ -8,6 +8,8 @@ export type {
   PipelineEditorMode,
   PipelineOperator,
   PipelineOperatorType,
+  SkipOperatorConfig,
+  SkipPipelineOperator,
   StreamColor,
   StreamShape,
   StreamValueKind,

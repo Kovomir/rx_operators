@@ -4,7 +4,7 @@ export type StreamShape = "circle" | "square" | "triangle";
 
 export type StreamValueKind = "odd" | "even";
 
-export type PipelineOperatorType = "map" | "filter";
+export type PipelineOperatorType = "map" | "filter" | "skip";
 
 export type MapOperation = "add" | "subtract" | "multiply";
 
@@ -22,6 +22,10 @@ export type FilterOperatorConfig = {
   allowedValueKinds: StreamValueKind[];
 };
 
+export type SkipOperatorConfig = {
+  count: number;
+};
+
 export type MapPipelineOperator = {
   id: string;
   type: "map";
@@ -34,6 +38,15 @@ export type FilterPipelineOperator = {
   config: FilterOperatorConfig;
 };
 
-export type PipelineOperator = MapPipelineOperator | FilterPipelineOperator;
+export type SkipPipelineOperator = {
+  id: string;
+  type: "skip";
+  config: SkipOperatorConfig;
+};
+
+export type PipelineOperator =
+  | MapPipelineOperator
+  | FilterPipelineOperator
+  | SkipPipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

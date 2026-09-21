@@ -5,6 +5,7 @@ import { InsertSlot } from "./InsertSlot";
 import { OperatorNode } from "./OperatorNode";
 
 type PipelineFlowProps = {
+  enabledOperatorTypes: PipelineOperatorType[];
   operators: PipelineOperator[];
   isEditable: boolean;
   canInsertOperatorAt: (insertIndex: number) => boolean;
@@ -15,6 +16,7 @@ type PipelineFlowProps = {
 };
 
 export function PipelineFlow({
+  enabledOperatorTypes,
   operators,
   isEditable,
   canInsertOperatorAt,
@@ -30,6 +32,7 @@ export function PipelineFlow({
 
         {isEditable ? (
           <InsertSlot
+            enabledOperatorTypes={enabledOperatorTypes}
             disabled={!canInsertOperatorAt(0)}
             onAddOperator={(type) => onAddOperator(0, type)}
           />
@@ -49,6 +52,7 @@ export function PipelineFlow({
 
             {isEditable ? (
               <InsertSlot
+                enabledOperatorTypes={enabledOperatorTypes}
                 disabled={!canInsertOperatorAt(index + 1)}
                 onAddOperator={(type) => onAddOperator(index + 1, type)}
               />

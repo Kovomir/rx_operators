@@ -15,11 +15,20 @@ import { FlowConnector } from "./FlowConnector";
 import { OperatorIcon } from "./OperatorIcon";
 
 type InsertSlotProps = {
+  enabledOperatorTypes: PipelineOperatorType[];
   disabled: boolean;
   onAddOperator: (type: PipelineOperatorType) => void;
 };
 
-export function InsertSlot({ disabled, onAddOperator }: InsertSlotProps) {
+export function InsertSlot({
+  enabledOperatorTypes,
+  disabled,
+  onAddOperator,
+}: InsertSlotProps) {
+  const operators = OPERATOR_CATALOG.filter((operator) =>
+    enabledOperatorTypes.includes(operator.type)
+  );
+
   return (
     <div className="group/slot flex shrink-0 items-center gap-1">
       <FlowConnector muted arrow={false} />
@@ -44,7 +53,7 @@ export function InsertSlot({ disabled, onAddOperator }: InsertSlotProps) {
         >
           <DropdownMenuLabel>Přidat operátor</DropdownMenuLabel>
           <div className="grid gap-1">
-            {OPERATOR_CATALOG.map((operator) => (
+            {operators.map((operator) => (
               <DropdownMenuItem
                 key={operator.type}
                 className="items-start gap-3 p-2"

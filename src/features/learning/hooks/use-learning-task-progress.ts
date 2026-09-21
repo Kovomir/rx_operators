@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import type { PipelineOperatorType } from "@/features/pipeline-editor";
-
-import { TASKS_BY_OPERATOR } from "../learning-tasks";
+import { TASKS_BY_OPERATOR, type LearningOperator } from "../learning-tasks";
 import {
   loadCompletedLearningTaskIds,
   saveLearningTaskCompletion,
@@ -82,7 +80,7 @@ export function useLearningTaskProgress() {
   }, [completedTaskIds]);
 
   const getCompletedTaskCount = useCallback(
-    (operatorType: PipelineOperatorType) =>
+    (operatorType: LearningOperator["type"]) =>
       TASKS_BY_OPERATOR[operatorType].filter((task) =>
         completedTaskIds.has(task.id)
       ).length,
@@ -90,7 +88,7 @@ export function useLearningTaskProgress() {
   );
 
   const getNextIncompleteTaskId = useCallback(
-    (operatorType: PipelineOperatorType) =>
+    (operatorType: LearningOperator["type"]) =>
       TASKS_BY_OPERATOR[operatorType].find(
         (task) => !completedTaskIds.has(task.id)
       )?.id,

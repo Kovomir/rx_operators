@@ -1,6 +1,7 @@
 import type {
   FilterPipelineOperator,
   MapPipelineOperator,
+  SkipPipelineOperator,
 } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
@@ -43,4 +44,11 @@ export function passesFilterOperator(
       return operator.config.allowedValueKinds.includes(valueKind);
     }
   }
+}
+
+export function applySkipOperator(
+  values: StreamValue[],
+  operator: SkipPipelineOperator
+) {
+  return values.slice(operator.config.count);
 }
