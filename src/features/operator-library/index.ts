@@ -4,16 +4,19 @@ import {
 } from "./filter";
 import { MAP_OPERATOR_LIBRARY_ENTRY, type MapOperatorLibraryEntry } from "./map";
 import { SKIP_OPERATOR_LIBRARY_ENTRY, type SkipOperatorLibraryEntry } from "./skip";
+import { TAKE_OPERATOR_LIBRARY_ENTRY, type TakeOperatorLibraryEntry } from "./take";
 
 export type OperatorLibraryEntry =
   | MapOperatorLibraryEntry
   | FilterOperatorLibraryEntry
-  | SkipOperatorLibraryEntry;
+  | SkipOperatorLibraryEntry
+  | TakeOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
   MAP_OPERATOR_LIBRARY_ENTRY,
   FILTER_OPERATOR_LIBRARY_ENTRY,
   SKIP_OPERATOR_LIBRARY_ENTRY,
+  TAKE_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
 export { FILTER_OPERATOR_LIBRARY_ENTRY } from "./filter";
@@ -28,3 +31,8 @@ export type {
   SkipOperatorLibraryEntry,
   SkipOperatorResourceLink,
 } from "./skip";
+export { TAKE_OPERATOR_LIBRARY_ENTRY } from "./take";
+export type {
+  TakeOperatorLibraryEntry,
+  TakeOperatorResourceLink,
+} from "./take";
