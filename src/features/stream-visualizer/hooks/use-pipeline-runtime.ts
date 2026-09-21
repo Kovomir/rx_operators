@@ -15,6 +15,11 @@ import {
 
 import type { StreamValue } from "../types";
 
+type RuntimeHandle = {
+  complete: () => void;
+  emit: ManualSourceRuntime["emit"];
+};
+
 type UsePipelineRuntimeArgs = {
   operators: PipelineOperator[];
   streamId?: StreamId;
@@ -30,9 +35,9 @@ export function usePipelineRuntime({
   onTraceEvent,
   onRuntimeCleanup,
 }: UsePipelineRuntimeArgs) {
-  const sourceRuntimeRef = useRef<ManualSourceRuntime | null>(null);
+  const runtimeRef = useRef<RuntimeHandle | null>(null);
 
-  useEffect(() => {
+  const createRuntime = useCallback((): RuntimeHandle => {
     const recorder = createPipelineTraceRecorder();
     const sourceRuntime = createManualSourceRuntime();
     const traceSubscription = recorder.events$.subscribe(onTraceEvent);
@@ -45,27 +50,48 @@ export function usePipelineRuntime({
       next: onOutputValue,
     });
 
-    sourceRuntimeRef.current = sourceRuntime;
+    return {
+      emit: sourceRuntime.emit,
+      complete() {
+        traceSubscription.unsubscribe();
+        outputSubscription.unsubscribe();
+        sourceRuntime.complete();
+        recorder.complete();
+      },
+    };
+  }, [onOutputValue, onTraceEvent, operators, streamId]);
 
-    return () => {
-      traceSubscription.unsubscribe();
-      outputSubscription.unsubscribe();
-      sourceRuntime.complete();
-      recorder.complete();
+  const cleanupRuntime = useCallback(
+    (runtime: RuntimeHandle | null) => {
+      runtime?.complete();
       onRuntimeCleanup();
 
-      if (sourceRuntimeRef.current === sourceRuntime) {
-        sourceRuntimeRef.current = null;
+      if (runtimeRef.current === runtime) {
+        runtimeRef.current = null;
       }
+    },
+    [onRuntimeCleanup]
+  );
+
+  const resetRuntime = useCallback(() => {
+    cleanupRuntime(runtimeRef.current);
+    runtimeRef.current = createRuntime();
+  }, [cleanupRuntime, createRuntime]);
+
+  useEffect(() => {
+    resetRuntime();
+
+    return () => {
+      cleanupRuntime(runtimeRef.current);
     };
-  }, [onOutputValue, onRuntimeCleanup, onTraceEvent, operators, streamId]);
+  }, [cleanupRuntime, resetRuntime]);
 
   const emitValue = useCallback(
     (value: StreamValue, source?: PipelineTraceSource) => {
-      sourceRuntimeRef.current?.emit(value, source);
+      runtimeRef.current?.emit(value, source);
     },
     []
   );
 
-  return { emitValue };
+  return { emitValue, resetRuntime };
 }

@@ -92,7 +92,7 @@ export function PipelineVisualizer({
     resetVisualValues();
   }, [resetVisualValues]);
 
-  const { emitValue } = usePipelineRuntime({
+  const { emitValue, resetRuntime } = usePipelineRuntime({
     operators,
     onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
@@ -102,12 +102,13 @@ export function PipelineVisualizer({
   const runSourceValues = useCallback(
     (values: StreamValue[]) => {
       resetRunState();
+      resetRuntime();
 
       values.forEach((value) => {
         emitValue(value, "demo");
       });
     },
-    [emitValue, resetRunState]
+    [emitValue, resetRunState, resetRuntime]
   );
 
   useEffect(() => {
