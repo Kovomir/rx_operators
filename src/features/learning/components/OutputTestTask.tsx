@@ -215,6 +215,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "take":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }
