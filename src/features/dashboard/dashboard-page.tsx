@@ -16,7 +16,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { PipelineOperatorType } from "@/features/pipeline-editor";
 import { cn } from "@/lib/utils";
 
 import { useLearningTaskProgress } from "../learning/hooks/use-learning-task-progress";
@@ -24,12 +23,13 @@ import {
   LEARNING_OPERATOR_ORDER,
   LEARNING_OPERATORS,
   TASKS_BY_OPERATOR,
+  type LearningOperator,
 } from "../learning/learning-tasks";
 import type { LearningTasksNavigationState } from "../learning/learning-tasks-page";
 
 type ContinueTarget = {
   completedTasks: number;
-  operatorType: PipelineOperatorType;
+  operatorType: LearningOperator["type"];
   taskId: string;
   totalTasks: number;
 };
@@ -266,9 +266,9 @@ function ProgressSyncError({
 }
 
 function getLearningContinueTarget(
-  getCompletedTaskCount: (operatorType: PipelineOperatorType) => number,
+  getCompletedTaskCount: (operatorType: LearningOperator["type"]) => number,
   getNextIncompleteTaskId: (
-    operatorType: PipelineOperatorType
+    operatorType: LearningOperator["type"]
   ) => string | undefined
 ): ContinueTarget | null {
   for (const operatorType of LEARNING_OPERATOR_ORDER) {

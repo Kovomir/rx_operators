@@ -1,11 +1,16 @@
 import { cn } from "@/lib/utils";
 
 import { usePipelineEditor } from "../hooks/use-pipeline-editor";
-import type { PipelineEditorMode, PipelineOperator } from "../types";
+import type {
+  PipelineEditorMode,
+  PipelineOperator,
+  PipelineOperatorType,
+} from "../types";
 import { PipelineEditorHeader } from "./PipelineEditorHeader";
 import { PipelineFlow } from "./PipelineFlow";
 
 type PipelineEditorProps = {
+  enabledOperatorTypes?: PipelineOperatorType[];
   lockedOperatorIds?: string[];
   operators: PipelineOperator[];
   onOperatorsChange?: (operators: PipelineOperator[]) => void;
@@ -15,8 +20,10 @@ type PipelineEditorProps = {
 };
 
 const DEFAULT_MAX_OPERATORS = 6;
+const DEFAULT_ENABLED_OPERATOR_TYPES: PipelineOperatorType[] = ["map", "filter"];
 
 export function PipelineEditor({
+  enabledOperatorTypes = DEFAULT_ENABLED_OPERATOR_TYPES,
   lockedOperatorIds = [],
   operators,
   onOperatorsChange,
@@ -51,6 +58,7 @@ export function PipelineEditor({
         maxOperators={maxOperators}
       />
       <PipelineFlow
+        enabledOperatorTypes={enabledOperatorTypes}
         operators={operators}
         isEditable={isEditable}
         canInsertOperatorAt={canInsertOperatorAt}

@@ -4,6 +4,7 @@ import type {
   FilterPipelineOperator,
   MapPipelineOperator,
   PipelineOperator,
+  SkipPipelineOperator,
 } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
@@ -24,6 +25,8 @@ export function buildTracedOperator(
       return tracedMap(operator, recorder, streamId);
     case "filter":
       return tracedFilter(operator, recorder, streamId);
+    case "skip":
+      return tracedSkip(operator, recorder, streamId);
   }
 }
 
@@ -100,6 +103,55 @@ function tracedFilter(
             stageId: operator.id,
             value,
           });
+        },
+        error(error: unknown) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+function tracedSkip(
+  operator: SkipPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      let skippedValueCount = 0;
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          if (skippedValueCount < operator.config.count) {
+            skippedValueCount += 1;
+            recorder.record({
+              streamId,
+              type: "operator-drop",
+              stageId: operator.id,
+              value,
+            });
+            return;
+          }
+
+          recorder.record({
+            streamId,
+            type: "operator-pass",
+            stageId: operator.id,
+            value,
+          });
+          subscriber.next(value);
         },
         error(error: unknown) {
           subscriber.error(error);

@@ -26,6 +26,7 @@ import type {
   MapOperation,
   MapPipelineOperator,
   PipelineOperator,
+  SkipPipelineOperator,
   StreamColor,
   StreamShape,
   StreamValueKind,
@@ -62,6 +63,14 @@ const FILTER_TARGET_OPTIONS: SelectOption<FilterTarget>[] = [
   { value: "value", label: "Hodnota" },
 ];
 
+const SKIP_COUNT_OPTIONS: SelectOption<number>[] = Array.from(
+  { length: 10 },
+  (_, index) => ({
+    value: index + 1,
+    label: String(index + 1),
+  })
+);
+
 export function OperatorConfigControls({
   operator,
   disabled,
@@ -79,6 +88,14 @@ export function OperatorConfigControls({
     case "filter":
       return (
         <FilterConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
+    case "skip":
+      return (
+        <SkipConfigControls
           operator={operator}
           disabled={disabled}
           onChange={onChange}
@@ -237,6 +254,52 @@ function FilterConfigControls({
         </DropdownMenu>
       </div>
     </div>
+  );
+}
+
+type SkipConfigControlsProps = {
+  operator: SkipPipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function SkipConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: SkipConfigControlsProps) {
+  return (
+    <label className="grid gap-1 text-xs text-muted-foreground">
+      Počet
+      <Select
+        value={String(operator.config.count)}
+        disabled={disabled}
+        onValueChange={(count) =>
+          onChange({
+            ...operator,
+            config: {
+              ...operator.config,
+              count: Number(count),
+            },
+          })
+        }
+      >
+        <SelectTrigger className="w-full text-xs font-normal">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {SKIP_COUNT_OPTIONS.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={String(option.value)}
+              className="text-xs"
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </label>
   );
 }
 

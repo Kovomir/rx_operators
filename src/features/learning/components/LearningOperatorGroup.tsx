@@ -32,7 +32,7 @@ type LearningOperatorGroupProps = {
   isExpanded: boolean;
   operator: LearningOperator;
   onGetNextIncompleteTaskId: (
-    operatorType: PipelineOperatorType
+    operatorType: LearningOperator["type"]
   ) => string | undefined;
   onMarkTaskCompleted: (taskId: string) => void;
   onToggle: () => void;

@@ -25,6 +25,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "filter",
     description: "Propustí jen položky, které splní nastavenou podmínku.",
   },
+  {
+    type: "skip",
+    label: "skip",
+    description: "Přeskočí zadaný počet prvních hodnot ve streamu.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -65,19 +70,27 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
     case "map":
       return `x => x ${MAP_OPERATION_LABELS[operator.config.operation]} ${operator.config.operand}`;
     case "filter":
-      switch (operator.config.target) {
-        case "color":
-          return `barva ∈ ${operator.config.allowedColors
-            .map((color) => STREAM_COLOR_LABELS[color])
-            .join(", ")}`;
-        case "shape":
-          return `tvar ∈ ${operator.config.allowedShapes
-            .map((shape) => STREAM_SHAPE_LABELS[shape])
-            .join(", ")}`;
-        case "value":
-          return `hodnota ∈ ${operator.config.allowedValueKinds
-            .map((kind) => STREAM_VALUE_KIND_LABELS[kind])
-            .join(", ")}`;
-      }
+      return getFilterExpressionPreview(operator);
+    case "skip":
+      return `skip(${operator.config.count})`;
+  }
+}
+
+function getFilterExpressionPreview(
+  operator: Extract<PipelineOperator, { type: "filter" }>
+) {
+  switch (operator.config.target) {
+    case "color":
+      return `barva ∈ ${operator.config.allowedColors
+        .map((color) => STREAM_COLOR_LABELS[color])
+        .join(", ")}`;
+    case "shape":
+      return `tvar ∈ ${operator.config.allowedShapes
+        .map((shape) => STREAM_SHAPE_LABELS[shape])
+        .join(", ")}`;
+    case "value":
+      return `hodnota ∈ ${operator.config.allowedValueKinds
+        .map((kind) => STREAM_VALUE_KIND_LABELS[kind])
+        .join(", ")}`;
   }
 }
