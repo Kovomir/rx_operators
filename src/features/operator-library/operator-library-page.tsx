@@ -7,6 +7,7 @@ import {
   FilterIcon,
   GraduationCapIcon,
   ListChecksIcon,
+  SkipForwardIcon,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -20,7 +21,6 @@ import {
 } from "@/components/ui/tooltip";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 import { PipelineVisualizer } from "@/features/stream-visualizer";
-import { cn } from "@/lib/utils";
 
 import {
   OPERATOR_LIBRARY,
@@ -248,20 +248,24 @@ function OperatorExample({ operator }: { operator: OperatorLibraryEntry }) {
 }
 
 function OperatorIcon({ type }: { type: PipelineOperatorType }) {
-  return (
-    <span
-      className={cn(
-        "flex size-9 shrink-0 items-center justify-center rounded-md",
-        type === "filter"
-          ? "bg-amber-100 text-amber-700"
-          : "bg-violet-100 text-violet-700"
-      )}
-    >
-      {type === "filter" ? (
-        <FilterIcon className="size-4" />
-      ) : (
-        <span className="text-sm font-semibold">f</span>
-      )}
-    </span>
-  );
+  switch (type) {
+    case "filter":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
+          <FilterIcon className="size-4" />
+        </span>
+      );
+    case "map":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
+          <span className="text-sm font-semibold">f</span>
+        </span>
+      );
+    case "skip":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-sky-100 text-sky-700">
+          <SkipForwardIcon className="size-4" />
+        </span>
+      );
+  }
 }
