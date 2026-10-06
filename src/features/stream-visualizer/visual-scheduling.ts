@@ -22,3 +22,21 @@ export function reserveVisualWindow(
     startTimeMs,
   };
 }
+
+export function reserveOrderedVisualStart(
+  nextStartById: Map<string, number>,
+  id: string,
+  minStartGapMs: number,
+  nowMs: number
+): VisualWindowReservation {
+  const startTimeMs = Math.max(nowMs, nextStartById.get(id) ?? nowMs);
+  const endTimeMs = startTimeMs + minStartGapMs;
+
+  nextStartById.set(id, endTimeMs);
+
+  return {
+    delayMs: startTimeMs - nowMs,
+    endTimeMs,
+    startTimeMs,
+  };
+}

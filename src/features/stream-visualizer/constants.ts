@@ -2,18 +2,19 @@ import type { StreamColor, StreamShape } from "@/features/pipeline-editor";
 
 export const DEFAULT_STREAM_VALUE_COUNT = 10;
 
-export const DEMO_VISUAL_VALUE_START_GAP_MS = 1000;
-export const LIVE_VISUAL_VALUE_START_GAP_MS = 360;
-export const MOVE_DURATION_MS = 1120;
-export const OPERATOR_PAUSE_MS = 440;
-export const MAP_PULSE_MS = 360;
-export const DROP_DURATION_MS = 640;
+export const DEMO_VISUAL_VALUE_MIN_START_GAP_MS = 935;
+export const LIVE_VISUAL_VALUE_MIN_START_GAP_MS = 645;
+export const MOVE_DURATION_MS = 1760;
+export const OPERATOR_PAUSE_MS = 785;
+export const MAP_PULSE_MS = 645;
+export const DROP_DURATION_MS = 1145;
 
-export const SVG_HEIGHT = 440;
+export const SVG_HEIGHT = 360;
 export const SVG_PADDING_X = 76;
 export const STAGE_SPACING = 300;
-export const TRACK_Y = 268;
+export const TRACK_Y = 220;
 export const STREAM_LANE_GAP = 72;
+export const STREAM_VALUE_LANE_OFFSET_Y = 42;
 
 export const STREAM_COLOR_STYLES: Record<
   StreamColor,

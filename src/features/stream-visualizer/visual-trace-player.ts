@@ -2,9 +2,9 @@ import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
 import { MAIN_STREAM_ID, type StreamId } from "@/lib/rx/stream-identity";
 
 import {
-  DEMO_VISUAL_VALUE_START_GAP_MS,
+  DEMO_VISUAL_VALUE_MIN_START_GAP_MS,
   DROP_DURATION_MS,
-  LIVE_VISUAL_VALUE_START_GAP_MS,
+  LIVE_VISUAL_VALUE_MIN_START_GAP_MS,
   MAP_PULSE_MS,
   MOVE_DURATION_MS,
   OPERATOR_PAUSE_MS,
@@ -13,13 +13,16 @@ import {
   SOURCE_STAGE_ID,
   SUBSCRIBER_STAGE_ID,
 } from "./pipeline-layout";
-import { getStreamY } from "./stream-layout";
+import { getStreamValueY } from "./stream-layout";
 import type {
   LiveVisualValue,
   StagePosition,
   StreamLane,
 } from "./types";
-import { reserveVisualWindow } from "./visual-scheduling";
+import {
+  reserveOrderedVisualStart,
+  reserveVisualWindow,
+} from "./visual-scheduling";
 
 export type VisualTracePlayerAction =
   | {
@@ -47,14 +50,16 @@ type VisualTracePlayerArgs = {
 };
 
 type VisualTracePlayerState = {
-  nextStartClockByStream: Map<string, number>;
+  nextSourceStartByStream: Map<string, number>;
+  previousValueLaneIndexByStream: Map<StreamId, number>;
+  valueLaneIndexByValue: Map<string, number>;
   streamIdByValue: Map<string, StreamId>;
   visualClockByValue: Map<string, number>;
 };
 
-const SOURCE_APPEAR_DURATION_MS = 280;
-const PASS_RESET_DURATION_MS = 240;
-const REMOVE_DROPPED_VALUE_DELAY_MS = 360;
+const SOURCE_APPEAR_DURATION_MS = 500;
+const PASS_RESET_DURATION_MS = 435;
+const REMOVE_DROPPED_VALUE_DELAY_MS = 645;
 
 export function createVisualTracePlayer({
   playbackSpeed,
@@ -63,7 +68,9 @@ export function createVisualTracePlayer({
   streamLanes,
 }: VisualTracePlayerArgs) {
   const state: VisualTracePlayerState = {
-    nextStartClockByStream: new Map(),
+    nextSourceStartByStream: new Map(),
+    previousValueLaneIndexByStream: new Map(),
+    valueLaneIndexByValue: new Map(),
     streamIdByValue: new Map(),
     visualClockByValue: new Map(),
   };
@@ -83,6 +90,7 @@ export function createVisualTracePlayer({
     removeValue(valueId: string) {
       state.visualClockByValue.delete(valueId);
       state.streamIdByValue.delete(valueId);
+      state.valueLaneIndexByValue.delete(valueId);
     },
   };
 }
@@ -118,20 +126,22 @@ function playTraceEvent({
         SOURCE_APPEAR_DURATION_MS,
         playbackSpeed
       );
-      const streamStartGapMs = scaleDuration(
-        getVisualStartGapMs(event.source),
+      const minStartGapMs = scaleDuration(
+        getVisualMinStartGapMs(event.source),
         playbackSpeed
       );
-      const { delayMs } = reserveVisualWindow(
-        state.nextStartClockByStream,
+      const { delayMs } = reserveOrderedVisualStart(
+        state.nextSourceStartByStream,
         getSourceClockId(event.streamId, event.source),
-        streamStartGapMs,
+        minStartGapMs,
         elapsedMs
       );
       const startAtMs = elapsedMs + delayMs;
-      const y = getStreamY(streamLanes, event.streamId);
+      const valueLaneIndex = pickValueLaneIndex(state, event.streamId);
+      const y = getStreamValueY(streamLanes, event.streamId, valueLaneIndex);
 
       state.streamIdByValue.set(event.value.id, event.streamId);
+      state.valueLaneIndexByValue.set(event.value.id, valueLaneIndex);
       state.visualClockByValue.set(
         event.value.id,
         startAtMs + transitionDurationMs
@@ -202,6 +212,10 @@ function playTraceEvent({
       );
 
       state.streamIdByValue.set(event.after.id, event.streamId);
+      state.valueLaneIndexByValue.set(
+        event.after.id,
+        getValueLaneIndex(state, event.before.id)
+      );
 
       return [
         {
@@ -386,9 +400,10 @@ function getValueStreamY(
   streamLanes: StreamLane[],
   valueId: string
 ) {
-  return getStreamY(
+  return getStreamValueY(
     streamLanes,
-    state.streamIdByValue.get(valueId) ?? MAIN_STREAM_ID
+    state.streamIdByValue.get(valueId) ?? MAIN_STREAM_ID,
+    getValueLaneIndex(state, valueId)
   );
 }
 
@@ -396,10 +411,33 @@ function scaleDuration(durationMs: number, playbackSpeed: number) {
   return durationMs / playbackSpeed;
 }
 
-function getVisualStartGapMs(source: "demo" | "live") {
+function pickValueLaneIndex(
+  state: VisualTracePlayerState,
+  streamId: StreamId
+) {
+  const previousValueLaneIndex =
+    state.previousValueLaneIndexByStream.get(streamId);
+  const availableLaneIndexes = [0, 1, 2].filter(
+    (valueLaneIndex) => valueLaneIndex !== previousValueLaneIndex
+  );
+  const valueLaneIndex =
+    availableLaneIndexes[
+      Math.floor(Math.random() * availableLaneIndexes.length)
+    ];
+
+  state.previousValueLaneIndexByStream.set(streamId, valueLaneIndex);
+
+  return valueLaneIndex;
+}
+
+function getValueLaneIndex(state: VisualTracePlayerState, valueId: string) {
+  return state.valueLaneIndexByValue.get(valueId) ?? 1;
+}
+
+function getVisualMinStartGapMs(source: "demo" | "live") {
   return source === "live"
-    ? LIVE_VISUAL_VALUE_START_GAP_MS
-    : DEMO_VISUAL_VALUE_START_GAP_MS;
+    ? LIVE_VISUAL_VALUE_MIN_START_GAP_MS
+    : DEMO_VISUAL_VALUE_MIN_START_GAP_MS;
 }
 
 function getSourceClockId(streamId: StreamId, source: "demo" | "live") {

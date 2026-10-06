@@ -1,6 +1,12 @@
-import { STREAM_LANE_GAP, TRACK_Y } from "./constants";
+import {
+  STREAM_LANE_GAP,
+  STREAM_VALUE_LANE_OFFSET_Y,
+  TRACK_Y,
+} from "./constants";
 import { MAIN_STREAM_ID, type StreamId } from "@/lib/rx/stream-identity";
 import type { StreamLane } from "./types";
+
+const STREAM_VALUE_LANE_OFFSETS = [-1, 0, 1] as const;
 
 export function buildStreamLanes(
   streamIds: StreamId[] = [MAIN_STREAM_ID]
@@ -22,4 +28,17 @@ export function getStreamY(
     streamLanes.find((streamLane) => streamLane.streamId === streamId)?.y ??
     TRACK_Y
   );
+}
+
+export function getStreamValueY(
+  streamLanes: StreamLane[],
+  streamId: StreamId,
+  valueLaneIndex: number
+): number {
+  const laneOffset =
+    STREAM_VALUE_LANE_OFFSETS[
+      Math.abs(valueLaneIndex) % STREAM_VALUE_LANE_OFFSETS.length
+    ];
+
+  return getStreamY(streamLanes, streamId) + laneOffset * STREAM_VALUE_LANE_OFFSET_Y;
 }
