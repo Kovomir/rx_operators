@@ -1,4 +1,4 @@
-import {type ReactNode, useState} from "react";
+import {type ReactNode, useEffect, useRef, useState} from "react";
 import {
   BookOpenIcon,
   CheckCircle2Icon,
@@ -46,12 +46,24 @@ export function LearningOperatorGroup({
   onToggle,
 }: LearningOperatorGroupProps) {
   const navigate = useNavigate();
+  const groupRef = useRef<HTMLElement>(null);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(
     initialActiveTaskId ?? null
   );
   const tasks = TASKS_BY_OPERATOR[operator.type];
   const isCompleted = tasks.length > 0 && completedTasks === tasks.length;
   const canContinue = tasks.length > 0 && !isCompleted;
+
+  useEffect(() => {
+    if (!isExpanded || activeTaskId) {
+      return;
+    }
+
+    groupRef.current?.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+  }, [activeTaskId, isExpanded]);
 
   function handleContinue() {
     const nextTaskId = onGetNextIncompleteTaskId(operator.type);
@@ -66,7 +78,10 @@ export function LearningOperatorGroup({
   }
 
   return (
-    <article className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
+    <article
+      ref={groupRef}
+      className="min-w-0 scroll-mt-20 overflow-hidden rounded-lg border bg-background shadow-sm"
+    >
       <div className="flex w-full min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/45">
         <button
           type="button"
@@ -248,8 +263,21 @@ function TaskAccordionItem({
   task,
   onSelect,
 }: TaskListRowProps) {
+  const taskRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isActive) {
+      return;
+    }
+
+    taskRef.current?.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+  }, [isActive]);
+
   return (
-    <div className="min-w-0">
+    <div ref={taskRef} className="min-w-0 scroll-mt-20">
       <button
         type="button"
         className={cn(
@@ -257,7 +285,15 @@ function TaskAccordionItem({
           isActive && "rounded-b-none border-primary bg-primary/5"
         )}
         aria-expanded={isActive}
-        onClick={onSelect}
+        onClick={() => {
+          onSelect();
+          window.requestAnimationFrame(() => {
+            taskRef.current?.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          });
+        }}
       >
         <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
           <BookOpenIcon className="size-4" />

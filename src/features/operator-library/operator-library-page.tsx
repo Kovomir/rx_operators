@@ -1,4 +1,4 @@
-import {type ReactNode, useState} from "react";
+import {type ReactNode, useEffect, useRef, useState} from "react";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -87,8 +87,24 @@ function OperatorLibraryGroup({
   onOpenLearningTasks,
   onToggle,
 }: OperatorLibraryGroupProps) {
+  const groupRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isExpanded) {
+      return;
+    }
+
+    groupRef.current?.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+  }, [isExpanded]);
+
   return (
-    <article className="min-w-0 overflow-hidden rounded-lg border bg-background shadow-sm">
+    <article
+      ref={groupRef}
+      className="min-w-0 scroll-mt-20 overflow-hidden rounded-lg border bg-background shadow-sm"
+    >
       <div className="flex w-full min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/45">
         <button
           type="button"
