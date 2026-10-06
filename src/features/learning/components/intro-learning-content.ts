@@ -112,9 +112,7 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
     codeExample: `source$.pipe(
   map(value => value * 2) // každou hodnotu vynásobí 2
 ).subscribe(value => {
-  // odběratel reaguje na výsledek,
-  // například výpisem do konzole nebo nastavením hodnoty počitadla
-  console.log(value);
+  console.log(value); // odběratel reaguje na výsledek, například výpisem do konzole
 });`,
   },
   {

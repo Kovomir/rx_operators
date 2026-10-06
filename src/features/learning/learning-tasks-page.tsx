@@ -70,9 +70,9 @@ export function LearningTasksPage() {
   const leadingLearningItems: LearningSearchItem[] = [
     {
       id: INTRO_LEARNING_TASK_ID,
-      label: "Úvod do Rx pipeline",
+      label: "Úvod",
       searchText:
-        "reactive extensions rx datový proud stream zdroj source observable pozorovatelný zdroj operátor operator odběratel observer",
+        "krátké seznámení se streamem, zdrojem, operátorem a odběratelem",
       render: () => (
         <IntroLearningTask
           isCompleted={completedTaskIds.has(INTRO_LEARNING_TASK_ID)}
