@@ -32,6 +32,8 @@ type PipelineVisualizerProps = {
   description?: string;
   operators: PipelineOperator[];
   scrollSync?: PipelineScrollSyncController;
+  selectedOperatorId?: string | null;
+  selectedOperatorFocusKey?: number;
   sourceValues?: StreamValue[];
   title?: string;
 };
@@ -43,6 +45,8 @@ export function PipelineVisualizer({
   description = "Vizualizace vaší Rx pipeline.",
   operators,
   scrollSync,
+  selectedOperatorId,
+  selectedOperatorFocusKey,
   sourceValues: providedSourceValues,
   title = "Vizualizace streamu",
 }: PipelineVisualizerProps) {
@@ -78,6 +82,9 @@ export function PipelineVisualizer({
     [stagePositions]
   );
   const visualizerWidth = getVisualizerWidth(stages.length);
+  const selectedStagePosition = selectedOperatorId
+    ? stagePositionById.get(selectedOperatorId)
+    : undefined;
   const {
     clearScheduledTimeouts,
     handleTraceEvent,
@@ -160,6 +167,8 @@ export function PipelineVisualizer({
       </div>
 
       <VisualizerCanvas
+        centeredX={selectedStagePosition?.x}
+        centerRequestKey={selectedOperatorFocusKey}
         width={visualizerWidth}
         scrollSync={scrollSync}
       >
@@ -170,6 +179,7 @@ export function PipelineVisualizer({
         />
         <StageLayer
           stagePositions={stagePositions}
+          selectedStageId={selectedOperatorId}
           sourceValueCount={sourceValues.length}
           outputValueCount={expectedOutputValues.length}
         />

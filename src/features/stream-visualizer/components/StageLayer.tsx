@@ -7,6 +7,7 @@ import type {StagePosition} from "../types";
 
 type StageLayerProps = {
   outputValueCount: number;
+  selectedStageId?: string | null;
   sourceValueCount: number;
   stagePositions: StagePosition[];
 };
@@ -22,6 +23,7 @@ const STAGE_DETAIL_BADGE_MAX_WIDTH = 230;
 
 export function StageLayer({
   outputValueCount,
+  selectedStageId,
   sourceValueCount,
   stagePositions,
 }: StageLayerProps) {
@@ -34,17 +36,29 @@ export function StageLayer({
             x2={stagePosition.x}
             y1={STAGE_GUIDE_TOP_Y}
             y2={STAGE_GUIDE_BOTTOM_Y}
-            stroke="var(--border)"
-            strokeWidth="1"
-            strokeDasharray="4 8"
+            stroke={
+              stagePosition.id === selectedStageId
+                ? "var(--primary)"
+                : "var(--border)"
+            }
+            strokeWidth={stagePosition.id === selectedStageId ? "2" : "1"}
+            strokeDasharray={stagePosition.id === selectedStageId ? "5 7" : "4 8"}
           />
           <circle
             cx={stagePosition.x}
             cy={stagePosition.y}
-            r="4"
-            fill="var(--background)"
-            stroke="var(--border)"
-            strokeWidth="1.5"
+            r={stagePosition.id === selectedStageId ? "6" : "4"}
+            fill={
+              stagePosition.id === selectedStageId
+                ? "var(--primary)"
+                : "var(--background)"
+            }
+            stroke={
+              stagePosition.id === selectedStageId
+                ? "var(--background)"
+                : "var(--border)"
+            }
+            strokeWidth={stagePosition.id === selectedStageId ? "2" : "1.5"}
           />
           <StageLabel
             stagePosition={stagePosition}
@@ -80,7 +94,11 @@ function StageLabel({
 
   return (
     <>
-      <StageIcon stagePosition={stagePosition} x={iconX} y={iconY} />
+      <StageIcon
+        stagePosition={stagePosition}
+        x={iconX}
+        y={iconY}
+      />
       <text
         x={labelX}
         y={STAGE_LABEL_Y}

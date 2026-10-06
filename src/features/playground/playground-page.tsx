@@ -69,6 +69,15 @@ export function PlaygroundPage() {
   const [isSaveTargetsLoading, setIsSaveTargetsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const pipelineScrollSync = usePipelineScrollSync();
+  const [selectedOperatorId, setSelectedOperatorId] = useState<string | null>(
+    null
+  );
+  const [selectedOperatorFocusKey, setSelectedOperatorFocusKey] = useState(0);
+  const activeSelectedOperatorId =
+    selectedOperatorId &&
+    operators.some((operator) => operator.id === selectedOperatorId)
+      ? selectedOperatorId
+      : null;
 
   useEffect(() => {
     if (!isSaveDialogOpen) {
@@ -167,6 +176,11 @@ export function PlaygroundPage() {
     }
   }
 
+  function selectOperator(operatorId: string) {
+    setSelectedOperatorId(operatorId);
+    setSelectedOperatorFocusKey((currentKey) => currentKey + 1);
+  }
+
   return (
     <main className="flex min-w-0 flex-1 flex-col gap-5 overflow-x-hidden p-4 md:p-6">
       <section className="max-w-3xl">
@@ -186,11 +200,15 @@ export function PlaygroundPage() {
         onOperatorsChange={setOperators}
         mode="editable"
         scrollSync={pipelineScrollSync}
+        selectedOperatorId={activeSelectedOperatorId}
+        onSelectOperator={selectOperator}
       />
 
       <PipelineVisualizer
         operators={operators}
         scrollSync={pipelineScrollSync}
+        selectedOperatorId={activeSelectedOperatorId}
+        selectedOperatorFocusKey={selectedOperatorFocusKey}
       />
 
       <div className="fixed right-4 bottom-4 z-40 grid justify-items-end gap-2 md:right-6 md:bottom-6">
