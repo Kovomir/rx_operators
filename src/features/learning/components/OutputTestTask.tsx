@@ -14,6 +14,7 @@ import {
   ValueSequence,
 } from "@/features/stream-visualizer";
 import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
+import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
 
 type TestResult = "passed" | "failed" | null;
@@ -43,6 +44,7 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
     clonePipelineOperators(task.initialOperators ?? [])
   );
   const [testResult, setTestResult] = useState<TestResult>(null);
+  const pipelineScrollSync = usePipelineScrollSync();
 
   const actualOutputValues = useMemo(
     () => evaluatePipelineOutput(task.sourceValues, operators),
@@ -123,12 +125,14 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
         onOperatorsChange={handleOperatorsChange}
         maxOperators={task.maxOperators}
         mode="editable"
+        scrollSync={pipelineScrollSync}
       />
 
       <PipelineVisualizer
         canEmitLiveValue={false}
         canRandomizeValues={false}
         operators={operators}
+        scrollSync={pipelineScrollSync}
         sourceValues={task.sourceValues}
         title="Vizualizace řešení"
       />

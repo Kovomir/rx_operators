@@ -1,7 +1,8 @@
+import { ChevronsRightIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export function FlowConnector({
-  arrow = true,
   muted = false,
   className,
 }: {
@@ -12,16 +13,13 @@ export function FlowConnector({
   return (
     <div
       className={cn(
-        "flex h-8 w-5 shrink-0 items-center text-muted-foreground/45",
+        "flex h-8 w-7 shrink-0 items-center justify-center text-muted-foreground/45",
         muted && "text-muted-foreground/25",
         className
       )}
       aria-hidden="true"
     >
-      <span className="h-px flex-1 rounded-full bg-current" />
-      {arrow ? (
-        <span className="-ml-1 size-1.5 rotate-45 border-t border-r border-current" />
-      ) : null}
+      <ChevronsRightIcon className="size-4 shrink-0 stroke-[1.85]" />
     </div>
   );
 }

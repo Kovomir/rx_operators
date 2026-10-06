@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
+import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
 
 import { usePipelineRuntime } from "../hooks/use-pipeline-runtime";
@@ -30,6 +31,7 @@ type PipelineVisualizerProps = {
   defaultPlaybackSpeed?: PlaybackSpeed;
   description?: string;
   operators: PipelineOperator[];
+  scrollSync?: PipelineScrollSyncController;
   sourceValues?: StreamValue[];
   title?: string;
 };
@@ -40,6 +42,7 @@ export function PipelineVisualizer({
   defaultPlaybackSpeed = DEFAULT_PLAYBACK_SPEED,
   description = "Vizualizace vaší Rx pipeline.",
   operators,
+  scrollSync,
   sourceValues: providedSourceValues,
   title = "Vizualizace streamu",
 }: PipelineVisualizerProps) {
@@ -156,7 +159,10 @@ export function PipelineVisualizer({
         />
       </div>
 
-      <VisualizerCanvas width={visualizerWidth}>
+      <VisualizerCanvas
+        width={visualizerWidth}
+        scrollSync={scrollSync}
+      >
         <TrackLayer
           stagePositions={stagePositions}
           streamLanes={streamLanes}
