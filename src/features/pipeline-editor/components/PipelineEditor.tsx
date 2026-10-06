@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 
 import { usePipelineEditor } from "../hooks/use-pipeline-editor";
 import type {
@@ -16,6 +17,7 @@ type PipelineEditorProps = {
   onOperatorsChange?: (operators: PipelineOperator[]) => void;
   mode?: PipelineEditorMode;
   maxOperators?: number;
+  scrollSync?: PipelineScrollSyncController;
   className?: string;
 };
 
@@ -29,6 +31,7 @@ export function PipelineEditor({
   onOperatorsChange,
   mode = "editable",
   maxOperators = DEFAULT_MAX_OPERATORS,
+  scrollSync,
   className,
 }: PipelineEditorProps) {
   const {
@@ -66,6 +69,7 @@ export function PipelineEditor({
         onAddOperator={addOperator}
         onUpdateOperator={updateOperator}
         onRemoveOperator={removeOperator}
+        scrollSync={scrollSync}
       />
     </div>
   );

@@ -1,3 +1,7 @@
+import { useEffect, useRef, type UIEvent } from "react";
+
+import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
+
 import type { PipelineOperator, PipelineOperatorType } from "../types";
 import { EndpointNode } from "./EndpointNode";
 import { FlowConnector } from "./FlowConnector";
@@ -13,6 +17,7 @@ type PipelineFlowProps = {
   onAddOperator: (insertIndex: number, type: PipelineOperatorType) => void;
   onUpdateOperator: (operator: PipelineOperator) => void;
   onRemoveOperator: (operatorId: string) => void;
+  scrollSync?: PipelineScrollSyncController;
 };
 
 export function PipelineFlow({
@@ -24,9 +29,28 @@ export function PipelineFlow({
   onAddOperator,
   onUpdateOperator,
   onRemoveOperator,
+  scrollSync,
 }: PipelineFlowProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollSync?.register("editor", scrollContainerRef.current);
+
+    return () => {
+      scrollSync?.register("editor", null);
+    };
+  }, [scrollSync]);
+
+  function handleScroll(event: UIEvent<HTMLDivElement>) {
+    scrollSync?.syncScrollLeft("editor", event.currentTarget.scrollLeft);
+  }
+
   return (
-    <div className="max-w-full overflow-x-auto scroll-smooth">
+    <div
+      ref={scrollContainerRef}
+      className="max-w-full overflow-x-auto"
+      onScroll={handleScroll}
+    >
       <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
         <EndpointNode variant="source" />
 

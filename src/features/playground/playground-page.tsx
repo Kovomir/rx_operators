@@ -35,6 +35,7 @@ import type {
   SavedPipeline,
   SavedPlaygroundState,
 } from "@/features/saved-pipelines/types";
+import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { PipelineVisualizer } from "@/features/stream-visualizer";
 
 const NEW_SAVE_TARGET_ID = "__new__";
@@ -67,6 +68,7 @@ export function PlaygroundPage() {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [isSaveTargetsLoading, setIsSaveTargetsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const pipelineScrollSync = usePipelineScrollSync();
 
   useEffect(() => {
     if (!isSaveDialogOpen) {
@@ -183,9 +185,13 @@ export function PlaygroundPage() {
         operators={operators}
         onOperatorsChange={setOperators}
         mode="editable"
+        scrollSync={pipelineScrollSync}
       />
 
-      <PipelineVisualizer operators={operators} />
+      <PipelineVisualizer
+        operators={operators}
+        scrollSync={pipelineScrollSync}
+      />
 
       <div className="fixed right-4 bottom-4 z-40 grid justify-items-end gap-2 md:right-6 md:bottom-6">
         {saveStatus?.type === "success" && (

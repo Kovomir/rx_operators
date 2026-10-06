@@ -10,8 +10,8 @@ export const MAP_PULSE_MS = 360;
 export const DROP_DURATION_MS = 640;
 
 export const SVG_HEIGHT = 440;
-export const SVG_PADDING_X = 72;
-export const STAGE_SPACING = 220;
+export const SVG_PADDING_X = 76;
+export const STAGE_SPACING = 284;
 export const TRACK_Y = 268;
 export const STREAM_LANE_GAP = 72;
 
