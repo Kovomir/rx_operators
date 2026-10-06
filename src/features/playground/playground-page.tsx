@@ -39,6 +39,7 @@ import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { PipelineVisualizer } from "@/features/stream-visualizer";
 
 const NEW_SAVE_TARGET_ID = "__new__";
+const PLAYGROUND_MAX_OPERATORS = 30;
 
 export type PlaygroundNavigationState = {
   restoredPipelineId?: string;
@@ -196,6 +197,7 @@ export function PlaygroundPage() {
 
       <PipelineEditor
         enabledOperatorTypes={["map", "filter", "skip", "take"]}
+        maxOperators={PLAYGROUND_MAX_OPERATORS}
         operators={operators}
         onOperatorsChange={setOperators}
         mode="editable"
