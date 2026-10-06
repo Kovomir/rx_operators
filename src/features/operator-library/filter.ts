@@ -45,10 +45,6 @@ export const FILTER_OPERATOR_LIBRARY_ENTRY: FilterOperatorLibraryEntry = {
       label: "ReactiveX dokumentace",
       href: "https://reactivex.io/documentation/operators/filter.html",
     },
-    {
-      label: "RxMarbles diagram",
-      href: "https://rxmarbles.com/#filter",
-    },
   ],
   visualizerTitle: "Ukázka filter",
   visualizerDescription:

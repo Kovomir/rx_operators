@@ -31,7 +31,7 @@ export function buildPipelineStages(
     {
       id: SOURCE_STAGE_ID,
       kind: "source",
-      label: "Source",
+      label: "Zdroj",
     },
     ...operators.map((operator, index) => ({
       id: operator.id,
@@ -43,7 +43,7 @@ export function buildPipelineStages(
     {
       id: SUBSCRIBER_STAGE_ID,
       kind: "subscriber",
-      label: "Subscriber",
+      label: "Odběratel",
     },
   ];
 }

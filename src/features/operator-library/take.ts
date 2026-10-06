@@ -45,10 +45,6 @@ export const TAKE_OPERATOR_LIBRARY_ENTRY: TakeOperatorLibraryEntry = {
       label: "ReactiveX dokumentace",
       href: "https://reactivex.io/documentation/operators/take.html",
     },
-    {
-      label: "RxMarbles diagram",
-      href: "https://rxmarbles.com/#take",
-    },
   ],
   visualizerTitle: "Ukázka take",
   visualizerDescription:
