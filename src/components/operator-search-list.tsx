@@ -4,6 +4,7 @@ import { SearchInput } from "@/components/ui/search-input";
 
 type SearchableOperator = {
   label: string;
+  searchText?: string;
 };
 
 type OperatorSearchListProps<TOperator extends SearchableOperator> = {
@@ -25,7 +26,7 @@ export function OperatorSearchList<TOperator extends SearchableOperator>({
   const filteredOperators = useMemo(
     () =>
       operators.filter((operator) =>
-        matchesOperatorName(operator.label, searchQuery)
+        matchesOperatorSearchText(operator, searchQuery)
       ),
     [operators, searchQuery]
   );
@@ -53,14 +54,19 @@ export function OperatorSearchList<TOperator extends SearchableOperator>({
   );
 }
 
-function matchesOperatorName(operatorLabel: string, searchQuery: string) {
+function matchesOperatorSearchText(
+  operator: SearchableOperator,
+  searchQuery: string
+) {
   const normalizedQuery = normalizeSearchText(searchQuery);
 
   if (normalizedQuery.length === 0) {
     return true;
   }
 
-  return normalizeSearchText(operatorLabel).includes(normalizedQuery);
+  return normalizeSearchText(
+    `${operator.label} ${operator.searchText ?? ""}`
+  ).includes(normalizedQuery);
 }
 
 function normalizeSearchText(value: string) {

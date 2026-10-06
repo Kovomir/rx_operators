@@ -182,7 +182,7 @@ function TestResultMessage({ result }: { result: TestResult }) {
       )}
       <span>
         {isPassed
-          ? "Správně. Výstup odpovídá očekávání."
+          ? "Správně."
           : "Výstup neodpovídá očekávaným hodnotám."}
       </span>
     </div>

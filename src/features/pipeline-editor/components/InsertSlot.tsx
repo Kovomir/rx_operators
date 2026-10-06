@@ -8,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 import { OPERATOR_CATALOG } from "../operator-catalog";
 import type { PipelineOperatorType } from "../types";
@@ -17,12 +18,14 @@ import { OperatorIcon } from "./OperatorIcon";
 type InsertSlotProps = {
   enabledOperatorTypes: PipelineOperatorType[];
   disabled: boolean;
+  highlighted?: boolean;
   onAddOperator: (type: PipelineOperatorType) => void;
 };
 
 export function InsertSlot({
   enabledOperatorTypes,
   disabled,
+  highlighted,
   onAddOperator,
 }: InsertSlotProps) {
   const operators = OPERATOR_CATALOG.filter((operator) =>
@@ -38,7 +41,11 @@ export function InsertSlot({
             type="button"
             variant="outline"
             size="icon"
-            className="relative z-10 rounded-full border-dashed bg-background shadow-sm transition-colors group-hover/slot:border-primary/45 group-hover/slot:text-primary"
+            className={cn(
+              "relative z-10 rounded-full border-dashed bg-background shadow-sm transition-colors group-hover/slot:border-primary/45 group-hover/slot:text-primary",
+              highlighted &&
+                "border-primary text-primary ring-2 ring-primary ring-offset-2 ring-offset-background"
+            )}
             aria-label="Přidat operátor"
             disabled={disabled}
           >

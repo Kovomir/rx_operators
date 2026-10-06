@@ -3,14 +3,20 @@ import { FlagIcon, RadioIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type EndpointNodeProps = {
+  highlighted?: boolean;
   variant: "source" | "subscriber";
 };
 
-export function EndpointNode({ variant }: EndpointNodeProps) {
+export function EndpointNode({ highlighted, variant }: EndpointNodeProps) {
   const isSource = variant === "source";
 
   return (
-    <div className="flex h-32 w-32 shrink-0 flex-col justify-between rounded-md border bg-card p-2.5 text-card-foreground shadow-sm">
+    <div
+      className={cn(
+        "flex h-32 w-32 shrink-0 flex-col justify-between rounded-md border bg-card p-2.5 text-card-foreground shadow-sm transition-shadow",
+        highlighted && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+      )}
+    >
       <div className="flex items-center gap-1.5">
         <span
           className={cn(

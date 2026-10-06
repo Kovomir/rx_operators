@@ -12,8 +12,8 @@ type StageLayerProps = {
   stagePositions: StagePosition[];
 };
 
-const STAGE_GUIDE_TOP_Y = 126;
-const STAGE_GUIDE_BOTTOM_Y = 330;
+const STAGE_GUIDE_TOP_Y = 120;
+const STAGE_GUIDE_BOTTOM_Y = 296;
 const STAGE_LABEL_Y = 44;
 const STAGE_DETAIL_Y = 76;
 const STAGE_ICON_SIZE = 30;
