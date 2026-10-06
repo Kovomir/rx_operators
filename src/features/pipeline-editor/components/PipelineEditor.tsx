@@ -18,6 +18,8 @@ type PipelineEditorProps = {
   mode?: PipelineEditorMode;
   maxOperators?: number;
   scrollSync?: PipelineScrollSyncController;
+  selectedOperatorId?: string | null;
+  onSelectOperator?: (operatorId: string) => void;
   className?: string;
 };
 
@@ -32,6 +34,8 @@ export function PipelineEditor({
   mode = "editable",
   maxOperators = DEFAULT_MAX_OPERATORS,
   scrollSync,
+  selectedOperatorId,
+  onSelectOperator,
   className,
 }: PipelineEditorProps) {
   const {
@@ -70,6 +74,8 @@ export function PipelineEditor({
         onUpdateOperator={updateOperator}
         onRemoveOperator={removeOperator}
         scrollSync={scrollSync}
+        selectedOperatorId={selectedOperatorId}
+        onSelectOperator={onSelectOperator}
       />
     </div>
   );

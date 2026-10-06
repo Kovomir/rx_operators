@@ -18,6 +18,8 @@ type PipelineFlowProps = {
   onUpdateOperator: (operator: PipelineOperator) => void;
   onRemoveOperator: (operatorId: string) => void;
   scrollSync?: PipelineScrollSyncController;
+  selectedOperatorId?: string | null;
+  onSelectOperator?: (operatorId: string) => void;
 };
 
 export function PipelineFlow({
@@ -30,6 +32,8 @@ export function PipelineFlow({
   onUpdateOperator,
   onRemoveOperator,
   scrollSync,
+  selectedOperatorId,
+  onSelectOperator,
 }: PipelineFlowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -70,8 +74,10 @@ export function PipelineFlow({
               operator={operator}
               editable={isEditable}
               removable={!isOperatorLocked(operator.id)}
+              selected={operator.id === selectedOperatorId}
               onChange={onUpdateOperator}
               onRemove={() => onRemoveOperator(operator.id)}
+              onSelect={() => onSelectOperator?.(operator.id)}
             />
 
             {isEditable ? (

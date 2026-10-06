@@ -45,6 +45,15 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
   );
   const [testResult, setTestResult] = useState<TestResult>(null);
   const pipelineScrollSync = usePipelineScrollSync();
+  const [selectedOperatorId, setSelectedOperatorId] = useState<string | null>(
+    null
+  );
+  const [selectedOperatorFocusKey, setSelectedOperatorFocusKey] = useState(0);
+  const activeSelectedOperatorId =
+    selectedOperatorId &&
+    operators.some((operator) => operator.id === selectedOperatorId)
+      ? selectedOperatorId
+      : null;
 
   const actualOutputValues = useMemo(
     () => evaluatePipelineOutput(task.sourceValues, operators),
@@ -57,6 +66,11 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
   function handleOperatorsChange(nextOperators: PipelineOperator[]) {
     setOperators(nextOperators);
     setTestResult(null);
+  }
+
+  function selectOperator(operatorId: string) {
+    setSelectedOperatorId(operatorId);
+    setSelectedOperatorFocusKey((currentKey) => currentKey + 1);
   }
 
   function checkOutput() {
@@ -77,6 +91,7 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
   function resetTask() {
     setOperators(clonePipelineOperators(task.initialOperators ?? []));
     setTestResult(null);
+    setSelectedOperatorId(null);
   }
 
   return (
@@ -126,6 +141,8 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
         maxOperators={task.maxOperators}
         mode="editable"
         scrollSync={pipelineScrollSync}
+        selectedOperatorId={activeSelectedOperatorId}
+        onSelectOperator={selectOperator}
       />
 
       <PipelineVisualizer
@@ -133,6 +150,8 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
         canRandomizeValues={false}
         operators={operators}
         scrollSync={pipelineScrollSync}
+        selectedOperatorId={activeSelectedOperatorId}
+        selectedOperatorFocusKey={selectedOperatorFocusKey}
         sourceValues={task.sourceValues}
         title="Vizualizace řešení"
       />

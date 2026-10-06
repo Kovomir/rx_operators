@@ -6,12 +6,16 @@ import { SVG_HEIGHT } from "../constants";
 
 type VisualizerCanvasProps = {
   children: ReactNode;
+  centeredX?: number;
+  centerRequestKey?: number;
   scrollSync?: PipelineScrollSyncController;
   width: number;
 };
 
 export function VisualizerCanvas({
   children,
+  centeredX,
+  centerRequestKey,
   scrollSync,
   width,
 }: VisualizerCanvasProps) {
@@ -28,6 +32,23 @@ export function VisualizerCanvas({
   function handleScroll(event: UIEvent<HTMLDivElement>) {
     scrollSync?.syncScrollLeft("visualizer", event.currentTarget.scrollLeft);
   }
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+
+    if (!scrollContainer || centeredX === undefined) {
+      return;
+    }
+
+    const maxScrollLeft =
+      scrollContainer.scrollWidth - scrollContainer.clientWidth;
+    const nextScrollLeft = Math.max(
+      0,
+      Math.min(maxScrollLeft, centeredX - scrollContainer.clientWidth / 2)
+    );
+
+    scrollSync?.scrollTo("visualizer", nextScrollLeft);
+  }, [centerRequestKey, centeredX, scrollSync]);
 
   return (
     <div
