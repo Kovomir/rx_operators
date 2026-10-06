@@ -59,9 +59,14 @@ export const TASKS_BY_OPERATOR = {
   take: TAKE_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
-export const LEARNING_TASK_IDS = Object.values(TASKS_BY_OPERATOR)
-  .flat()
-  .map((task) => task.id);
+export const INTRO_LEARNING_TASK_ID = "intro-rxjs-pipeline";
+
+export const LEARNING_TASK_IDS = [
+  INTRO_LEARNING_TASK_ID,
+  ...Object.values(TASKS_BY_OPERATOR)
+    .flat()
+    .map((task) => task.id),
+];
 
 export function getLearningTaskOperatorType(taskId: string) {
   return LEARNING_OPERATORS.find((operator) =>

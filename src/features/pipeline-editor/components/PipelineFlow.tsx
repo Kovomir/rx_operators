@@ -12,8 +12,10 @@ type PipelineFlowProps = {
   enabledOperatorTypes: PipelineOperatorType[];
   operators: PipelineOperator[];
   isEditable: boolean;
+  highlightedElement?: PipelineEditorHighlightedElement;
   canInsertOperatorAt: (insertIndex: number) => boolean;
   isOperatorLocked: (operatorId: string) => boolean;
+  showDisabledInsertSlots?: boolean;
   onAddOperator: (insertIndex: number, type: PipelineOperatorType) => void;
   onUpdateOperator: (operator: PipelineOperator) => void;
   onRemoveOperator: (operatorId: string) => void;
@@ -22,12 +24,20 @@ type PipelineFlowProps = {
   onSelectOperator?: (operatorId: string) => void;
 };
 
+export type PipelineEditorHighlightedElement =
+  | "source"
+  | "first-insert-slot"
+  | "first-operator"
+  | "subscriber";
+
 export function PipelineFlow({
   enabledOperatorTypes,
   operators,
   isEditable,
+  highlightedElement,
   canInsertOperatorAt,
   isOperatorLocked,
+  showDisabledInsertSlots,
   onAddOperator,
   onUpdateOperator,
   onRemoveOperator,
@@ -36,6 +46,7 @@ export function PipelineFlow({
   onSelectOperator,
 }: PipelineFlowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const showsInsertSlots = isEditable || showDisabledInsertSlots;
 
   useEffect(() => {
     scrollSync?.register("editor", scrollContainerRef.current);
@@ -56,12 +67,16 @@ export function PipelineFlow({
       onScroll={handleScroll}
     >
       <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
-        <EndpointNode variant="source" />
+        <EndpointNode
+          highlighted={highlightedElement === "source"}
+          variant="source"
+        />
 
-        {isEditable ? (
+        {showsInsertSlots ? (
           <InsertSlot
             enabledOperatorTypes={enabledOperatorTypes}
-            disabled={!canInsertOperatorAt(0)}
+            disabled={!isEditable || !canInsertOperatorAt(0)}
+            highlighted={highlightedElement === "first-insert-slot"}
             onAddOperator={(type) => onAddOperator(0, type)}
           />
         ) : (
@@ -73,6 +88,9 @@ export function PipelineFlow({
             <OperatorNode
               operator={operator}
               editable={isEditable}
+              highlighted={
+                highlightedElement === "first-operator" && index === 0
+              }
               removable={!isOperatorLocked(operator.id)}
               selected={operator.id === selectedOperatorId}
               onChange={onUpdateOperator}
@@ -80,10 +98,10 @@ export function PipelineFlow({
               onSelect={() => onSelectOperator?.(operator.id)}
             />
 
-            {isEditable ? (
+            {showsInsertSlots ? (
               <InsertSlot
                 enabledOperatorTypes={enabledOperatorTypes}
-                disabled={!canInsertOperatorAt(index + 1)}
+                disabled={!isEditable || !canInsertOperatorAt(index + 1)}
                 onAddOperator={(type) => onAddOperator(index + 1, type)}
               />
             ) : index < operators.length - 1 ? (
@@ -92,7 +110,10 @@ export function PipelineFlow({
           </div>
         ))}
 
-        <EndpointNode variant="subscriber" />
+        <EndpointNode
+          highlighted={highlightedElement === "subscriber"}
+          variant="subscriber"
+        />
       </div>
     </div>
   );

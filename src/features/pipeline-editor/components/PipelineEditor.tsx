@@ -8,7 +8,10 @@ import type {
   PipelineOperatorType,
 } from "../types";
 import { PipelineEditorHeader } from "./PipelineEditorHeader";
-import { PipelineFlow } from "./PipelineFlow";
+import {
+  PipelineFlow,
+  type PipelineEditorHighlightedElement,
+} from "./PipelineFlow";
 
 type PipelineEditorProps = {
   enabledOperatorTypes?: PipelineOperatorType[];
@@ -17,8 +20,10 @@ type PipelineEditorProps = {
   onOperatorsChange?: (operators: PipelineOperator[]) => void;
   mode?: PipelineEditorMode;
   maxOperators?: number;
+  highlightedElement?: PipelineEditorHighlightedElement;
   scrollSync?: PipelineScrollSyncController;
   selectedOperatorId?: string | null;
+  showDisabledInsertSlots?: boolean;
   onSelectOperator?: (operatorId: string) => void;
   className?: string;
 };
@@ -33,8 +38,10 @@ export function PipelineEditor({
   onOperatorsChange,
   mode = "editable",
   maxOperators = DEFAULT_MAX_OPERATORS,
+  highlightedElement,
   scrollSync,
   selectedOperatorId,
+  showDisabledInsertSlots,
   onSelectOperator,
   className,
 }: PipelineEditorProps) {
@@ -68,8 +75,10 @@ export function PipelineEditor({
         enabledOperatorTypes={enabledOperatorTypes}
         operators={operators}
         isEditable={isEditable}
+        highlightedElement={highlightedElement}
         canInsertOperatorAt={canInsertOperatorAt}
         isOperatorLocked={isOperatorLocked}
+        showDisabledInsertSlots={showDisabledInsertSlots}
         onAddOperator={addOperator}
         onUpdateOperator={updateOperator}
         onRemoveOperator={removeOperator}

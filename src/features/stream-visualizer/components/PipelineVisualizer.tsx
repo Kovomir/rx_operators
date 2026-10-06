@@ -34,6 +34,7 @@ type PipelineVisualizerProps = {
   scrollSync?: PipelineScrollSyncController;
   selectedOperatorId?: string | null;
   selectedOperatorFocusKey?: number;
+  restartKey?: number;
   sourceValues?: StreamValue[];
   title?: string;
 };
@@ -47,6 +48,7 @@ export function PipelineVisualizer({
   scrollSync,
   selectedOperatorId,
   selectedOperatorFocusKey,
+  restartKey,
   sourceValues: providedSourceValues,
   title = "Vizualizace streamu",
 }: PipelineVisualizerProps) {
@@ -129,7 +131,7 @@ export function PipelineVisualizer({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [operators, playbackSpeed, runSourceValues, sourceValues]);
+  }, [operators, playbackSpeed, restartKey, runSourceValues, sourceValues]);
 
   function emitLiveValue() {
     const [nextValue] = createDefaultStreamValues(1);

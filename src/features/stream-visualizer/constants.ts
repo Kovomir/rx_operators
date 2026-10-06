@@ -9,10 +9,10 @@ export const OPERATOR_PAUSE_MS = 785;
 export const MAP_PULSE_MS = 645;
 export const DROP_DURATION_MS = 1145;
 
-export const SVG_HEIGHT = 360;
+export const SVG_HEIGHT = 320;
 export const SVG_PADDING_X = 76;
 export const STAGE_SPACING = 300;
-export const TRACK_Y = 220;
+export const TRACK_Y = 210;
 export const STREAM_LANE_GAP = 72;
 export const STREAM_VALUE_LANE_OFFSET_Y = 42;
 

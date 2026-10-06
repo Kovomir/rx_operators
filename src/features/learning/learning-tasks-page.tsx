@@ -1,26 +1,43 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { OperatorSearchList } from "@/components/operator-search-list";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
 
+import { IntroLearningTask } from "./components/IntroLearningTask";
 import { LearningOperatorGroup } from "./components/LearningOperatorGroup";
 import { useLearningTaskProgress } from "./hooks/use-learning-task-progress";
-import { LEARNING_OPERATORS } from "./learning-tasks";
+import {
+  INTRO_LEARNING_TASK_ID,
+  LEARNING_OPERATORS,
+  TASKS_BY_OPERATOR,
+} from "./learning-tasks";
 
 export type LearningTasksNavigationState = {
   activeOperatorType?: PipelineOperatorType;
   activeTaskId?: string;
 };
 
+type LearningSearchItem = {
+  id: string;
+  label: string;
+  searchText?: string;
+  render: () => ReactNode;
+};
+
+type ExpandedLearningItem = typeof INTRO_LEARNING_TASK_ID | PipelineOperatorType;
+
 export function LearningTasksPage() {
   const location = useLocation();
   const navigationState = location.state as LearningTasksNavigationState | null;
-  const [expandedOperator, setExpandedOperator] =
-    useState<PipelineOperatorType | null>(
-      navigationState?.activeOperatorType ?? null
+  const [expandedLearningItem, setExpandedLearningItem] =
+    useState<ExpandedLearningItem | null>(
+      navigationState?.activeOperatorType ?? INTRO_LEARNING_TASK_ID
     );
+  const [introCompletionTaskId, setIntroCompletionTaskId] = useState<
+    string | null
+  >(null);
   const {
     completedTaskIds,
     getCompletedTaskCount,
@@ -30,11 +47,78 @@ export function LearningTasksPage() {
     progressError,
   } = useLearningTaskProgress();
 
-  function toggleOperator(operatorType: PipelineOperatorType) {
-    setExpandedOperator((currentOperator) =>
-      currentOperator === operatorType ? null : operatorType
+  function toggleIntroTask() {
+    setIntroCompletionTaskId(null);
+    setExpandedLearningItem((currentItem) =>
+      currentItem === INTRO_LEARNING_TASK_ID ? null : INTRO_LEARNING_TASK_ID
     );
   }
+
+  function toggleOperator(operatorType: PipelineOperatorType) {
+    setIntroCompletionTaskId(null);
+    setExpandedLearningItem((currentItem) =>
+      currentItem === operatorType ? null : operatorType
+    );
+  }
+
+  function completeIntroTask(taskId: string) {
+    void markTaskCompleted(taskId);
+    setIntroCompletionTaskId(TASKS_BY_OPERATOR.map[0]?.id ?? null);
+    setExpandedLearningItem("map");
+  }
+
+  const leadingLearningItems: LearningSearchItem[] = [
+    {
+      id: INTRO_LEARNING_TASK_ID,
+      label: "Úvod do Rx pipeline",
+      searchText:
+        "reactive extensions rx datový proud stream zdroj source observable pozorovatelný zdroj operátor operator odběratel observer",
+      render: () => (
+        <IntroLearningTask
+          isCompleted={completedTaskIds.has(INTRO_LEARNING_TASK_ID)}
+          isExpanded={expandedLearningItem === INTRO_LEARNING_TASK_ID}
+          onMarkTaskCompleted={completeIntroTask}
+          onToggle={toggleIntroTask}
+        />
+      ),
+    },
+  ];
+  const operatorLearningItems: LearningSearchItem[] = LEARNING_OPERATORS.map(
+    (operator) => ({
+      id: operator.type,
+      label: operator.label,
+      searchText: operator.description,
+      render: () => {
+        const isExpanded = expandedLearningItem === operator.type;
+        const initialActiveTaskId =
+          navigationState?.activeOperatorType === operator.type
+            ? navigationState.activeTaskId
+            : operator.type === "map"
+              ? introCompletionTaskId ?? undefined
+              : undefined;
+
+        return (
+          <LearningOperatorGroup
+            key={`${operator.type}-${initialActiveTaskId ?? "default"}`}
+            completedTaskIds={completedTaskIds}
+            completedTasks={getCompletedTaskCount(operator.type)}
+            initialActiveTaskId={initialActiveTaskId}
+            isExpanded={isExpanded}
+            operator={operator}
+            onGetNextIncompleteTaskId={getNextIncompleteTaskId}
+            onMarkTaskCompleted={markTaskCompleted}
+            onToggle={() => toggleOperator(operator.type)}
+          />
+        );
+      },
+    })
+  );
+  const trailingLearningItems: LearningSearchItem[] = [];
+  const learningSearchItems = [
+    ...leadingLearningItems,
+    ...operatorLearningItems,
+    ...trailingLearningItems,
+  ];
 
   return (
     <main className="flex min-w-0 flex-1 flex-col gap-5 overflow-x-hidden p-4 md:p-6">
@@ -53,30 +137,10 @@ export function LearningTasksPage() {
         <LoadingState label="Načítání úloh" />
       ) : (
         <OperatorSearchList
-          operators={LEARNING_OPERATORS}
+          operators={learningSearchItems}
           placeholder="Hledat operátor"
           ariaLabel="Hledat operátor"
-          renderOperator={(operator) => {
-            const isExpanded = expandedOperator === operator.type;
-
-            return (
-              <LearningOperatorGroup
-                key={operator.type}
-                completedTaskIds={completedTaskIds}
-                completedTasks={getCompletedTaskCount(operator.type)}
-                initialActiveTaskId={
-                  navigationState?.activeOperatorType === operator.type
-                    ? navigationState.activeTaskId
-                    : undefined
-                }
-                isExpanded={isExpanded}
-                operator={operator}
-                onGetNextIncompleteTaskId={getNextIncompleteTaskId}
-                onMarkTaskCompleted={markTaskCompleted}
-                onToggle={() => toggleOperator(operator.type)}
-              />
-            );
-          }}
+          renderOperator={(item) => <div key={item.id}>{item.render()}</div>}
         />
       )}
     </main>
