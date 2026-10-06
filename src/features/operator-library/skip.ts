@@ -45,10 +45,6 @@ export const SKIP_OPERATOR_LIBRARY_ENTRY: SkipOperatorLibraryEntry = {
       label: "ReactiveX dokumentace",
       href: "https://reactivex.io/documentation/operators/skip.html",
     },
-    {
-      label: "RxMarbles diagram",
-      href: "https://rxmarbles.com/#skip",
-    },
   ],
   visualizerTitle: "Ukázka skip",
   visualizerDescription:

@@ -27,7 +27,7 @@ export function EndpointNode({ variant }: EndpointNodeProps) {
           )}
         </span>
         <span className="text-sm font-semibold">
-          {isSource ? "Source" : "Subscriber"}
+          {isSource ? "Zdroj" : "Odběratel"}
         </span>
       </div>
       <p className="text-xs leading-5 text-muted-foreground">

@@ -45,10 +45,6 @@ export const MAP_OPERATOR_LIBRARY_ENTRY: MapOperatorLibraryEntry = {
       label: "ReactiveX dokumentace",
       href: "https://reactivex.io/documentation/operators/map.html",
     },
-    {
-      label: "RxMarbles diagram",
-      href: "https://rxmarbles.com/#map",
-    },
   ],
   visualizerTitle: "Ukázka map",
   visualizerDescription: "Každá hodnota se vynásobí dvěma.",
