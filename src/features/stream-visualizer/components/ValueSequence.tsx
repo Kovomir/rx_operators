@@ -1,4 +1,5 @@
 import type { StreamValue } from "../types";
+import { formatDisplayNumber } from "../value-formatting";
 import { StreamValueGlyph } from "./StreamValueGlyph";
 
 export type DisplayStreamValue =
@@ -35,7 +36,7 @@ function ValueBadge({
   if (typeof value === "number") {
     return (
       <span className="flex size-7 items-center justify-center rounded-md border bg-background font-mono text-xs font-semibold text-foreground shadow-xs">
-        {value}
+        {formatDisplayNumber(value)}
       </span>
     );
   }
@@ -46,7 +47,7 @@ function ValueBadge({
       height="40"
       viewBox="-20 -20 40 40"
       className="block size-10 shrink-0"
-      aria-label={`${value.value}, ${value.color}, ${value.shape}`}
+      aria-label={`${formatDisplayNumber(value.value)}, ${value.color}, ${value.shape}`}
       role="img"
     >
       <StreamValueGlyph
