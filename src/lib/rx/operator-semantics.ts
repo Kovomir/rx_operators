@@ -60,3 +60,9 @@ export function applyTakeOperator(
 ) {
   return values.slice(0, operator.config.count);
 }
+
+export function applyDistinctUntilChangedOperator(values: StreamValue[]) {
+  return values.filter(
+    (value, index) => index === 0 || value.value !== values[index - 1].value
+  );
+}

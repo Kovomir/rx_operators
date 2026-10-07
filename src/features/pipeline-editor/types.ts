@@ -4,7 +4,12 @@ export type StreamShape = "circle" | "square" | "triangle";
 
 export type StreamValueKind = "odd" | "even";
 
-export type PipelineOperatorType = "map" | "filter" | "skip" | "take";
+export type PipelineOperatorType =
+  | "map"
+  | "filter"
+  | "skip"
+  | "take"
+  | "distinctUntilChanged";
 
 export type MapOperation = "add" | "subtract" | "multiply";
 
@@ -30,6 +35,8 @@ export type TakeOperatorConfig = {
   count: number;
 };
 
+export type DistinctUntilChangedOperatorConfig = Record<string, never>;
+
 export type MapPipelineOperator = {
   id: string;
   type: "map";
@@ -54,10 +61,17 @@ export type TakePipelineOperator = {
   config: TakeOperatorConfig;
 };
 
+export type DistinctUntilChangedPipelineOperator = {
+  id: string;
+  type: "distinctUntilChanged";
+  config: DistinctUntilChangedOperatorConfig;
+};
+
 export type PipelineOperator =
   | MapPipelineOperator
   | FilterPipelineOperator
   | SkipPipelineOperator
-  | TakePipelineOperator;
+  | TakePipelineOperator
+  | DistinctUntilChangedPipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

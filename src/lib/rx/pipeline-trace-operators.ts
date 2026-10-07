@@ -1,6 +1,7 @@
 import { Observable, type OperatorFunction } from "rxjs";
 
 import type {
+  DistinctUntilChangedPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
   PipelineOperator,
@@ -11,6 +12,7 @@ import type { StreamValue } from "@/types/stream";
 
 import {
   applyMapOperator,
+  applyDistinctUntilChangedOperator,
   passesFilterOperator,
 } from "./operator-semantics";
 import type { PipelineTraceRecorder } from "./pipeline-trace-recorder";
@@ -30,6 +32,8 @@ export function buildTracedOperator(
       return tracedSkip(operator, recorder, streamId);
     case "take":
       return tracedTake(operator, recorder, streamId);
+    case "distinctUntilChanged":
+      return tracedDistinctUntilChanged(operator, recorder, streamId);
   }
 }
 
@@ -188,6 +192,59 @@ function tracedTake(
 
           if (takenValueCount < operator.config.count) {
             takenValueCount += 1;
+            recorder.record({
+              streamId,
+              type: "operator-pass",
+              stageId: operator.id,
+              value,
+            });
+            subscriber.next(value);
+            return;
+          }
+
+          recorder.record({
+            streamId,
+            type: "operator-drop",
+            stageId: operator.id,
+            value,
+          });
+        },
+        error(error: unknown) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+function tracedDistinctUntilChanged(
+  operator: DistinctUntilChangedPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      let previousValue: StreamValue | null = null;
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          const [nextValue] = applyDistinctUntilChangedOperator(
+            previousValue ? [previousValue, value] : [value]
+          ).slice(-1);
+
+          if (!previousValue || nextValue === value) {
+            previousValue = value;
             recorder.record({
               streamId,
               type: "operator-pass",

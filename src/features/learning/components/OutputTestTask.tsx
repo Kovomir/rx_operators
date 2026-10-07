@@ -267,6 +267,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "distinctUntilChanged":
+        return {
+          ...operator,
+          config: {},
+        };
     }
   });
 }

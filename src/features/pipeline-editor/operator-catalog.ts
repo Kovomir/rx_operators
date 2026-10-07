@@ -35,6 +35,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "take",
     description: "Propustí zadaný počet prvních hodnot ve streamu.",
   },
+  {
+    type: "distinctUntilChanged",
+    label: "distinctUntilChanged",
+    description: "Zahodí jen sousední duplicitní hodnoty.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -80,6 +85,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return `skip(${operator.config.count})`;
     case "take":
       return `take(${operator.config.count})`;
+    case "distinctUntilChanged":
+      return "distinctUntilChanged()";
   }
 }
 
