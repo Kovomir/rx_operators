@@ -201,6 +201,49 @@ function playTraceEvent({
         },
       ];
     }
+    case "operator-create": {
+      const operatorPosition = stagePositionById.get(event.stageId);
+
+      if (!operatorPosition) {
+        return [];
+      }
+
+      const transitionDurationMs = scaleDuration(
+        SOURCE_APPEAR_DURATION_MS,
+        playbackSpeed
+      );
+      const startAtMs = reserveValueVisualTime(
+        state,
+        event.value.id,
+        transitionDurationMs,
+        elapsedMs
+      );
+      const valueLaneIndex = pickValueLaneIndex(state, event.streamId);
+      const y = getStreamValueY(streamLanes, event.streamId, valueLaneIndex);
+
+      state.streamIdByValue.set(event.value.id, event.streamId);
+      state.valueLaneIndexByValue.set(event.value.id, valueLaneIndex);
+
+      return [
+        {
+          type: "upsert-value",
+          atMs: startAtMs,
+          value: {
+            id: event.value.id,
+            animationKey: `${runId}:${event.value.id}`,
+            streamId: event.streamId,
+            streamValue: event.value,
+            displayValue: event.value.value,
+            status: "passed",
+            x: operatorPosition.x,
+            y,
+            opacity: 1,
+            scale: 1.08,
+            transitionDurationMs,
+          },
+        },
+      ];
+    }
     case "operator-map": {
       const pulseDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
       const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);

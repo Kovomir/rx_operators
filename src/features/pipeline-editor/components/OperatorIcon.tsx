@@ -1,4 +1,10 @@
-import { FilterIcon, PauseIcon, SkipForwardIcon, TerminalIcon } from "lucide-react";
+import {
+  FilterIcon,
+  PauseIcon,
+  PlusIcon,
+  SkipForwardIcon,
+  TerminalIcon,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -57,6 +63,12 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
       return (
         <span className={cn(className, "bg-orange-100 text-orange-700")}>
           <TerminalIcon className="size-4" />
+        </span>
+      );
+    case "startWith":
+      return (
+        <span className={cn(className, "bg-teal-100 text-teal-700")}>
+          <PlusIcon className="size-4" />
         </span>
       );
   }

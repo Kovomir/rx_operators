@@ -6,6 +6,7 @@ import type {
   MapPipelineOperator,
   PipelineOperator,
   SkipPipelineOperator,
+  StartWithPipelineOperator,
   TapPipelineOperator,
   TakePipelineOperator,
 } from "@/features/pipeline-editor";
@@ -14,6 +15,7 @@ import type { StreamValue } from "@/types/stream";
 import {
   applyMapOperator,
   applyDistinctUntilChangedOperator,
+  createStartWithValue,
   passesFilterOperator,
 } from "./operator-semantics";
 import type { PipelineTraceRecorder } from "./pipeline-trace-recorder";
@@ -37,6 +39,8 @@ export function buildTracedOperator(
       return tracedDistinctUntilChanged(operator, recorder, streamId);
     case "tap":
       return tracedTap(operator, recorder, streamId);
+    case "startWith":
+      return tracedStartWith(operator, recorder, streamId);
   }
 }
 
@@ -304,6 +308,51 @@ function tracedTap(
             value,
           });
 
+          subscriber.next(value);
+        },
+        error(error: unknown) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+function tracedStartWith(
+  operator: StartWithPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      const initialValue = createStartWithValue(operator);
+
+      recorder.record({
+        streamId,
+        type: "operator-create",
+        stageId: operator.id,
+        value: initialValue,
+      });
+      subscriber.next(initialValue);
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+          recorder.record({
+            streamId,
+            type: "operator-pass",
+            stageId: operator.id,
+            value,
+          });
           subscriber.next(value);
         },
         error(error: unknown) {
