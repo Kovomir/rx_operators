@@ -29,13 +29,23 @@ type TestResult = "passed" | "failed" | null;
 
 export type ExpectedOutputValue = DisplayStreamValue;
 
+export type PipelineOperatorRequirement = {
+  type: "debounceTime";
+  durationMs: number;
+};
+
 export type OutputTestTaskDefinition = {
   id: string;
   taskNumber: number;
   title: string;
+  taskType?: "output" | "behavior";
+  inputSummary?: string;
+  outputSummary?: string;
   sourceValues: StreamValue[];
-  expectedOutputValues: ExpectedOutputValue[];
+  expectedOutputValues?: ExpectedOutputValue[];
+  validationOutputValues?: ExpectedOutputValue[];
   expectedOperatorTypes?: PipelineOperatorType[];
+  operatorRequirements?: PipelineOperatorRequirement[];
   expectedTapValues?: number[];
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];
@@ -78,6 +88,8 @@ export function OutputTestTask({
     () => evaluatePipelineTapValues(task.sourceValues, operators),
     [operators, task.sourceValues]
   );
+  const outputValuesForValidation =
+    task.validationOutputValues ?? task.expectedOutputValues;
   const displayedSourceValues = task.showSourceValueDetails
     ? task.sourceValues
     : task.sourceValues.map((value) => value.value);
@@ -93,20 +105,26 @@ export function OutputTestTask({
   }
 
   function checkOutput() {
-    const hasExpectedOutput = areOutputValuesEqual(
-      actualOutputValues,
-      task.expectedOutputValues
-    );
+    const hasExpectedOutput = outputValuesForValidation
+      ? areOutputValuesEqual(actualOutputValues, outputValuesForValidation)
+      : true;
     const hasExpectedOperators = areOperatorTypesEqual(
       operators,
       task.expectedOperatorTypes
+    );
+    const hasExpectedOperatorRequirements = doOperatorsSatisfyRequirements(
+      operators,
+      task.operatorRequirements
     );
     const hasExpectedTapValues = areNumberArraysEqual(
       actualTapValues,
       task.expectedTapValues
     );
     const nextResult =
-      hasExpectedOutput && hasExpectedOperators && hasExpectedTapValues
+      hasExpectedOutput &&
+      hasExpectedOperators &&
+      hasExpectedOperatorRequirements &&
+      hasExpectedTapValues
         ? "passed"
         : "failed";
 
@@ -136,7 +154,15 @@ export function OutputTestTask({
             </h2>
           </div>
 
-          <TestResultMessage result={testResult} onContinue={onContinue} />
+          <TestResultMessage
+            result={testResult}
+            failureMessage={
+              task.taskType === "behavior"
+                ? "Pipeline zatím nesplňuje požadované chování."
+                : undefined
+            }
+            onContinue={onContinue}
+          />
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Button type="button" onClick={checkOutput}>
@@ -153,11 +179,21 @@ export function OutputTestTask({
         <div className="min-w-0 border-l-0 pt-0 lg:border-l lg:pl-4">
           <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
           <div className="mt-3 grid gap-3">
-            <ValueSequence label="Vstup" values={displayedSourceValues} />
-            <ValueSequence
-              label="Očekávaný výstup"
-              values={task.expectedOutputValues}
-            />
+            {task.inputSummary && (
+              <TaskSummaryLine label="Vstup" value={task.inputSummary} />
+            )}
+            {task.outputSummary && (
+              <TaskSummaryLine label="Výstup" value={task.outputSummary} />
+            )}
+            {!task.inputSummary && (
+              <ValueSequence label="Vstup" values={displayedSourceValues} />
+            )}
+            {task.expectedOutputValues && (
+              <ValueSequence
+                label="Očekávaný výstup"
+                values={task.expectedOutputValues}
+              />
+            )}
             {task.expectedTapValues && (
               <ValueSequence
                 label="Výpis tap(console.log)"
@@ -194,10 +230,27 @@ export function OutputTestTask({
   );
 }
 
+function TaskSummaryLine({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-md border bg-muted/35 px-3 py-2 text-sm leading-6 text-foreground">
+      <span className="font-semibold">{label}:</span>{" "}
+      <span className="text-muted-foreground">{value}</span>
+    </div>
+  );
+}
+
 function TestResultMessage({
+  failureMessage,
   onContinue,
   result,
 }: {
+  failureMessage?: string;
   result: TestResult;
   onContinue?: () => void;
 }) {
@@ -225,7 +278,7 @@ function TestResultMessage({
         <span className="min-w-0">
           {isPassed
             ? "Správně."
-            : "Výstup neodpovídá očekávaným hodnotám."}
+            : failureMessage ?? "Výstup neodpovídá očekávaným hodnotám."}
         </span>
       </div>
       {isPassed && onContinue && (
@@ -258,7 +311,9 @@ function areOutputValuesEqual(
       return (
         actualValue.value === expectedValue.value &&
         actualValue.color === expectedValue.color &&
-        actualValue.shape === expectedValue.shape
+        actualValue.shape === expectedValue.shape &&
+        (typeof expectedValue.emittedAtMs !== "number" ||
+          actualValue.emittedAtMs === expectedValue.emittedAtMs)
       );
     })
   );
@@ -277,6 +332,27 @@ function areOperatorTypesEqual(
     operators.every(
       (operator, index) => operator.type === expectedOperatorTypes[index]
     )
+  );
+}
+
+function doOperatorsSatisfyRequirements(
+  operators: PipelineOperator[],
+  requirements: PipelineOperatorRequirement[] | undefined
+) {
+  if (!requirements) {
+    return true;
+  }
+
+  return requirements.every((requirement) =>
+    operators.some((operator) => {
+      switch (requirement.type) {
+        case "debounceTime":
+          return (
+            operator.type === "debounceTime" &&
+            operator.config.durationMs === requirement.durationMs
+          );
+      }
+    })
   );
 }
 
