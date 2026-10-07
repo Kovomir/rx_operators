@@ -50,6 +50,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "startWith",
     description: "Přidá hodnotu na začátek streamu.",
   },
+  {
+    type: "scan",
+    label: "scan",
+    description: "Akumuluje průběžný stav mezi hodnotami streamu.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -101,6 +106,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return "tap(console.log)";
     case "startWith":
       return `startWith(${operator.config.value})`;
+    case "scan":
+      return "scan((acc, value) => acc + value, 0)";
   }
 }
 

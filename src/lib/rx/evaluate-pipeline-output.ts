@@ -4,6 +4,7 @@ import type { StreamValue } from "@/types/stream";
 import {
   applyMapOperator,
   applyDistinctUntilChangedOperator,
+  applyScanOperator,
   applySkipOperator,
   applyStartWithOperator,
   applyTakeOperator,
@@ -57,5 +58,7 @@ function applyPipelineOperator(
       return values;
     case "startWith":
       return applyStartWithOperator(values, operator);
+    case "scan":
+      return applyScanOperator(values);
   }
 }

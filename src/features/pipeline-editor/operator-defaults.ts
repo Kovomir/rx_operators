@@ -4,6 +4,7 @@ import type {
   MapOperatorConfig,
   PipelineOperator,
   PipelineOperatorType,
+  ScanOperatorConfig,
   SkipOperatorConfig,
   StartWithOperatorConfig,
   TapOperatorConfig,
@@ -40,6 +41,8 @@ export const DEFAULT_TAP_CONFIG: TapOperatorConfig = {
 export const DEFAULT_START_WITH_CONFIG: StartWithOperatorConfig = {
   value: 0,
 };
+
+export const DEFAULT_SCAN_CONFIG: ScanOperatorConfig = {};
 
 export function createDefaultPipelineOperator(
   id: string,
@@ -92,6 +95,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_START_WITH_CONFIG },
+      };
+    case "scan":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_SCAN_CONFIG },
       };
   }
 }

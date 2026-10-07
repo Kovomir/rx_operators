@@ -13,6 +13,8 @@ export type {
   PipelineEditorMode,
   PipelineOperator,
   PipelineOperatorType,
+  ScanOperatorConfig,
+  ScanPipelineOperator,
   SkipOperatorConfig,
   SkipPipelineOperator,
   StartWithOperatorConfig,

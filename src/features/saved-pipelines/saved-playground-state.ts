@@ -71,6 +71,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseCountPipelineOperator(value.id, "take", value.config);
     case "distinctUntilChanged":
       return parseNoConfigPipelineOperator(value.id, "distinctUntilChanged");
+    case "scan":
+      return parseNoConfigPipelineOperator(value.id, "scan");
     case "tap":
       return parseTapPipelineOperator(value.id, value.config);
     case "startWith":
@@ -155,7 +157,7 @@ function parseCountPipelineOperator(
 
 function parseNoConfigPipelineOperator(
   id: string,
-  type: "distinctUntilChanged"
+  type: "distinctUntilChanged" | "scan"
 ): PipelineOperator {
   return {
     id,
@@ -223,6 +225,7 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           config: { ...operator.config },
         };
       case "distinctUntilChanged":
+      case "scan":
         return {
           ...operator,
           config: {},

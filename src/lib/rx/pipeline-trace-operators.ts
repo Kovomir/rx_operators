@@ -5,6 +5,7 @@ import type {
   FilterPipelineOperator,
   MapPipelineOperator,
   PipelineOperator,
+  ScanPipelineOperator,
   SkipPipelineOperator,
   StartWithPipelineOperator,
   TapPipelineOperator,
@@ -15,6 +16,7 @@ import type { StreamValue } from "@/types/stream";
 import {
   applyMapOperator,
   applyDistinctUntilChangedOperator,
+  applyScanStep,
   createStartWithValue,
   passesFilterOperator,
 } from "./operator-semantics";
@@ -41,6 +43,8 @@ export function buildTracedOperator(
       return tracedTap(operator, recorder, streamId);
     case "startWith":
       return tracedStartWith(operator, recorder, streamId);
+    case "scan":
+      return tracedScan(operator, recorder, streamId);
   }
 }
 
@@ -354,6 +358,49 @@ function tracedStartWith(
             value,
           });
           subscriber.next(value);
+        },
+        error(error: unknown) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+function tracedScan(
+  operator: ScanPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      let accumulator = 0;
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          const scanStep = applyScanStep(value, accumulator);
+          accumulator = scanStep.accumulator;
+
+          recorder.record({
+            streamId,
+            type: "operator-map",
+            stageId: operator.id,
+            before: value,
+            after: scanStep.value,
+          });
+
+          subscriber.next(scanStep.value);
         },
         error(error: unknown) {
           subscriber.error(error);

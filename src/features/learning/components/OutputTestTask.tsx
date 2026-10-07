@@ -323,6 +323,7 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           config: { ...operator.config },
         };
       case "distinctUntilChanged":
+      case "scan":
         return {
           ...operator,
           config: {},

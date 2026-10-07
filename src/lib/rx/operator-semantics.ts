@@ -85,3 +85,30 @@ export function createStartWithValue(
     value: operator.config.value,
   };
 }
+
+export function applyScanOperator(values: StreamValue[]) {
+  let accumulator = 0;
+
+  return values.map((value) => {
+    accumulator += value.value;
+    return {
+      ...value,
+      value: accumulator,
+    };
+  });
+}
+
+export function applyScanStep(
+  streamValue: StreamValue,
+  accumulator: number
+) {
+  const nextAccumulator = accumulator + streamValue.value;
+
+  return {
+    accumulator: nextAccumulator,
+    value: {
+      ...streamValue,
+      value: nextAccumulator,
+    },
+  };
+}
