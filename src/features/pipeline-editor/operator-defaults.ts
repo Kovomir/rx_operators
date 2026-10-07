@@ -5,6 +5,7 @@ import type {
   PipelineOperator,
   PipelineOperatorType,
   SkipOperatorConfig,
+  TapOperatorConfig,
   TakeOperatorConfig,
 } from "./types";
 
@@ -30,6 +31,10 @@ export const DEFAULT_TAKE_CONFIG: TakeOperatorConfig = {
 
 export const DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG: DistinctUntilChangedOperatorConfig =
   {};
+
+export const DEFAULT_TAP_CONFIG: TapOperatorConfig = {
+  effect: "consoleLog",
+};
 
 export function createDefaultPipelineOperator(
   id: string,
@@ -70,6 +75,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG },
+      };
+    case "tap":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_TAP_CONFIG },
       };
   }
 }

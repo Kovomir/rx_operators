@@ -6,6 +6,7 @@ import type {
   MapPipelineOperator,
   PipelineOperator,
   SkipPipelineOperator,
+  TapPipelineOperator,
   TakePipelineOperator,
 } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
@@ -34,6 +35,8 @@ export function buildTracedOperator(
       return tracedTake(operator, recorder, streamId);
     case "distinctUntilChanged":
       return tracedDistinctUntilChanged(operator, recorder, streamId);
+    case "tap":
+      return tracedTap(operator, recorder, streamId);
   }
 }
 
@@ -261,6 +264,47 @@ function tracedDistinctUntilChanged(
             stageId: operator.id,
             value,
           });
+        },
+        error(error: unknown) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+function tracedTap(
+  operator: TapPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          if (operator.config.effect === "consoleLog") {
+            console.log(value.value);
+          }
+
+          recorder.record({
+            streamId,
+            type: "operator-tap",
+            stageId: operator.id,
+            value,
+          });
+
+          subscriber.next(value);
         },
         error(error: unknown) {
           subscriber.error(error);

@@ -120,6 +120,8 @@ export function OperatorConfigControls({
       );
     case "distinctUntilChanged":
       return <NoConfigControls label="Bez nastavení" />;
+    case "tap":
+      return <NoConfigControls label="console.log" />;
   }
 }
 

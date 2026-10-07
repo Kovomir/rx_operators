@@ -38,6 +38,11 @@ export type PipelineTraceEventPayload =
       value: StreamValue;
     }
   | {
+      type: "operator-tap";
+      stageId: string;
+      value: StreamValue;
+    }
+  | {
       type: "subscriber-next";
       value: StreamValue;
     };

@@ -18,6 +18,8 @@ export type {
   StreamColor,
   StreamShape,
   StreamValueKind,
+  TapOperatorConfig,
+  TapPipelineOperator,
   TakeOperatorConfig,
   TakePipelineOperator,
 } from "./types";

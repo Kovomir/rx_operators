@@ -40,6 +40,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "distinctUntilChanged",
     description: "Zahodí jen sousední duplicitní hodnoty.",
   },
+  {
+    type: "tap",
+    label: "tap",
+    description: "Provede vedlejší efekt a hodnotu pošle dál beze změny.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -87,6 +92,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return `take(${operator.config.count})`;
     case "distinctUntilChanged":
       return "distinctUntilChanged()";
+    case "tap":
+      return "tap(console.log)";
   }
 }
 

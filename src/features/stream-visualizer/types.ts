@@ -29,6 +29,7 @@ export type StreamLane = {
 export type ValueAnimationStatus =
   | "moving"
   | "mapped"
+  | "tapped"
   | "passed"
   | "dropped"
   | "completed";

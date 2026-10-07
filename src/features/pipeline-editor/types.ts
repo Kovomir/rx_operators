@@ -9,7 +9,8 @@ export type PipelineOperatorType =
   | "filter"
   | "skip"
   | "take"
-  | "distinctUntilChanged";
+  | "distinctUntilChanged"
+  | "tap";
 
 export type MapOperation = "add" | "subtract" | "multiply";
 
@@ -36,6 +37,10 @@ export type TakeOperatorConfig = {
 };
 
 export type DistinctUntilChangedOperatorConfig = Record<string, never>;
+
+export type TapOperatorConfig = {
+  effect: "consoleLog";
+};
 
 export type MapPipelineOperator = {
   id: string;
@@ -67,11 +72,18 @@ export type DistinctUntilChangedPipelineOperator = {
   config: DistinctUntilChangedOperatorConfig;
 };
 
+export type TapPipelineOperator = {
+  id: string;
+  type: "tap";
+  config: TapOperatorConfig;
+};
+
 export type PipelineOperator =
   | MapPipelineOperator
   | FilterPipelineOperator
   | SkipPipelineOperator
   | TakePipelineOperator
-  | DistinctUntilChangedPipelineOperator;
+  | DistinctUntilChangedPipelineOperator
+  | TapPipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

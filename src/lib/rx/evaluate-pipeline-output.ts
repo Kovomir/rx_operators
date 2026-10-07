@@ -34,5 +34,7 @@ function applyPipelineOperator(
       return applyTakeOperator(values, operator);
     case "distinctUntilChanged":
       return applyDistinctUntilChangedOperator(values);
+    case "tap":
+      return values;
   }
 }
