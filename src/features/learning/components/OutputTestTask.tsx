@@ -32,6 +32,7 @@ export type OutputTestTaskDefinition = {
   title: string;
   sourceValues: StreamValue[];
   expectedOutputValues: ExpectedOutputValue[];
+  expectedOperatorTypes?: PipelineOperatorType[];
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];
   enabledOperatorTypes?: PipelineOperatorType[];
@@ -84,12 +85,16 @@ export function OutputTestTask({
   }
 
   function checkOutput() {
-    const nextResult = areOutputValuesEqual(
+    const hasExpectedOutput = areOutputValuesEqual(
       actualOutputValues,
       task.expectedOutputValues
-    )
-      ? "passed"
-      : "failed";
+    );
+    const hasExpectedOperators = areOperatorTypesEqual(
+      operators,
+      task.expectedOperatorTypes
+    );
+    const nextResult =
+      hasExpectedOutput && hasExpectedOperators ? "passed" : "failed";
 
     setTestResult(nextResult);
 
@@ -236,6 +241,22 @@ function areOutputValuesEqual(
         actualValue.shape === expectedValue.shape
       );
     })
+  );
+}
+
+function areOperatorTypesEqual(
+  operators: PipelineOperator[],
+  expectedOperatorTypes: PipelineOperatorType[] | undefined
+) {
+  if (!expectedOperatorTypes) {
+    return true;
+  }
+
+  return (
+    operators.length === expectedOperatorTypes.length &&
+    operators.every(
+      (operator, index) => operator.type === expectedOperatorTypes[index]
+    )
   );
 }
 

@@ -8,6 +8,12 @@ import {
   type FilterOutputTestTaskDefinition,
 } from "./filter";
 import {
+  DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
+  DISTINCT_UNTIL_CHANGED_TASKS,
+  type DistinctUntilChangedLearningOperator,
+  type DistinctUntilChangedOutputTestTaskDefinition,
+} from "./distinct-until-changed";
+import {
   MAP_LEARNING_OPERATOR,
   MAP_TASKS,
   type MapLearningOperator,
@@ -30,26 +36,30 @@ export type LearningOperator =
   | MapLearningOperator
   | FilterLearningOperator
   | SkipLearningOperator
-  | TakeLearningOperator;
+  | TakeLearningOperator
+  | DistinctUntilChangedLearningOperator;
 
 export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
   | FilterOutputTestTaskDefinition
   | SkipOutputTestTaskDefinition
-  | TakeOutputTestTaskDefinition;
+  | TakeOutputTestTaskDefinition
+  | DistinctUntilChangedOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
   "map",
   "filter",
-  "skip",
   "take",
+  "skip",
+  "distinctUntilChanged",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
   MAP_LEARNING_OPERATOR,
   FILTER_LEARNING_OPERATOR,
-  SKIP_LEARNING_OPERATOR,
   TAKE_LEARNING_OPERATOR,
+  SKIP_LEARNING_OPERATOR,
+  DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
@@ -57,9 +67,12 @@ export const TASKS_BY_OPERATOR = {
   filter: FILTER_TASKS,
   skip: SKIP_TASKS,
   take: TAKE_TASKS,
+  distinctUntilChanged: DISTINCT_UNTIL_CHANGED_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
+  DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
+  DISTINCT_UNTIL_CHANGED_TASKS,
   FILTER_LEARNING_OPERATOR,
   FILTER_TASKS,
   MAP_LEARNING_OPERATOR,
@@ -70,6 +83,8 @@ export {
   TAKE_TASKS,
 };
 export type {
+  DistinctUntilChangedLearningOperator,
+  DistinctUntilChangedOutputTestTaskDefinition,
   FilterLearningOperator,
   FilterOutputTestTaskDefinition,
   MapLearningOperator,
