@@ -109,11 +109,6 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
         text: "V ukázce je zvýrazněný zamčený operátor map, který hodnoty vynásobí 2. Později lze v samostatných úlohách operátory skládat a nastavovat ručně.",
       },
     ],
-    codeExample: `source$.pipe(
-  map(value => value * 2) // každou hodnotu vynásobí 2
-).subscribe(value => {
-  console.log(value); // odběratel reaguje na výsledek, například výpisem do konzole
-});`,
   },
   {
     title: "Odběratel",
@@ -159,6 +154,11 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
         text: "Knihovna operátorů slouží jako rychlé vysvětlení a vizuální ukázka. Výukové úlohy potom ověří, že operátor umíte použít ve správné části pipeline.",
       },
     ],
+    codeExample: `source$.pipe(
+  map(value => value * 2) // každou hodnotu vynásobí 2
+).subscribe(value => {
+  console.log(value); // odběratel reaguje na výsledek, například výpisem do konzole
+});`,
     resources: [
       {
         label: "RxJS dokumentace",
