@@ -6,6 +6,7 @@ import type {
   StreamColor,
   StreamShape,
   StreamValueKind,
+  TapOperatorConfig,
 } from "@/features/pipeline-editor";
 
 import {
@@ -18,6 +19,7 @@ const FILTER_TARGETS = ["color", "shape", "value"] satisfies FilterTarget[];
 const STREAM_COLORS = ["red", "blue", "green"] satisfies StreamColor[];
 const STREAM_SHAPES = ["circle", "square", "triangle"] satisfies StreamShape[];
 const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
+const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
 
 export function createSavedPlaygroundState(
   operators: PipelineOperator[]
@@ -67,6 +69,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseCountPipelineOperator(value.id, "take", value.config);
     case "distinctUntilChanged":
       return parseNoConfigPipelineOperator(value.id, "distinctUntilChanged");
+    case "tap":
+      return parseTapPipelineOperator(value.id, value.config);
     default:
       return null;
   }
@@ -156,6 +160,23 @@ function parseNoConfigPipelineOperator(
   };
 }
 
+function parseTapPipelineOperator(
+  id: string,
+  config: unknown
+): PipelineOperator | null {
+  if (!isRecord(config) || !isOneOf(config.effect, TAP_EFFECTS)) {
+    return null;
+  }
+
+  return {
+    id,
+    type: "tap",
+    config: {
+      effect: config.effect,
+    },
+  };
+}
+
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -184,6 +205,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
         return {
           ...operator,
           config: {},
+        };
+      case "tap":
+        return {
+          ...operator,
+          config: { ...operator.config },
         };
     }
   });

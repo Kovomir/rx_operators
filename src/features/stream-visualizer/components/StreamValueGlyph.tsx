@@ -16,6 +16,7 @@ export function StreamValueGlyph({
   status,
 }: StreamValueGlyphProps) {
   const isDropped = status === "dropped";
+  const isTapped = status === "tapped";
   const colorStyle = isDropped
     ? DROPPED_STREAM_COLOR_STYLES[streamValue.color]
     : STREAM_COLOR_STYLES[streamValue.color];
@@ -23,6 +24,7 @@ export function StreamValueGlyph({
   return (
     <g>
       <ShapeGlyph streamValue={streamValue} colorStyle={colorStyle} />
+      {isTapped && <TapEffectMark />}
       {isDropped && <FilteredOutMark />}
 
       <text
@@ -33,6 +35,21 @@ export function StreamValueGlyph({
       >
         {value}
       </text>
+    </g>
+  );
+}
+
+function TapEffectMark() {
+  return (
+    <g className="pointer-events-none">
+      <circle
+        r="22"
+        fill="none"
+        stroke="var(--primary)"
+        strokeWidth="2"
+        strokeDasharray="3 4"
+        opacity="0.8"
+      />
     </g>
   );
 }

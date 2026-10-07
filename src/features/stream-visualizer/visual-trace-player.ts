@@ -275,6 +275,40 @@ function playTraceEvent({
         },
       ];
     }
+    case "operator-tap": {
+      const pulseDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
+      const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);
+      const startAtMs = reserveValueVisualTime(
+        state,
+        event.value.id,
+        pulseDurationMs + pauseDurationMs,
+        elapsedMs
+      );
+
+      state.streamIdByValue.set(event.value.id, event.streamId);
+
+      return [
+        {
+          type: "update-value",
+          atMs: startAtMs,
+          valueId: event.value.id,
+          update: {
+            status: "tapped",
+            scale: 1.2,
+            transitionDurationMs: pulseDurationMs,
+          },
+        },
+        {
+          type: "update-value",
+          atMs: startAtMs + pulseDurationMs,
+          valueId: event.value.id,
+          update: {
+            scale: 1,
+            transitionDurationMs: pauseDurationMs,
+          },
+        },
+      ];
+    }
     case "operator-drop": {
       const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);
       const dropDurationMs = scaleDuration(DROP_DURATION_MS, playbackSpeed);

@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {FilterIcon, FlagIcon, PauseIcon, RadioIcon, SkipForwardIcon,} from "lucide-react";
+import {FilterIcon, FlagIcon, PauseIcon, RadioIcon, SkipForwardIcon, TerminalIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
 
@@ -250,6 +250,18 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
           >
             !=
           </text>
+        </StageIconFrame>
+      );
+    case "tap":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-orange-100">
+          <TerminalIcon
+            x={x + 7}
+            y={y + 7}
+            width={16}
+            height={16}
+            className="stroke-orange-700"
+          />
         </StageIconFrame>
       );
   }
