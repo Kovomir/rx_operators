@@ -3,6 +3,7 @@ import type { StreamValue } from "@/types/stream";
 
 import {
   applyDebounceTimeOperator,
+  applyDelayOperator,
   applyMapOperator,
   applyDistinctUntilChangedOperator,
   applyScanOperator,
@@ -63,5 +64,7 @@ function applyPipelineOperator(
       return applyScanOperator(values);
     case "debounceTime":
       return applyDebounceTimeOperator(values, operator);
+    case "delay":
+      return applyDelayOperator(values, operator);
   }
 }

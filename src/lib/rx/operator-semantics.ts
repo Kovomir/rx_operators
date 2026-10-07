@@ -1,5 +1,6 @@
 import type {
   DebounceTimePipelineOperator,
+  DelayPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
   SkipPipelineOperator,
@@ -137,6 +138,16 @@ export function applyDebounceTimeOperator(
       emittedAtMs:
         getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
     }));
+}
+
+export function applyDelayOperator(
+  values: StreamValue[],
+  operator: DelayPipelineOperator
+) {
+  return values.map((value) => ({
+    ...value,
+    emittedAtMs: getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
+  }));
 }
 
 function getStreamValueEmissionTimeMs(value: StreamValue) {

@@ -1,5 +1,6 @@
 import type {
   DebounceTimeOperatorConfig,
+  DelayOperatorConfig,
   FilterPipelineOperator,
   FilterTarget,
   MapOperation,
@@ -24,6 +25,7 @@ const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
 const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
 const START_WITH_VALUES = Array.from({ length: 11 }, (_, value) => value) satisfies StartWithOperatorConfig["value"][];
 const DEBOUNCE_TIME_DURATIONS = [300, 500, 800, 1000] satisfies DebounceTimeOperatorConfig["durationMs"][];
+const DELAY_DURATIONS = [300, 500, 800, 1000] satisfies DelayOperatorConfig["durationMs"][];
 
 export function createSavedPlaygroundState(
   operators: PipelineOperator[]
@@ -77,6 +79,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseNoConfigPipelineOperator(value.id, "scan");
     case "debounceTime":
       return parseDebounceTimePipelineOperator(value.id, value.config);
+    case "delay":
+      return parseDelayPipelineOperator(value.id, value.config);
     case "tap":
       return parseTapPipelineOperator(value.id, value.config);
     case "startWith":
@@ -224,6 +228,23 @@ function parseDebounceTimePipelineOperator(
   };
 }
 
+function parseDelayPipelineOperator(
+  id: string,
+  config: unknown
+): PipelineOperator | null {
+  if (!isRecord(config) || !isOneOfNumber(config.durationMs, DELAY_DURATIONS)) {
+    return null;
+  }
+
+  return {
+    id,
+    type: "delay",
+    config: {
+      durationMs: config.durationMs,
+    },
+  };
+}
+
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -265,6 +286,7 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           config: { ...operator.config },
         };
       case "debounceTime":
+      case "delay":
         return {
           ...operator,
           config: { ...operator.config },
