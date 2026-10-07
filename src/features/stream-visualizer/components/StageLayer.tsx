@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon,} from "lucide-react";
+import {FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
 
@@ -285,6 +285,18 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
             width={16}
             height={16}
             className="stroke-cyan-700"
+          />
+        </StageIconFrame>
+      );
+    case "debounceTime":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-indigo-100">
+          <TimerIcon
+            x={x + 7}
+            y={y + 7}
+            width={16}
+            height={16}
+            className="stroke-indigo-700"
           />
         </StageIconFrame>
       );

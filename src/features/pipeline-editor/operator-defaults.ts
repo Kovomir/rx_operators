@@ -1,4 +1,5 @@
 import type {
+  DebounceTimeOperatorConfig,
   DistinctUntilChangedOperatorConfig,
   FilterOperatorConfig,
   MapOperatorConfig,
@@ -43,6 +44,10 @@ export const DEFAULT_START_WITH_CONFIG: StartWithOperatorConfig = {
 };
 
 export const DEFAULT_SCAN_CONFIG: ScanOperatorConfig = {};
+
+export const DEFAULT_DEBOUNCE_TIME_CONFIG: DebounceTimeOperatorConfig = {
+  durationMs: 500,
+};
 
 export function createDefaultPipelineOperator(
   id: string,
@@ -101,6 +106,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_SCAN_CONFIG },
+      };
+    case "debounceTime":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_DEBOUNCE_TIME_CONFIG },
       };
   }
 }

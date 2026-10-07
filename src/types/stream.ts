@@ -7,4 +7,5 @@ export type StreamValue = {
   shape: StreamShape;
   color: StreamColor;
   value: number;
+  emittedAtMs?: number;
 };

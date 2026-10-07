@@ -12,7 +12,8 @@ export type PipelineOperatorType =
   | "distinctUntilChanged"
   | "tap"
   | "startWith"
-  | "scan";
+  | "scan"
+  | "debounceTime";
 
 export type MapOperation = "add" | "subtract" | "multiply";
 
@@ -49,6 +50,10 @@ export type StartWithOperatorConfig = {
 };
 
 export type ScanOperatorConfig = Record<string, never>;
+
+export type DebounceTimeOperatorConfig = {
+  durationMs: number;
+};
 
 export type MapPipelineOperator = {
   id: string;
@@ -98,6 +103,12 @@ export type ScanPipelineOperator = {
   config: ScanOperatorConfig;
 };
 
+export type DebounceTimePipelineOperator = {
+  id: string;
+  type: "debounceTime";
+  config: DebounceTimeOperatorConfig;
+};
+
 export type PipelineOperator =
   | MapPipelineOperator
   | FilterPipelineOperator
@@ -106,6 +117,7 @@ export type PipelineOperator =
   | DistinctUntilChangedPipelineOperator
   | TapPipelineOperator
   | StartWithPipelineOperator
-  | ScanPipelineOperator;
+  | ScanPipelineOperator
+  | DebounceTimePipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

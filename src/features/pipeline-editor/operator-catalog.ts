@@ -55,6 +55,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "scan",
     description: "Akumuluje průběžný stav mezi hodnotami streamu.",
   },
+  {
+    type: "debounceTime",
+    label: "debounceTime",
+    description: "Propustí hodnotu až po krátkém tichu ve streamu.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -108,6 +113,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return `startWith(${operator.config.value})`;
     case "scan":
       return "scan((acc, value) => acc + value, 0)";
+    case "debounceTime":
+      return `debounceTime(${operator.config.durationMs})`;
   }
 }
 

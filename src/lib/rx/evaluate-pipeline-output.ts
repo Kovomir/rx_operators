@@ -2,6 +2,7 @@ import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
 import {
+  applyDebounceTimeOperator,
   applyMapOperator,
   applyDistinctUntilChangedOperator,
   applyScanOperator,
@@ -60,5 +61,7 @@ function applyPipelineOperator(
       return applyStartWithOperator(values, operator);
     case "scan":
       return applyScanOperator(values);
+    case "debounceTime":
+      return applyDebounceTimeOperator(values, operator);
   }
 }

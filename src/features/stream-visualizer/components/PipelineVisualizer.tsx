@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
@@ -58,6 +58,7 @@ export function PipelineVisualizer({
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(
     defaultPlaybackSpeed
   );
+  const sourceEmissionTimeoutsRef = useRef<number[]>([]);
   const sourceValues = providedSourceValues ?? localSourceValues;
   const expectedOutputValues = useMemo(
     () => evaluatePipelineOutput(sourceValues, operators),
@@ -104,6 +105,14 @@ export function PipelineVisualizer({
     resetVisualValues();
   }, [resetVisualValues]);
 
+  const clearSourceEmissionTimeouts = useCallback(() => {
+    for (const timeoutId of sourceEmissionTimeoutsRef.current) {
+      window.clearTimeout(timeoutId);
+    }
+
+    sourceEmissionTimeoutsRef.current = [];
+  }, []);
+
   const { emitValue, resetRuntime } = usePipelineRuntime({
     operators,
     onOutputValue: handleOutputValue,
@@ -113,14 +122,19 @@ export function PipelineVisualizer({
 
   const runSourceValues = useCallback(
     (values: StreamValue[]) => {
+      clearSourceEmissionTimeouts();
       resetRunState();
       resetRuntime();
 
       values.forEach((value) => {
-        emitValue(value, "demo");
+        const timeoutId = window.setTimeout(() => {
+          emitValue(value, "demo");
+        }, value.emittedAtMs ?? 0);
+
+        sourceEmissionTimeoutsRef.current.push(timeoutId);
       });
     },
-    [emitValue, resetRunState, resetRuntime]
+    [clearSourceEmissionTimeouts, emitValue, resetRunState, resetRuntime]
   );
 
   useEffect(() => {
@@ -130,8 +144,16 @@ export function PipelineVisualizer({
 
     return () => {
       window.clearTimeout(timeoutId);
+      clearSourceEmissionTimeouts();
     };
-  }, [operators, playbackSpeed, restartKey, runSourceValues, sourceValues]);
+  }, [
+    clearSourceEmissionTimeouts,
+    operators,
+    playbackSpeed,
+    restartKey,
+    runSourceValues,
+    sourceValues,
+  ]);
 
   function emitLiveValue() {
     const [nextValue] = createDefaultStreamValues(1);

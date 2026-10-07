@@ -5,6 +5,7 @@ import {
   SigmaIcon,
   SkipForwardIcon,
   TerminalIcon,
+  TimerIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -76,6 +77,12 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
       return (
         <span className={cn(className, "bg-cyan-100 text-cyan-700")}>
           <SigmaIcon className="size-4" />
+        </span>
+      );
+    case "debounceTime":
+      return (
+        <span className={cn(className, "bg-indigo-100 text-indigo-700")}>
+          <TimerIcon className="size-4" />
         </span>
       );
   }

@@ -21,6 +21,7 @@ import {
   STREAM_VALUE_KIND_LABELS,
 } from "../operator-catalog";
 import type {
+  DebounceTimePipelineOperator,
   FilterPipelineOperator,
   FilterTarget,
   MapOperation,
@@ -89,6 +90,13 @@ const START_WITH_VALUE_OPTIONS: SelectOption<number>[] = Array.from(
   })
 );
 
+const DEBOUNCE_TIME_DURATION_OPTIONS: SelectOption<number>[] = [
+  { value: 300, label: "300 ms" },
+  { value: 500, label: "500 ms" },
+  { value: 800, label: "800 ms" },
+  { value: 1000, label: "1000 ms" },
+];
+
 export function OperatorConfigControls({
   operator,
   disabled,
@@ -141,6 +149,14 @@ export function OperatorConfigControls({
       );
     case "scan":
       return <NoConfigControls label="acc + value" />;
+    case "debounceTime":
+      return (
+        <DebounceTimeConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
   }
 }
 
@@ -421,6 +437,52 @@ function StartWithConfigControls({
         </SelectTrigger>
         <SelectContent>
           {START_WITH_VALUE_OPTIONS.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={String(option.value)}
+              className="text-xs"
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </label>
+  );
+}
+
+type DebounceTimeConfigControlsProps = {
+  operator: DebounceTimePipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function DebounceTimeConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: DebounceTimeConfigControlsProps) {
+  return (
+    <label className="grid gap-1 text-xs text-muted-foreground">
+      Čas ticha
+      <Select
+        value={String(operator.config.durationMs)}
+        disabled={disabled}
+        onValueChange={(durationMs) =>
+          onChange({
+            ...operator,
+            config: {
+              ...operator.config,
+              durationMs: Number(durationMs),
+            },
+          })
+        }
+      >
+        <SelectTrigger className="w-full text-xs font-normal">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {DEBOUNCE_TIME_DURATION_OPTIONS.map((option) => (
             <SelectItem
               key={option.value}
               value={String(option.value)}

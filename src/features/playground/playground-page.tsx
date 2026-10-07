@@ -205,6 +205,7 @@ export function PlaygroundPage() {
           "tap",
           "startWith",
           "scan",
+          "debounceTime",
         ]}
         maxOperators={PLAYGROUND_MAX_OPERATORS}
         operators={operators}
