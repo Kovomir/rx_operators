@@ -45,16 +45,9 @@ export function useLearningTaskNavigation({
     setActiveTaskId(taskId);
   }
 
-  function handleTaskSolved(task: LearningSectionTask) {
-    if (task.kind !== "intro") {
-      markTaskCompleted(task.id);
-      return;
-    }
-
-    markTaskCompleted(task.id);
-
+  function openNextIncompleteTask(completedTaskId: string) {
     const nextTarget = getNextIncompleteLearningTaskTarget(completedTaskIds, {
-      completedTaskId: task.id,
+      completedTaskId,
     });
 
     if (!nextTarget) {
@@ -65,9 +58,24 @@ export function useLearningTaskNavigation({
     setActiveTaskId(nextTarget.task.id);
   }
 
+  function handleTaskSolved(task: LearningSectionTask) {
+    markTaskCompleted(task.id);
+
+    if (task.kind === "output-test") {
+      return;
+    }
+
+    openNextIncompleteTask(task.id);
+  }
+
+  function continueAfterTask(task: LearningSectionTask) {
+    openNextIncompleteTask(task.id);
+  }
+
   return {
     activeSectionId,
     activeTaskId,
+    continueAfterTask,
     handleTaskSolved,
     selectTask,
     toggleSection,
