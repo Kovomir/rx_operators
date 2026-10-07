@@ -19,6 +19,24 @@ export function evaluatePipelineOutput(
   );
 }
 
+export function evaluatePipelineTapValues(
+  sourceValues: StreamValue[],
+  operators: PipelineOperator[]
+): number[] {
+  const tapValues: number[] = [];
+
+  operators.reduce((currentValues, operator) => {
+    if (operator.type === "tap") {
+      tapValues.push(...currentValues.map((value) => value.value));
+      return currentValues;
+    }
+
+    return applyPipelineOperator(currentValues, operator);
+  }, sourceValues);
+
+  return tapValues;
+}
+
 function applyPipelineOperator(
   values: StreamValue[],
   operator: PipelineOperator

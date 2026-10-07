@@ -26,6 +26,12 @@ import {
   type SkipOutputTestTaskDefinition,
 } from "./skip";
 import {
+  TAP_LEARNING_OPERATOR,
+  TAP_TASKS,
+  type TapLearningOperator,
+  type TapOutputTestTaskDefinition,
+} from "./tap";
+import {
   TAKE_LEARNING_OPERATOR,
   TAKE_TASKS,
   type TakeLearningOperator,
@@ -37,14 +43,16 @@ export type LearningOperator =
   | FilterLearningOperator
   | SkipLearningOperator
   | TakeLearningOperator
-  | DistinctUntilChangedLearningOperator;
+  | DistinctUntilChangedLearningOperator
+  | TapLearningOperator;
 
 export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
   | FilterOutputTestTaskDefinition
   | SkipOutputTestTaskDefinition
   | TakeOutputTestTaskDefinition
-  | DistinctUntilChangedOutputTestTaskDefinition;
+  | DistinctUntilChangedOutputTestTaskDefinition
+  | TapOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
   "map",
@@ -52,6 +60,7 @@ export const LEARNING_OPERATOR_ORDER = [
   "take",
   "skip",
   "distinctUntilChanged",
+  "tap",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
@@ -60,6 +69,7 @@ export const LEARNING_OPERATORS = [
   TAKE_LEARNING_OPERATOR,
   SKIP_LEARNING_OPERATOR,
   DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
+  TAP_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
@@ -68,6 +78,7 @@ export const TASKS_BY_OPERATOR = {
   skip: SKIP_TASKS,
   take: TAKE_TASKS,
   distinctUntilChanged: DISTINCT_UNTIL_CHANGED_TASKS,
+  tap: TAP_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
@@ -79,6 +90,8 @@ export {
   MAP_TASKS,
   SKIP_LEARNING_OPERATOR,
   SKIP_TASKS,
+  TAP_LEARNING_OPERATOR,
+  TAP_TASKS,
   TAKE_LEARNING_OPERATOR,
   TAKE_TASKS,
 };
@@ -91,6 +104,8 @@ export type {
   MapOutputTestTaskDefinition,
   SkipLearningOperator,
   SkipOutputTestTaskDefinition,
+  TapLearningOperator,
+  TapOutputTestTaskDefinition,
   TakeLearningOperator,
   TakeOutputTestTaskDefinition,
 };
