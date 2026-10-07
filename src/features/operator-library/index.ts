@@ -7,6 +7,7 @@ import {
   type DistinctUntilChangedOperatorLibraryEntry,
 } from "./distinct-until-changed";
 import { MAP_OPERATOR_LIBRARY_ENTRY, type MapOperatorLibraryEntry } from "./map";
+import { SCAN_OPERATOR_LIBRARY_ENTRY, type ScanOperatorLibraryEntry } from "./scan";
 import { SKIP_OPERATOR_LIBRARY_ENTRY, type SkipOperatorLibraryEntry } from "./skip";
 import {
   START_WITH_OPERATOR_LIBRARY_ENTRY,
@@ -22,7 +23,8 @@ export type OperatorLibraryEntry =
   | TakeOperatorLibraryEntry
   | DistinctUntilChangedOperatorLibraryEntry
   | TapOperatorLibraryEntry
-  | StartWithOperatorLibraryEntry;
+  | StartWithOperatorLibraryEntry
+  | ScanOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
   MAP_OPERATOR_LIBRARY_ENTRY,
@@ -32,6 +34,7 @@ export const OPERATOR_LIBRARY = [
   DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY,
   TAP_OPERATOR_LIBRARY_ENTRY,
   START_WITH_OPERATOR_LIBRARY_ENTRY,
+  SCAN_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
 export { DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY } from "./distinct-until-changed";
@@ -46,6 +49,8 @@ export type {
 } from "./filter";
 export { MAP_OPERATOR_LIBRARY_ENTRY } from "./map";
 export type { MapOperatorLibraryEntry, MapOperatorResourceLink } from "./map";
+export { SCAN_OPERATOR_LIBRARY_ENTRY } from "./scan";
+export type { ScanOperatorLibraryEntry, ScanOperatorResourceLink } from "./scan";
 export { SKIP_OPERATOR_LIBRARY_ENTRY } from "./skip";
 export type {
   SkipOperatorLibraryEntry,
