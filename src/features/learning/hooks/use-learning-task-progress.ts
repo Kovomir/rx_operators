@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { TASKS_BY_OPERATOR, type LearningOperator } from "../learning-tasks";
+import {
+  getCompletedSectionTaskCount,
+  getLearningSection,
+  getNextIncompleteSectionTaskId,
+} from "../learning-tasks";
 import {
   loadCompletedLearningTaskIds,
   saveLearningTaskCompletion,
@@ -80,18 +84,28 @@ export function useLearningTaskProgress() {
   }, [completedTaskIds]);
 
   const getCompletedTaskCount = useCallback(
-    (operatorType: LearningOperator["type"]) =>
-      TASKS_BY_OPERATOR[operatorType].filter((task) =>
-        completedTaskIds.has(task.id)
-      ).length,
+    (sectionId: string) => {
+      const section = getLearningSection(sectionId);
+
+      if (!section) {
+        return 0;
+      }
+
+      return getCompletedSectionTaskCount(section, completedTaskIds);
+    },
     [completedTaskIds]
   );
 
   const getNextIncompleteTaskId = useCallback(
-    (operatorType: LearningOperator["type"]) =>
-      TASKS_BY_OPERATOR[operatorType].find(
-        (task) => !completedTaskIds.has(task.id)
-      )?.id,
+    (sectionId: string) => {
+      const section = getLearningSection(sectionId);
+
+      if (!section) {
+        return undefined;
+      }
+
+      return getNextIncompleteSectionTaskId(section, completedTaskIds);
+    },
     [completedTaskIds]
   );
 
