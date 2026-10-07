@@ -6,6 +6,10 @@ import {
   DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY,
   type DistinctUntilChangedOperatorLibraryEntry,
 } from "./distinct-until-changed";
+import {
+  DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY,
+  type DebounceTimeOperatorLibraryEntry,
+} from "./debounce-time";
 import { MAP_OPERATOR_LIBRARY_ENTRY, type MapOperatorLibraryEntry } from "./map";
 import { SCAN_OPERATOR_LIBRARY_ENTRY, type ScanOperatorLibraryEntry } from "./scan";
 import { SKIP_OPERATOR_LIBRARY_ENTRY, type SkipOperatorLibraryEntry } from "./skip";
@@ -24,7 +28,8 @@ export type OperatorLibraryEntry =
   | DistinctUntilChangedOperatorLibraryEntry
   | TapOperatorLibraryEntry
   | StartWithOperatorLibraryEntry
-  | ScanOperatorLibraryEntry;
+  | ScanOperatorLibraryEntry
+  | DebounceTimeOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
   MAP_OPERATOR_LIBRARY_ENTRY,
@@ -35,8 +40,14 @@ export const OPERATOR_LIBRARY = [
   TAP_OPERATOR_LIBRARY_ENTRY,
   START_WITH_OPERATOR_LIBRARY_ENTRY,
   SCAN_OPERATOR_LIBRARY_ENTRY,
+  DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
+export { DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY } from "./debounce-time";
+export type {
+  DebounceTimeOperatorLibraryEntry,
+  DebounceTimeOperatorResourceLink,
+} from "./debounce-time";
 export { DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY } from "./distinct-until-changed";
 export type {
   DistinctUntilChangedOperatorLibraryEntry,
