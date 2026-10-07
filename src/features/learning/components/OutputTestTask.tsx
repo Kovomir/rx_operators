@@ -42,7 +42,7 @@ export type OutputTestTaskDefinition = {
 type OutputTestTaskProps = {
   task: OutputTestTaskDefinition;
   onSolved: () => void;
-  onContinue: () => void;
+  onContinue?: () => void;
 };
 
 export function OutputTestTask({
@@ -174,7 +174,7 @@ function TestResultMessage({
   result,
 }: {
   result: TestResult;
-  onContinue: () => void;
+  onContinue?: () => void;
 }) {
   if (result === null) {
     return null;
@@ -203,7 +203,7 @@ function TestResultMessage({
             : "Výstup neodpovídá očekávaným hodnotám."}
         </span>
       </div>
-      {isPassed && (
+      {isPassed && onContinue && (
         <Button type="button" size="sm" onClick={onContinue}>
           <PlayIcon />
           Pokračovat

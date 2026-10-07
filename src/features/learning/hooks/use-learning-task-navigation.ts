@@ -61,21 +61,14 @@ export function useLearningTaskNavigation({
   function handleTaskSolved(task: LearningSectionTask) {
     markTaskCompleted(task.id);
 
-    if (task.kind === "output-test") {
-      return;
+    if (task.kind === "intro") {
+      openNextIncompleteTask(task.id);
     }
-
-    openNextIncompleteTask(task.id);
-  }
-
-  function continueAfterTask(task: LearningSectionTask) {
-    openNextIncompleteTask(task.id);
   }
 
   return {
     activeSectionId,
     activeTaskId,
-    continueAfterTask,
     handleTaskSolved,
     selectTask,
     toggleSection,

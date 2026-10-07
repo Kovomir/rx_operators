@@ -15,10 +15,13 @@ import type { LearningSectionTask } from "../learning-tasks";
 type LearningTaskItemProps = {
   isActive: boolean;
   isCompleted: boolean;
+  nextTaskTarget?: {
+    sectionId: string;
+    taskId: string;
+  };
   sectionId: string;
   task: LearningSectionTask;
   onMarkTaskCompleted: (taskId: string) => void;
-  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 };
@@ -26,7 +29,7 @@ type LearningTaskItemProps = {
 export function LearningTaskItem({
   isActive,
   isCompleted,
-  onContinueAfterTask,
+  nextTaskTarget,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
@@ -54,6 +57,17 @@ export function LearningTaskItem({
         behavior: "smooth",
       });
     });
+  }
+
+  function selectNextTask() {
+    if (nextTaskTarget) {
+      onSelectTask(nextTaskTarget.sectionId, nextTaskTarget.taskId);
+    }
+  }
+
+  function solveAndSelectNextTask() {
+    onTaskSolved(task);
+    selectNextTask();
   }
 
   const TaskIcon = task.kind === "output-test" ? TargetIcon : BookOpenIcon;
@@ -91,9 +105,9 @@ export function LearningTaskItem({
         <div className="rounded-b-lg border border-t-0 border-primary bg-background px-3 py-4 md:px-4">
           <LearningTaskContent
             task={task}
-            onContinueAfterTask={onContinueAfterTask}
+            onContinueToNextTask={nextTaskTarget ? selectNextTask : undefined}
             onMarkTaskCompleted={onMarkTaskCompleted}
-            onTaskSolved={onTaskSolved}
+            onTaskSolved={solveAndSelectNextTask}
           />
         </div>
       )}
@@ -103,13 +117,13 @@ export function LearningTaskItem({
 
 function LearningTaskContent({
   onMarkTaskCompleted,
-  onContinueAfterTask,
+  onContinueToNextTask,
   onTaskSolved,
   task,
 }: {
   task: LearningSectionTask;
   onMarkTaskCompleted: (taskId: string) => void;
-  onContinueAfterTask: (task: LearningSectionTask) => void;
+  onContinueToNextTask?: () => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 }) {
   switch (task.kind) {
@@ -129,7 +143,7 @@ function LearningTaskContent({
           key={task.id}
           task={task}
           onSolved={() => onMarkTaskCompleted(task.id)}
-          onContinue={() => onContinueAfterTask(task)}
+          onContinue={onContinueToNextTask}
         />
       );
   }
