@@ -415,6 +415,7 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           config: { ...operator.config },
         };
       case "debounceTime":
+      case "delay":
         return {
           ...operator,
           config: { ...operator.config },

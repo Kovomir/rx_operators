@@ -2,6 +2,7 @@ import { Observable, type OperatorFunction } from "rxjs";
 
 import type {
   DebounceTimePipelineOperator,
+  DelayPipelineOperator,
   DistinctUntilChangedPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
@@ -48,6 +49,8 @@ export function buildTracedOperator(
       return tracedScan(operator, recorder, streamId);
     case "debounceTime":
       return tracedDebounceTime(operator, recorder, streamId);
+    case "delay":
+      return tracedDelay(operator, recorder, streamId);
   }
 }
 
@@ -495,6 +498,81 @@ function tracedDebounceTime(
 
       return () => {
         clearPendingTimeout();
+        subscription.unsubscribe();
+      };
+    });
+}
+
+function tracedDelay(
+  operator: DelayPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      const pendingTimeoutIds = new Set<ReturnType<typeof setTimeout>>();
+      let isSourceComplete = false;
+
+      function completeWhenReady() {
+        if (isSourceComplete && pendingTimeoutIds.size === 0) {
+          subscriber.complete();
+        }
+      }
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          const timeoutId = setTimeout(() => {
+            pendingTimeoutIds.delete(timeoutId);
+
+            if (subscriber.closed) {
+              return;
+            }
+
+            const delayedValue = {
+              ...value,
+              emittedAtMs: (value.emittedAtMs ?? 0) + operator.config.durationMs,
+            };
+
+            recorder.record({
+              streamId,
+              type: "operator-pass",
+              stageId: operator.id,
+              value: delayedValue,
+            });
+
+            subscriber.next(delayedValue);
+            completeWhenReady();
+          }, operator.config.durationMs);
+
+          pendingTimeoutIds.add(timeoutId);
+        },
+        error(error: unknown) {
+          for (const timeoutId of pendingTimeoutIds) {
+            clearTimeout(timeoutId);
+          }
+
+          pendingTimeoutIds.clear();
+          subscriber.error(error);
+        },
+        complete() {
+          isSourceComplete = true;
+          completeWhenReady();
+        },
+      });
+
+      return () => {
+        for (const timeoutId of pendingTimeoutIds) {
+          clearTimeout(timeoutId);
+        }
+
+        pendingTimeoutIds.clear();
         subscription.unsubscribe();
       };
     });

@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon,} from "lucide-react";
+import {ClockIcon, FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
 
@@ -297,6 +297,18 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
             width={16}
             height={16}
             className="stroke-indigo-700"
+          />
+        </StageIconFrame>
+      );
+    case "delay":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-lime-100">
+          <ClockIcon
+            x={x + 7}
+            y={y + 7}
+            width={16}
+            height={16}
+            className="stroke-lime-700"
           />
         </StageIconFrame>
       );
