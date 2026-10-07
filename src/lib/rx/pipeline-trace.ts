@@ -43,6 +43,11 @@ export type PipelineTraceEventPayload =
       value: StreamValue;
     }
   | {
+      type: "operator-create";
+      stageId: string;
+      value: StreamValue;
+    }
+  | {
       type: "subscriber-next";
       value: StreamValue;
     };

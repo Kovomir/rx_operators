@@ -332,6 +332,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "startWith":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }

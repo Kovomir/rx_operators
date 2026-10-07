@@ -15,6 +15,8 @@ export type {
   PipelineOperatorType,
   SkipOperatorConfig,
   SkipPipelineOperator,
+  StartWithOperatorConfig,
+  StartWithPipelineOperator,
   StreamColor,
   StreamShape,
   StreamValueKind,

@@ -27,6 +27,7 @@ import type {
   MapPipelineOperator,
   PipelineOperator,
   SkipPipelineOperator,
+  StartWithPipelineOperator,
   StreamColor,
   StreamShape,
   StreamValueKind,
@@ -80,6 +81,14 @@ const TAKE_COUNT_OPTIONS: SelectOption<number>[] = Array.from(
   })
 );
 
+const START_WITH_VALUE_OPTIONS: SelectOption<number>[] = Array.from(
+  { length: 11 },
+  (_, value) => ({
+    value,
+    label: String(value),
+  })
+);
+
 export function OperatorConfigControls({
   operator,
   disabled,
@@ -122,6 +131,14 @@ export function OperatorConfigControls({
       return <NoConfigControls label="prev !== curr" />;
     case "tap":
       return <NoConfigControls label="console.log" />;
+    case "startWith":
+      return (
+        <StartWithConfigControls
+          operator={operator}
+          disabled={disabled}
+          onChange={onChange}
+        />
+      );
   }
 }
 
@@ -356,6 +373,52 @@ function TakeConfigControls({
         </SelectTrigger>
         <SelectContent>
           {TAKE_COUNT_OPTIONS.map((option) => (
+            <SelectItem
+              key={option.value}
+              value={String(option.value)}
+              className="text-xs"
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </label>
+  );
+}
+
+type StartWithConfigControlsProps = {
+  operator: StartWithPipelineOperator;
+  disabled: boolean;
+  onChange: (operator: PipelineOperator) => void;
+};
+
+function StartWithConfigControls({
+  operator,
+  disabled,
+  onChange,
+}: StartWithConfigControlsProps) {
+  return (
+    <label className="grid gap-1 text-xs text-muted-foreground">
+      Hodnota
+      <Select
+        value={String(operator.config.value)}
+        disabled={disabled}
+        onValueChange={(value) =>
+          onChange({
+            ...operator,
+            config: {
+              ...operator.config,
+              value: Number(value),
+            },
+          })
+        }
+      >
+        <SelectTrigger className="w-full text-xs font-normal">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {START_WITH_VALUE_OPTIONS.map((option) => (
             <SelectItem
               key={option.value}
               value={String(option.value)}

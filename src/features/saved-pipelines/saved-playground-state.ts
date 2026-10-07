@@ -3,6 +3,7 @@ import type {
   FilterTarget,
   MapOperation,
   PipelineOperator,
+  StartWithOperatorConfig,
   StreamColor,
   StreamShape,
   StreamValueKind,
@@ -20,6 +21,7 @@ const STREAM_COLORS = ["red", "blue", "green"] satisfies StreamColor[];
 const STREAM_SHAPES = ["circle", "square", "triangle"] satisfies StreamShape[];
 const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
 const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
+const START_WITH_VALUES = Array.from({ length: 11 }, (_, value) => value) satisfies StartWithOperatorConfig["value"][];
 
 export function createSavedPlaygroundState(
   operators: PipelineOperator[]
@@ -71,6 +73,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseNoConfigPipelineOperator(value.id, "distinctUntilChanged");
     case "tap":
       return parseTapPipelineOperator(value.id, value.config);
+    case "startWith":
+      return parseStartWithPipelineOperator(value.id, value.config);
     default:
       return null;
   }
@@ -177,6 +181,23 @@ function parseTapPipelineOperator(
   };
 }
 
+function parseStartWithPipelineOperator(
+  id: string,
+  config: unknown
+): PipelineOperator | null {
+  if (!isRecord(config) || !isOneOfNumber(config.value, START_WITH_VALUES)) {
+    return null;
+  }
+
+  return {
+    id,
+    type: "startWith",
+    config: {
+      value: config.value,
+    },
+  };
+}
+
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -211,6 +232,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "startWith":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }
@@ -231,4 +257,11 @@ function isArrayOf<TValue extends string>(
   allowedValues: readonly TValue[]
 ): value is TValue[] {
   return Array.isArray(value) && value.every((item) => isOneOf(item, allowedValues));
+}
+
+function isOneOfNumber<TValue extends number>(
+  value: unknown,
+  allowedValues: readonly TValue[]
+): value is TValue {
+  return typeof value === "number" && allowedValues.includes(value as TValue);
 }

@@ -45,6 +45,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     label: "tap",
     description: "Provede vedlejší efekt a hodnotu pošle dál beze změny.",
   },
+  {
+    type: "startWith",
+    label: "startWith",
+    description: "Přidá hodnotu na začátek streamu.",
+  },
 ];
 
 export const MAP_OPERATION_LABELS: Record<MapOperation, string> = {
@@ -94,6 +99,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return "distinctUntilChanged()";
     case "tap":
       return "tap(console.log)";
+    case "startWith":
+      return `startWith(${operator.config.value})`;
   }
 }
 

@@ -5,6 +5,7 @@ import {
   applyMapOperator,
   applyDistinctUntilChangedOperator,
   applySkipOperator,
+  applyStartWithOperator,
   applyTakeOperator,
   passesFilterOperator,
 } from "./operator-semantics";
@@ -54,5 +55,7 @@ function applyPipelineOperator(
       return applyDistinctUntilChangedOperator(values);
     case "tap":
       return values;
+    case "startWith":
+      return applyStartWithOperator(values, operator);
   }
 }
