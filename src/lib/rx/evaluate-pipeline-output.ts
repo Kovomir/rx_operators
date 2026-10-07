@@ -3,6 +3,7 @@ import type { StreamValue } from "@/types/stream";
 
 import {
   applyMapOperator,
+  applyDistinctUntilChangedOperator,
   applySkipOperator,
   applyTakeOperator,
   passesFilterOperator,
@@ -31,5 +32,7 @@ function applyPipelineOperator(
       return applySkipOperator(values, operator);
     case "take":
       return applyTakeOperator(values, operator);
+    case "distinctUntilChanged":
+      return applyDistinctUntilChangedOperator(values);
   }
 }

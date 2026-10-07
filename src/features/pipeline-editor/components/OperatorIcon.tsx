@@ -47,5 +47,11 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
           <PauseIcon className="size-4" />
         </span>
       );
+    case "distinctUntilChanged":
+      return (
+        <span className={cn(className, "bg-rose-100 text-rose-700")}>
+          <span className="text-xs font-semibold">!=</span>
+        </span>
+      );
   }
 }

@@ -65,6 +65,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseCountPipelineOperator(value.id, "skip", value.config);
     case "take":
       return parseCountPipelineOperator(value.id, "take", value.config);
+    case "distinctUntilChanged":
+      return parseNoConfigPipelineOperator(value.id, "distinctUntilChanged");
     default:
       return null;
   }
@@ -143,6 +145,17 @@ function parseCountPipelineOperator(
   };
 }
 
+function parseNoConfigPipelineOperator(
+  id: string,
+  type: "distinctUntilChanged"
+): PipelineOperator {
+  return {
+    id,
+    type,
+    config: {},
+  };
+}
+
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -166,6 +179,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
         return {
           ...operator,
           config: { ...operator.config },
+        };
+      case "distinctUntilChanged":
+        return {
+          ...operator,
+          config: {},
         };
     }
   });

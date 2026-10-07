@@ -1,4 +1,5 @@
 import type {
+  DistinctUntilChangedOperatorConfig,
   FilterOperatorConfig,
   MapOperatorConfig,
   PipelineOperator,
@@ -26,6 +27,9 @@ export const DEFAULT_SKIP_CONFIG: SkipOperatorConfig = {
 export const DEFAULT_TAKE_CONFIG: TakeOperatorConfig = {
   count: 1,
 };
+
+export const DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG: DistinctUntilChangedOperatorConfig =
+  {};
 
 export function createDefaultPipelineOperator(
   id: string,
@@ -60,6 +64,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_TAKE_CONFIG },
+      };
+    case "distinctUntilChanged":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG },
       };
   }
 }

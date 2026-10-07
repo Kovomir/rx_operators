@@ -196,7 +196,13 @@ export function PlaygroundPage() {
       </section>
 
       <PipelineEditor
-        enabledOperatorTypes={["map", "filter", "skip", "take"]}
+        enabledOperatorTypes={[
+          "map",
+          "filter",
+          "skip",
+          "take",
+          "distinctUntilChanged",
+        ]}
         maxOperators={PLAYGROUND_MAX_OPERATORS}
         operators={operators}
         onOperatorsChange={setOperators}

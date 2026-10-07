@@ -118,6 +118,8 @@ export function OperatorConfigControls({
           onChange={onChange}
         />
       );
+    case "distinctUntilChanged":
+      return <NoConfigControls label="Bez nastavení" />;
   }
 }
 
@@ -363,6 +365,14 @@ function TakeConfigControls({
         </SelectContent>
       </Select>
     </label>
+  );
+}
+
+function NoConfigControls({ label }: { label: string }) {
+  return (
+    <div className="rounded-md border border-dashed px-2 py-2 text-xs text-muted-foreground">
+      {label}
+    </div>
   );
 }
 

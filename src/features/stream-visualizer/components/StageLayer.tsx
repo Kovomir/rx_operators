@@ -239,6 +239,19 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
           />
         </StageIconFrame>
       );
+    case "distinctUntilChanged":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-rose-100">
+          <text
+            x={x + STAGE_ICON_SIZE / 2}
+            y={y + 20}
+            textAnchor="middle"
+            className="fill-rose-700 text-[12px] font-semibold"
+          >
+            !=
+          </text>
+        </StageIconFrame>
+      );
   }
 }
 

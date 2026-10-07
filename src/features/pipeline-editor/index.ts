@@ -2,6 +2,8 @@ export { PipelineEditor } from "./components/PipelineEditor";
 export { OperatorIcon } from "./components/OperatorIcon";
 export { getOperatorExpressionPreview } from "./operator-catalog";
 export type {
+  DistinctUntilChangedOperatorConfig,
+  DistinctUntilChangedPipelineOperator,
   FilterPipelineOperator,
   FilterOperatorConfig,
   FilterTarget,
