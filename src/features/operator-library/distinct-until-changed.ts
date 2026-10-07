@@ -30,6 +30,7 @@ export const DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY: DistinctUntilChanged
     usage: [
       "Používá se, když chcete ignorovat opakované stejné hodnoty hned za sebou.",
       "Porovnává vždy aktuální hodnotu s poslední propuštěnou hodnotou.",
+      "Volitelně mu lze předat vlastní porovnávací funkci pro prev a curr.",
       "Hodí se například pro změny stavu, kde opakování stejného stavu nepřináší novou informaci.",
     ],
     exampleCode: `source$.pipe(
