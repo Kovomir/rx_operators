@@ -13,6 +13,7 @@ type LearningTaskGroupProps = {
   section: LearningSection;
   onGetNextIncompleteTaskId: (sectionId: string) => string | undefined;
   onMarkTaskCompleted: (taskId: string) => void;
+  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
   onToggle: () => void;
@@ -25,6 +26,7 @@ export function LearningTaskGroup({
   isExpanded,
   section,
   onGetNextIncompleteTaskId,
+  onContinueAfterTask,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
@@ -80,6 +82,7 @@ export function LearningTaskGroup({
               activeTaskId={activeTaskId}
               completedTaskIds={completedTaskIds}
               section={section}
+              onContinueAfterTask={onContinueAfterTask}
               onMarkTaskCompleted={onMarkTaskCompleted}
               onSelectTask={onSelectTask}
               onTaskSolved={onTaskSolved}
@@ -98,6 +101,7 @@ type TaskWorkspaceProps = {
   completedTaskIds: Set<string>;
   section: LearningSection;
   onMarkTaskCompleted: (taskId: string) => void;
+  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 };
@@ -106,6 +110,7 @@ function TaskWorkspace({
   activeTaskId,
   completedTaskIds,
   section,
+  onContinueAfterTask,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
@@ -119,6 +124,7 @@ function TaskWorkspace({
           isCompleted={completedTaskIds.has(task.id)}
           sectionId={section.id}
           task={task}
+          onContinueAfterTask={onContinueAfterTask}
           onMarkTaskCompleted={onMarkTaskCompleted}
           onSelectTask={onSelectTask}
           onTaskSolved={onTaskSolved}

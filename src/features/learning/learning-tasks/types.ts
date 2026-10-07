@@ -1,4 +1,5 @@
 import type { PipelineOperatorType } from "@/features/pipeline-editor";
+import type { OperatorLibraryEntry } from "@/features/operator-library";
 
 import type { OutputTestTaskDefinition } from "../components/OutputTestTask";
 
@@ -13,8 +14,17 @@ export type OutputLearningTaskDefinition = OutputTestTaskDefinition & {
   kind: "output-test";
 };
 
+export type OperatorLibraryLearningTaskDefinition = {
+  id: string;
+  kind: "operator-library";
+  taskNumber: number;
+  title: string;
+  operator: OperatorLibraryEntry;
+};
+
 export type LearningSectionTask =
   | IntroLearningTaskDefinition
+  | OperatorLibraryLearningTaskDefinition
   | OutputLearningTaskDefinition;
 
 export type LearningSectionKind = "intro" | "operator" | "challenge-group";

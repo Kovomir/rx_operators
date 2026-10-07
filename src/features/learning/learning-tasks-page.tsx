@@ -33,6 +33,7 @@ export function LearningTasksPage() {
   const {
     activeSectionId,
     activeTaskId,
+    continueAfterTask,
     handleTaskSolved,
     selectTask,
     toggleSection,
@@ -58,6 +59,7 @@ export function LearningTasksPage() {
             isExpanded={isExpanded}
             section={section}
             onGetNextIncompleteTaskId={getNextIncompleteTaskId}
+            onContinueAfterTask={continueAfterTask}
             onMarkTaskCompleted={markTaskCompleted}
             onSelectTask={selectTask}
             onTaskSolved={handleTaskSolved}
@@ -86,8 +88,8 @@ export function LearningTasksPage() {
       ) : (
         <OperatorSearchList
           operators={learningSearchItems}
-          placeholder="Hledat úlohu nebo operátor"
-          ariaLabel="Hledat úlohu nebo operátor"
+          placeholder="Hledat operátor"
+          ariaLabel="Hledat operátor"
           renderOperator={(item) => <div key={item.id}>{item.render()}</div>}
         />
       )}

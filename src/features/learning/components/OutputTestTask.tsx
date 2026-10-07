@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { CheckCircle2Icon, RotateCcwIcon, XCircleIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  PlayIcon,
+  RotateCcwIcon,
+  XCircleIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,9 +42,14 @@ export type OutputTestTaskDefinition = {
 type OutputTestTaskProps = {
   task: OutputTestTaskDefinition;
   onSolved: () => void;
+  onContinue: () => void;
 };
 
-export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
+export function OutputTestTask({
+  task,
+  onContinue,
+  onSolved,
+}: OutputTestTaskProps) {
   const [operators, setOperators] = useState<PipelineOperator[]>(() =>
     clonePipelineOperators(task.initialOperators ?? [])
   );
@@ -107,7 +117,7 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
             </h2>
           </div>
 
-          <TestResultMessage result={testResult} />
+          <TestResultMessage result={testResult} onContinue={onContinue} />
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Button type="button" onClick={checkOutput}>
@@ -159,7 +169,13 @@ export function OutputTestTask({ task, onSolved }: OutputTestTaskProps) {
   );
 }
 
-function TestResultMessage({ result }: { result: TestResult }) {
+function TestResultMessage({
+  onContinue,
+  result,
+}: {
+  result: TestResult;
+  onContinue: () => void;
+}) {
   if (result === null) {
     return null;
   }
@@ -167,24 +183,32 @@ function TestResultMessage({ result }: { result: TestResult }) {
   const isPassed = result === "passed";
 
   return (
-    <div
-      className={cn(
-        "mt-4 flex w-fit max-w-full items-start gap-2 rounded-md border px-3 py-2 text-xs leading-5",
-        isPassed
-          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-          : "border-red-200 bg-red-50 text-red-900"
+    <div className="mt-4 flex max-w-full flex-wrap items-center gap-2">
+      <div
+        className={cn(
+          "flex w-fit max-w-full items-start gap-2 rounded-md border px-3 py-2 text-xs leading-5",
+          isPassed
+            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+            : "border-red-200 bg-red-50 text-red-900"
+        )}
+      >
+        {isPassed ? (
+          <CheckCircle2Icon className="mt-0.5 size-4 shrink-0" />
+        ) : (
+          <XCircleIcon className="mt-0.5 size-4 shrink-0" />
+        )}
+        <span className="min-w-0">
+          {isPassed
+            ? "Správně."
+            : "Výstup neodpovídá očekávaným hodnotám."}
+        </span>
+      </div>
+      {isPassed && (
+        <Button type="button" size="sm" onClick={onContinue}>
+          <PlayIcon />
+          Pokračovat
+        </Button>
       )}
-    >
-      {isPassed ? (
-        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0" />
-      ) : (
-        <XCircleIcon className="mt-0.5 size-4 shrink-0" />
-      )}
-      <span>
-        {isPassed
-          ? "Správně."
-          : "Výstup neodpovídá očekávaným hodnotám."}
-      </span>
     </div>
   );
 }

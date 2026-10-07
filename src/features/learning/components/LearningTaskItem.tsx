@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
-import { BookOpenIcon } from "lucide-react";
+import { BookOpenIcon, TargetIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 import { IntroLearningTask } from "./IntroLearningTask";
+import { OperatorLibraryLearningTask } from "./OperatorLibraryLearningTask";
 import { OutputTestTask } from "./OutputTestTask";
 import {
   CompletedStatusIcon,
@@ -17,6 +18,7 @@ type LearningTaskItemProps = {
   sectionId: string;
   task: LearningSectionTask;
   onMarkTaskCompleted: (taskId: string) => void;
+  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 };
@@ -24,6 +26,7 @@ type LearningTaskItemProps = {
 export function LearningTaskItem({
   isActive,
   isCompleted,
+  onContinueAfterTask,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
@@ -53,6 +56,12 @@ export function LearningTaskItem({
     });
   }
 
+  const TaskIcon = task.kind === "output-test" ? TargetIcon : BookOpenIcon;
+  const taskLabel =
+    task.kind === "operator-library"
+      ? "Představení operátoru"
+      : `Úloha ${task.taskNumber}`;
+
   return (
     <div ref={taskRef} className="min-w-0 scroll-mt-20">
       <button
@@ -65,11 +74,11 @@ export function LearningTaskItem({
         onClick={selectTask}
       >
         <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-          <BookOpenIcon className="size-4" />
+          <TaskIcon className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-foreground">
-            Úloha {task.taskNumber}
+            {taskLabel}
           </span>
           <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
             {task.title}
@@ -82,6 +91,7 @@ export function LearningTaskItem({
         <div className="rounded-b-lg border border-t-0 border-primary bg-background px-3 py-4 md:px-4">
           <LearningTaskContent
             task={task}
+            onContinueAfterTask={onContinueAfterTask}
             onMarkTaskCompleted={onMarkTaskCompleted}
             onTaskSolved={onTaskSolved}
           />
@@ -93,22 +103,33 @@ export function LearningTaskItem({
 
 function LearningTaskContent({
   onMarkTaskCompleted,
+  onContinueAfterTask,
   onTaskSolved,
   task,
 }: {
   task: LearningSectionTask;
   onMarkTaskCompleted: (taskId: string) => void;
+  onContinueAfterTask: (task: LearningSectionTask) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 }) {
   switch (task.kind) {
     case "intro":
       return <IntroLearningTask onSolved={() => onTaskSolved(task)} />;
+    case "operator-library":
+      return (
+        <OperatorLibraryLearningTask
+          key={task.id}
+          task={task}
+          onSolved={() => onTaskSolved(task)}
+        />
+      );
     case "output-test":
       return (
         <OutputTestTask
           key={task.id}
           task={task}
           onSolved={() => onMarkTaskCompleted(task.id)}
+          onContinue={() => onContinueAfterTask(task)}
         />
       );
   }
