@@ -139,6 +139,8 @@ export function OperatorConfigControls({
           onChange={onChange}
         />
       );
+    case "scan":
+      return <NoConfigControls label="acc + value" />;
   }
 }
 

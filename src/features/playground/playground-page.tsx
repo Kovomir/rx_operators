@@ -204,6 +204,7 @@ export function PlaygroundPage() {
           "distinctUntilChanged",
           "tap",
           "startWith",
+          "scan",
         ]}
         maxOperators={PLAYGROUND_MAX_OPERATORS}
         operators={operators}

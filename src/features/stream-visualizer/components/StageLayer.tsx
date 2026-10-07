@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SkipForwardIcon, TerminalIcon,} from "lucide-react";
+import {FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
 
@@ -273,6 +273,18 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
             width={16}
             height={16}
             className="stroke-teal-700"
+          />
+        </StageIconFrame>
+      );
+    case "scan":
+      return (
+        <StageIconFrame x={x} y={y} className="fill-cyan-100">
+          <SigmaIcon
+            x={x + 7}
+            y={y + 7}
+            width={16}
+            height={16}
+            className="stroke-cyan-700"
           />
         </StageIconFrame>
       );

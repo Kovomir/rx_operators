@@ -11,7 +11,8 @@ export type PipelineOperatorType =
   | "take"
   | "distinctUntilChanged"
   | "tap"
-  | "startWith";
+  | "startWith"
+  | "scan";
 
 export type MapOperation = "add" | "subtract" | "multiply";
 
@@ -46,6 +47,8 @@ export type TapOperatorConfig = {
 export type StartWithOperatorConfig = {
   value: number;
 };
+
+export type ScanOperatorConfig = Record<string, never>;
 
 export type MapPipelineOperator = {
   id: string;
@@ -89,6 +92,12 @@ export type StartWithPipelineOperator = {
   config: StartWithOperatorConfig;
 };
 
+export type ScanPipelineOperator = {
+  id: string;
+  type: "scan";
+  config: ScanOperatorConfig;
+};
+
 export type PipelineOperator =
   | MapPipelineOperator
   | FilterPipelineOperator
@@ -96,6 +105,7 @@ export type PipelineOperator =
   | TakePipelineOperator
   | DistinctUntilChangedPipelineOperator
   | TapPipelineOperator
-  | StartWithPipelineOperator;
+  | StartWithPipelineOperator
+  | ScanPipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

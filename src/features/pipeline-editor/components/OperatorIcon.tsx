@@ -2,6 +2,7 @@ import {
   FilterIcon,
   PauseIcon,
   PlusIcon,
+  SigmaIcon,
   SkipForwardIcon,
   TerminalIcon,
 } from "lucide-react";
@@ -69,6 +70,12 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
       return (
         <span className={cn(className, "bg-teal-100 text-teal-700")}>
           <PlusIcon className="size-4" />
+        </span>
+      );
+    case "scan":
+      return (
+        <span className={cn(className, "bg-cyan-100 text-cyan-700")}>
+          <SigmaIcon className="size-4" />
         </span>
       );
   }
