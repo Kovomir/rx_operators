@@ -1,12 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-import {
-  getLearningTaskOperatorType,
-  getLearningTaskSection,
-  LEARNING_TASK_IDS,
-} from "./learning-tasks";
-
-const LEARNING_MODULE_ID = "learning";
+import { LEARNING_TASK_IDS } from "./learning-tasks";
 
 type TaskCompletionRow = {
   task_id: string;
@@ -74,25 +68,10 @@ export async function saveLearningTaskCompletion(
     };
   }
 
-  const operatorType = getLearningTaskOperatorType(taskId);
-  const learningSection = getLearningTaskSection(taskId);
-
   const { error } = await supabase.from("task_completions").upsert(
     {
       user_id: user.id,
       task_id: taskId,
-      module_id: LEARNING_MODULE_ID,
-      operator_id: operatorType ?? null,
-      completed_at: new Date().toISOString(),
-      metadata: {
-        difficulty: learningSection?.difficulty ?? null,
-        operator_types: learningSection?.operatorTypes ?? [],
-        source: "learning_tasks",
-        task_kind:
-          learningSection?.tasks.find((task) => task.id === taskId)?.kind ??
-          null,
-        section_id: learningSection?.id ?? null,
-      },
     },
     {
       onConflict: "user_id,task_id",
