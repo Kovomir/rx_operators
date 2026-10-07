@@ -338,6 +338,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "debounceTime":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }

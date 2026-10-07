@@ -1,4 +1,5 @@
 import type {
+  DebounceTimePipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
   SkipPipelineOperator,
@@ -111,4 +112,33 @@ export function applyScanStep(
       value: nextAccumulator,
     },
   };
+}
+
+export function applyDebounceTimeOperator(
+  values: StreamValue[],
+  operator: DebounceTimePipelineOperator
+) {
+  return values
+    .filter((value, index) => {
+      const nextValue = values[index + 1];
+
+      if (!nextValue) {
+        return true;
+      }
+
+      return (
+        getStreamValueEmissionTimeMs(nextValue) -
+          getStreamValueEmissionTimeMs(value) >=
+        operator.config.durationMs
+      );
+    })
+    .map((value) => ({
+      ...value,
+      emittedAtMs:
+        getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
+    }));
+}
+
+function getStreamValueEmissionTimeMs(value: StreamValue) {
+  return value.emittedAtMs ?? 0;
 }

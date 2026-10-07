@@ -1,6 +1,7 @@
 import { Observable, type OperatorFunction } from "rxjs";
 
 import type {
+  DebounceTimePipelineOperator,
   DistinctUntilChangedPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
@@ -45,6 +46,8 @@ export function buildTracedOperator(
       return tracedStartWith(operator, recorder, streamId);
     case "scan":
       return tracedScan(operator, recorder, streamId);
+    case "debounceTime":
+      return tracedDebounceTime(operator, recorder, streamId);
   }
 }
 
@@ -411,5 +414,88 @@ function tracedScan(
       });
 
       return () => subscription.unsubscribe();
+    });
+}
+
+function tracedDebounceTime(
+  operator: DebounceTimePipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      let pendingValue: StreamValue | null = null;
+      let pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+      function clearPendingTimeout() {
+        if (pendingTimeoutId !== null) {
+          clearTimeout(pendingTimeoutId);
+          pendingTimeoutId = null;
+        }
+      }
+
+      function emitPendingValue() {
+        if (!pendingValue || subscriber.closed) {
+          return;
+        }
+
+        const value = {
+          ...pendingValue,
+          emittedAtMs:
+            (pendingValue.emittedAtMs ?? 0) + operator.config.durationMs,
+        };
+        pendingValue = null;
+        pendingTimeoutId = null;
+
+        recorder.record({
+          streamId,
+          type: "operator-pass",
+          stageId: operator.id,
+          value,
+        });
+
+        subscriber.next(value);
+      }
+
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+
+          if (pendingValue) {
+            recorder.record({
+              streamId,
+              type: "operator-drop",
+              stageId: operator.id,
+              value: pendingValue,
+            });
+          }
+
+          clearPendingTimeout();
+          pendingValue = value;
+          pendingTimeoutId = setTimeout(
+            emitPendingValue,
+            operator.config.durationMs
+          );
+        },
+        error(error: unknown) {
+          clearPendingTimeout();
+          subscriber.error(error);
+        },
+        complete() {
+          clearPendingTimeout();
+          emitPendingValue();
+          subscriber.complete();
+        },
+      });
+
+      return () => {
+        clearPendingTimeout();
+        subscription.unsubscribe();
+      };
     });
 }

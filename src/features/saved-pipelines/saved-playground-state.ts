@@ -1,4 +1,5 @@
 import type {
+  DebounceTimeOperatorConfig,
   FilterPipelineOperator,
   FilterTarget,
   MapOperation,
@@ -22,6 +23,7 @@ const STREAM_SHAPES = ["circle", "square", "triangle"] satisfies StreamShape[];
 const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
 const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
 const START_WITH_VALUES = Array.from({ length: 11 }, (_, value) => value) satisfies StartWithOperatorConfig["value"][];
+const DEBOUNCE_TIME_DURATIONS = [300, 500, 800, 1000] satisfies DebounceTimeOperatorConfig["durationMs"][];
 
 export function createSavedPlaygroundState(
   operators: PipelineOperator[]
@@ -73,6 +75,8 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
       return parseNoConfigPipelineOperator(value.id, "distinctUntilChanged");
     case "scan":
       return parseNoConfigPipelineOperator(value.id, "scan");
+    case "debounceTime":
+      return parseDebounceTimePipelineOperator(value.id, value.config);
     case "tap":
       return parseTapPipelineOperator(value.id, value.config);
     case "startWith":
@@ -200,6 +204,26 @@ function parseStartWithPipelineOperator(
   };
 }
 
+function parseDebounceTimePipelineOperator(
+  id: string,
+  config: unknown
+): PipelineOperator | null {
+  if (
+    !isRecord(config) ||
+    !isOneOfNumber(config.durationMs, DEBOUNCE_TIME_DURATIONS)
+  ) {
+    return null;
+  }
+
+  return {
+    id,
+    type: "debounceTime",
+    config: {
+      durationMs: config.durationMs,
+    },
+  };
+}
+
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -236,6 +260,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           config: { ...operator.config },
         };
       case "startWith":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
+      case "debounceTime":
         return {
           ...operator,
           config: { ...operator.config },
