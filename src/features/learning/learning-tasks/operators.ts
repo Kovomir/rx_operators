@@ -26,6 +26,12 @@ import {
   type SkipOutputTestTaskDefinition,
 } from "./skip";
 import {
+  START_WITH_LEARNING_OPERATOR,
+  START_WITH_TASKS,
+  type StartWithLearningOperator,
+  type StartWithOutputTestTaskDefinition,
+} from "./start-with";
+import {
   TAP_LEARNING_OPERATOR,
   TAP_TASKS,
   type TapLearningOperator,
@@ -44,7 +50,8 @@ export type LearningOperator =
   | SkipLearningOperator
   | TakeLearningOperator
   | DistinctUntilChangedLearningOperator
-  | TapLearningOperator;
+  | TapLearningOperator
+  | StartWithLearningOperator;
 
 export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
@@ -52,7 +59,8 @@ export type LearningTaskDefinition =
   | SkipOutputTestTaskDefinition
   | TakeOutputTestTaskDefinition
   | DistinctUntilChangedOutputTestTaskDefinition
-  | TapOutputTestTaskDefinition;
+  | TapOutputTestTaskDefinition
+  | StartWithOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
   "map",
@@ -61,6 +69,7 @@ export const LEARNING_OPERATOR_ORDER = [
   "skip",
   "distinctUntilChanged",
   "tap",
+  "startWith",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
@@ -70,6 +79,7 @@ export const LEARNING_OPERATORS = [
   SKIP_LEARNING_OPERATOR,
   DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
   TAP_LEARNING_OPERATOR,
+  START_WITH_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
@@ -79,6 +89,7 @@ export const TASKS_BY_OPERATOR = {
   take: TAKE_TASKS,
   distinctUntilChanged: DISTINCT_UNTIL_CHANGED_TASKS,
   tap: TAP_TASKS,
+  startWith: START_WITH_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
@@ -90,6 +101,8 @@ export {
   MAP_TASKS,
   SKIP_LEARNING_OPERATOR,
   SKIP_TASKS,
+  START_WITH_LEARNING_OPERATOR,
+  START_WITH_TASKS,
   TAP_LEARNING_OPERATOR,
   TAP_TASKS,
   TAKE_LEARNING_OPERATOR,
@@ -104,6 +117,8 @@ export type {
   MapOutputTestTaskDefinition,
   SkipLearningOperator,
   SkipOutputTestTaskDefinition,
+  StartWithLearningOperator,
+  StartWithOutputTestTaskDefinition,
   TapLearningOperator,
   TapOutputTestTaskDefinition,
   TakeLearningOperator,
