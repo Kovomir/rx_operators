@@ -1,23 +1,16 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 
 import { OperatorSearchList } from "@/components/operator-search-list";
 import { LoadingState } from "@/components/ui/loading-state";
-import type { PipelineOperatorType } from "@/features/pipeline-editor";
 
-import { IntroLearningTask } from "./components/IntroLearningTask";
-import { LearningOperatorGroup } from "./components/LearningOperatorGroup";
-import { useLearningTaskProgress } from "./hooks/use-learning-task-progress";
+import { LearningTaskGroup } from "./components/LearningTaskGroup";
 import {
-  INTRO_LEARNING_TASK_ID,
-  LEARNING_OPERATORS,
-  TASKS_BY_OPERATOR,
-} from "./learning-tasks";
-
-export type LearningTasksNavigationState = {
-  activeOperatorType?: PipelineOperatorType;
-  activeTaskId?: string;
-};
+  useLearningTaskNavigation,
+  type LearningTasksNavigationState,
+} from "./hooks/use-learning-task-navigation";
+import { useLearningTaskProgress } from "./hooks/use-learning-task-progress";
+import { LEARNING_SECTIONS } from "./learning-tasks";
 
 type LearningSearchItem = {
   id: string;
@@ -26,18 +19,9 @@ type LearningSearchItem = {
   render: () => ReactNode;
 };
 
-type ExpandedLearningItem = typeof INTRO_LEARNING_TASK_ID | PipelineOperatorType;
-
 export function LearningTasksPage() {
   const location = useLocation();
   const navigationState = location.state as LearningTasksNavigationState | null;
-  const [expandedLearningItem, setExpandedLearningItem] =
-    useState<ExpandedLearningItem | null>(
-      navigationState?.activeOperatorType ?? INTRO_LEARNING_TASK_ID
-    );
-  const [introCompletionTaskId, setIntroCompletionTaskId] = useState<
-    string | null
-  >(null);
   const {
     completedTaskIds,
     getCompletedTaskCount,
@@ -46,79 +30,43 @@ export function LearningTasksPage() {
     markTaskCompleted,
     progressError,
   } = useLearningTaskProgress();
+  const {
+    activeSectionId,
+    activeTaskId,
+    handleTaskSolved,
+    selectTask,
+    toggleSection,
+  } = useLearningTaskNavigation({
+    completedTaskIds,
+    markTaskCompleted: (taskId) => void markTaskCompleted(taskId),
+    navigationState,
+  });
 
-  function toggleIntroTask() {
-    setIntroCompletionTaskId(null);
-    setExpandedLearningItem((currentItem) =>
-      currentItem === INTRO_LEARNING_TASK_ID ? null : INTRO_LEARNING_TASK_ID
-    );
-  }
-
-  function toggleOperator(operatorType: PipelineOperatorType) {
-    setIntroCompletionTaskId(null);
-    setExpandedLearningItem((currentItem) =>
-      currentItem === operatorType ? null : operatorType
-    );
-  }
-
-  function completeIntroTask(taskId: string) {
-    void markTaskCompleted(taskId);
-    setIntroCompletionTaskId(TASKS_BY_OPERATOR.map[0]?.id ?? null);
-    setExpandedLearningItem("map");
-  }
-
-  const leadingLearningItems: LearningSearchItem[] = [
-    {
-      id: INTRO_LEARNING_TASK_ID,
-      label: "Úvod",
-      searchText:
-        "krátké seznámení se streamem, zdrojem, operátorem a odběratelem",
-      render: () => (
-        <IntroLearningTask
-          isCompleted={completedTaskIds.has(INTRO_LEARNING_TASK_ID)}
-          isExpanded={expandedLearningItem === INTRO_LEARNING_TASK_ID}
-          onMarkTaskCompleted={completeIntroTask}
-          onToggle={toggleIntroTask}
-        />
-      ),
-    },
-  ];
-  const operatorLearningItems: LearningSearchItem[] = LEARNING_OPERATORS.map(
-    (operator) => ({
-      id: operator.type,
-      label: operator.label,
-      searchText: operator.description,
+  const learningSearchItems: LearningSearchItem[] = LEARNING_SECTIONS.map(
+    (section) => ({
+      id: section.id,
+      label: section.label,
+      searchText: `${section.description} ${section.operatorTypes?.join(" ") ?? ""}`,
       render: () => {
-        const isExpanded = expandedLearningItem === operator.type;
-        const initialActiveTaskId =
-          navigationState?.activeOperatorType === operator.type
-            ? navigationState.activeTaskId
-            : operator.type === "map"
-              ? introCompletionTaskId ?? undefined
-              : undefined;
+        const isExpanded = activeSectionId === section.id;
 
         return (
-          <LearningOperatorGroup
-            key={`${operator.type}-${initialActiveTaskId ?? "default"}`}
+          <LearningTaskGroup
+            activeTaskId={isExpanded ? activeTaskId : null}
             completedTaskIds={completedTaskIds}
-            completedTasks={getCompletedTaskCount(operator.type)}
-            initialActiveTaskId={initialActiveTaskId}
+            completedTasks={getCompletedTaskCount(section.id)}
             isExpanded={isExpanded}
-            operator={operator}
+            section={section}
             onGetNextIncompleteTaskId={getNextIncompleteTaskId}
             onMarkTaskCompleted={markTaskCompleted}
-            onToggle={() => toggleOperator(operator.type)}
+            onSelectTask={selectTask}
+            onTaskSolved={handleTaskSolved}
+            onToggle={() => toggleSection(section.id)}
           />
         );
       },
     })
   );
-  const trailingLearningItems: LearningSearchItem[] = [];
-  const learningSearchItems = [
-    ...leadingLearningItems,
-    ...operatorLearningItems,
-    ...trailingLearningItems,
-  ];
 
   return (
     <main className="flex min-w-0 flex-1 flex-col gap-5 overflow-x-hidden p-4 md:p-6">
@@ -127,7 +75,7 @@ export function LearningTasksPage() {
           Výukové úlohy
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Vyberte operátor a řešte výukové úlohy.
+          Vyberte část výuky a řešte navazující úlohy.
         </p>
       </section>
 
@@ -138,8 +86,8 @@ export function LearningTasksPage() {
       ) : (
         <OperatorSearchList
           operators={learningSearchItems}
-          placeholder="Hledat operátor"
-          ariaLabel="Hledat operátor"
+          placeholder="Hledat úlohu nebo operátor"
+          ariaLabel="Hledat úlohu nebo operátor"
           renderOperator={(item) => <div key={item.id}>{item.render()}</div>}
         />
       )}
