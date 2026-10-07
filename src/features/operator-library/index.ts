@@ -8,6 +8,10 @@ import {
 } from "./distinct-until-changed";
 import { MAP_OPERATOR_LIBRARY_ENTRY, type MapOperatorLibraryEntry } from "./map";
 import { SKIP_OPERATOR_LIBRARY_ENTRY, type SkipOperatorLibraryEntry } from "./skip";
+import {
+  START_WITH_OPERATOR_LIBRARY_ENTRY,
+  type StartWithOperatorLibraryEntry,
+} from "./start-with";
 import { TAP_OPERATOR_LIBRARY_ENTRY, type TapOperatorLibraryEntry } from "./tap";
 import { TAKE_OPERATOR_LIBRARY_ENTRY, type TakeOperatorLibraryEntry } from "./take";
 
@@ -17,7 +21,8 @@ export type OperatorLibraryEntry =
   | SkipOperatorLibraryEntry
   | TakeOperatorLibraryEntry
   | DistinctUntilChangedOperatorLibraryEntry
-  | TapOperatorLibraryEntry;
+  | TapOperatorLibraryEntry
+  | StartWithOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
   MAP_OPERATOR_LIBRARY_ENTRY,
@@ -26,6 +31,7 @@ export const OPERATOR_LIBRARY = [
   TAKE_OPERATOR_LIBRARY_ENTRY,
   DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY,
   TAP_OPERATOR_LIBRARY_ENTRY,
+  START_WITH_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
 export { DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY } from "./distinct-until-changed";
@@ -45,6 +51,11 @@ export type {
   SkipOperatorLibraryEntry,
   SkipOperatorResourceLink,
 } from "./skip";
+export { START_WITH_OPERATOR_LIBRARY_ENTRY } from "./start-with";
+export type {
+  StartWithOperatorLibraryEntry,
+  StartWithOperatorResourceLink,
+} from "./start-with";
 export { TAP_OPERATOR_LIBRARY_ENTRY } from "./tap";
 export type { TapOperatorLibraryEntry, TapOperatorResourceLink } from "./tap";
 export { TAKE_OPERATOR_LIBRARY_ENTRY } from "./take";
