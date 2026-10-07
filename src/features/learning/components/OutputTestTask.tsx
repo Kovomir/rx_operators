@@ -18,7 +18,10 @@ import {
   type StreamValue,
   ValueSequence,
 } from "@/features/stream-visualizer";
-import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
+import {
+  evaluatePipelineOutput,
+  evaluatePipelineTapValues,
+} from "@/lib/rx/evaluate-pipeline-output";
 import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +36,7 @@ export type OutputTestTaskDefinition = {
   sourceValues: StreamValue[];
   expectedOutputValues: ExpectedOutputValue[];
   expectedOperatorTypes?: PipelineOperatorType[];
+  expectedTapValues?: number[];
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];
   enabledOperatorTypes?: PipelineOperatorType[];
@@ -70,6 +74,10 @@ export function OutputTestTask({
     () => evaluatePipelineOutput(task.sourceValues, operators),
     [operators, task.sourceValues]
   );
+  const actualTapValues = useMemo(
+    () => evaluatePipelineTapValues(task.sourceValues, operators),
+    [operators, task.sourceValues]
+  );
   const displayedSourceValues = task.showSourceValueDetails
     ? task.sourceValues
     : task.sourceValues.map((value) => value.value);
@@ -93,8 +101,14 @@ export function OutputTestTask({
       operators,
       task.expectedOperatorTypes
     );
+    const hasExpectedTapValues = areNumberArraysEqual(
+      actualTapValues,
+      task.expectedTapValues
+    );
     const nextResult =
-      hasExpectedOutput && hasExpectedOperators ? "passed" : "failed";
+      hasExpectedOutput && hasExpectedOperators && hasExpectedTapValues
+        ? "passed"
+        : "failed";
 
     setTestResult(nextResult);
 
@@ -144,6 +158,12 @@ export function OutputTestTask({
               label="Očekávaný výstup"
               values={task.expectedOutputValues}
             />
+            {task.expectedTapValues && (
+              <ValueSequence
+                label="Výpis tap(console.log)"
+                values={task.expectedTapValues}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -257,6 +277,20 @@ function areOperatorTypesEqual(
     operators.every(
       (operator, index) => operator.type === expectedOperatorTypes[index]
     )
+  );
+}
+
+function areNumberArraysEqual(
+  actualValues: number[],
+  expectedValues: number[] | undefined
+) {
+  if (!expectedValues) {
+    return true;
+  }
+
+  return (
+    actualValues.length === expectedValues.length &&
+    actualValues.every((actualValue, index) => actualValue === expectedValues[index])
   );
 }
 
