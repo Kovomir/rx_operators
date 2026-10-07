@@ -14,6 +14,12 @@ import {
   type DistinctUntilChangedOutputTestTaskDefinition,
 } from "./distinct-until-changed";
 import {
+  DEBOUNCE_TIME_LEARNING_OPERATOR,
+  DEBOUNCE_TIME_TASKS,
+  type DebounceTimeLearningOperator,
+  type DebounceTimeOutputTestTaskDefinition,
+} from "./debounce-time";
+import {
   MAP_LEARNING_OPERATOR,
   MAP_TASKS,
   type MapLearningOperator,
@@ -58,7 +64,8 @@ export type LearningOperator =
   | DistinctUntilChangedLearningOperator
   | TapLearningOperator
   | StartWithLearningOperator
-  | ScanLearningOperator;
+  | ScanLearningOperator
+  | DebounceTimeLearningOperator;
 
 export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
@@ -68,7 +75,8 @@ export type LearningTaskDefinition =
   | DistinctUntilChangedOutputTestTaskDefinition
   | TapOutputTestTaskDefinition
   | StartWithOutputTestTaskDefinition
-  | ScanOutputTestTaskDefinition;
+  | ScanOutputTestTaskDefinition
+  | DebounceTimeOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
   "map",
@@ -79,6 +87,7 @@ export const LEARNING_OPERATOR_ORDER = [
   "tap",
   "startWith",
   "scan",
+  "debounceTime",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
@@ -90,6 +99,7 @@ export const LEARNING_OPERATORS = [
   TAP_LEARNING_OPERATOR,
   START_WITH_LEARNING_OPERATOR,
   SCAN_LEARNING_OPERATOR,
+  DEBOUNCE_TIME_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
@@ -101,9 +111,12 @@ export const TASKS_BY_OPERATOR = {
   tap: TAP_TASKS,
   startWith: START_WITH_TASKS,
   scan: SCAN_TASKS,
+  debounceTime: DEBOUNCE_TIME_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
+  DEBOUNCE_TIME_LEARNING_OPERATOR,
+  DEBOUNCE_TIME_TASKS,
   DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
   DISTINCT_UNTIL_CHANGED_TASKS,
   FILTER_LEARNING_OPERATOR,
@@ -122,6 +135,8 @@ export {
   TAKE_TASKS,
 };
 export type {
+  DebounceTimeLearningOperator,
+  DebounceTimeOutputTestTaskDefinition,
   DistinctUntilChangedLearningOperator,
   DistinctUntilChangedOutputTestTaskDefinition,
   FilterLearningOperator,

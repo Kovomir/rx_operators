@@ -4,7 +4,7 @@ import { StreamValueGlyph } from "./StreamValueGlyph";
 
 export type DisplayStreamValue =
   | number
-  | Pick<StreamValue, "color" | "shape" | "value">;
+  | Pick<StreamValue, "color" | "shape" | "value" | "emittedAtMs">;
 
 type ValueSequenceProps = {
   label: string;
@@ -42,23 +42,43 @@ function ValueBadge({
   }
 
   return (
-    <svg
-      width="40"
-      height="40"
-      viewBox="-20 -20 40 40"
-      className="block size-10 shrink-0"
-      aria-label={`${formatDisplayNumber(value.value)}, ${value.color}, ${value.shape}`}
-      role="img"
-    >
-      <StreamValueGlyph
-        streamValue={{
-          id: "value-preview",
-          color: value.color,
-          shape: value.shape,
-          value: value.value,
-        }}
-        value={value.value}
-      />
-    </svg>
+    <span className="grid shrink-0 justify-items-center gap-0.5">
+      <svg
+        width="40"
+        height="40"
+        viewBox="-20 -20 40 40"
+        className="block size-10"
+        aria-label={getStreamValuePreviewLabel(value)}
+        role="img"
+      >
+        <StreamValueGlyph
+          streamValue={{
+            id: "value-preview",
+            color: value.color,
+            shape: value.shape,
+            value: value.value,
+            emittedAtMs: value.emittedAtMs,
+          }}
+          value={value.value}
+        />
+      </svg>
+      {typeof value.emittedAtMs === "number" && (
+        <span className="font-mono text-[10px] leading-none text-muted-foreground">
+          {value.emittedAtMs} ms
+        </span>
+      )}
+    </span>
   );
+}
+
+function getStreamValuePreviewLabel(
+  value: Pick<StreamValue, "color" | "shape" | "value" | "emittedAtMs">
+) {
+  const baseLabel = `${formatDisplayNumber(value.value)}, ${value.color}, ${value.shape}`;
+
+  if (typeof value.emittedAtMs !== "number") {
+    return baseLabel;
+  }
+
+  return `${baseLabel}, ${value.emittedAtMs} ms`;
 }
