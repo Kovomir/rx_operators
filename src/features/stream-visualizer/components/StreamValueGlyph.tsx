@@ -3,6 +3,7 @@ import {
   DROPPED_STREAM_COLOR_STYLES,
   STREAM_COLOR_STYLES,
 } from "../constants";
+import { formatDisplayNumber } from "../value-formatting";
 
 type StreamValueGlyphProps = {
   streamValue: StreamValue;
@@ -33,7 +34,7 @@ export function StreamValueGlyph({
         className="select-none text-[11px] font-semibold"
         fill={colorStyle.text}
       >
-        {value}
+        {formatDisplayNumber(value)}
       </text>
     </g>
   );
