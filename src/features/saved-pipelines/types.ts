@@ -12,7 +12,6 @@ export type SavedPipeline = {
   id: string;
   name: string;
   playgroundState: SavedPlaygroundState;
-  createdAt: string;
   updatedAt: string;
 };
 

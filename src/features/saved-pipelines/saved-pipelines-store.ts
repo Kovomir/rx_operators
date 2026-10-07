@@ -12,7 +12,6 @@ type SavedPipelineRow = {
   id: string;
   name: string;
   pipeline: unknown;
-  created_at: string;
   updated_at: string;
 };
 
@@ -48,7 +47,7 @@ export async function loadSavedPipelines(): Promise<SavedPipeline[]> {
 
   const { data, error } = await supabase
     .from("saved_pipelines")
-    .select("id,name,pipeline,created_at,updated_at")
+    .select("id,name,pipeline,updated_at")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false })
     .overrideTypes<SavedPipelineRow[], { merge: false }>();
@@ -127,7 +126,7 @@ export async function createSavedPipeline(
       name: normalizedName,
       pipeline: playgroundState,
     })
-    .select("id,name,pipeline,created_at,updated_at")
+    .select("id,name,pipeline,updated_at")
     .single<SavedPipelineRow>();
 
   if (error) {
@@ -190,9 +189,12 @@ export async function renameSavedPipeline(
 
   const { data, error } = await supabase
     .from("saved_pipelines")
-    .update({ name: normalizedName })
+    .update({
+      name: normalizedName,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
-    .select("id,name,pipeline,created_at,updated_at")
+    .select("id,name,pipeline,updated_at")
     .single<SavedPipelineRow>();
 
   if (error) {
@@ -240,9 +242,10 @@ export async function updateSavedPipeline(
     .update({
       name: normalizedName,
       pipeline: playgroundState,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .select("id,name,pipeline,created_at,updated_at")
+    .select("id,name,pipeline,updated_at")
     .single<SavedPipelineRow>();
 
   if (error) {
@@ -272,7 +275,6 @@ function mapSavedPipelineRow(
     id: row.id,
     name: row.name,
     playgroundState,
-    createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
