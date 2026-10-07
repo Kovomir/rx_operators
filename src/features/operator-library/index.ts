@@ -2,6 +2,10 @@ import {
   FILTER_OPERATOR_LIBRARY_ENTRY,
   type FilterOperatorLibraryEntry,
 } from "./filter";
+import {
+  DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY,
+  type DistinctUntilChangedOperatorLibraryEntry,
+} from "./distinct-until-changed";
 import { MAP_OPERATOR_LIBRARY_ENTRY, type MapOperatorLibraryEntry } from "./map";
 import { SKIP_OPERATOR_LIBRARY_ENTRY, type SkipOperatorLibraryEntry } from "./skip";
 import { TAKE_OPERATOR_LIBRARY_ENTRY, type TakeOperatorLibraryEntry } from "./take";
@@ -10,15 +14,22 @@ export type OperatorLibraryEntry =
   | MapOperatorLibraryEntry
   | FilterOperatorLibraryEntry
   | SkipOperatorLibraryEntry
-  | TakeOperatorLibraryEntry;
+  | TakeOperatorLibraryEntry
+  | DistinctUntilChangedOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
   MAP_OPERATOR_LIBRARY_ENTRY,
   FILTER_OPERATOR_LIBRARY_ENTRY,
   SKIP_OPERATOR_LIBRARY_ENTRY,
   TAKE_OPERATOR_LIBRARY_ENTRY,
+  DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
+export { DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY } from "./distinct-until-changed";
+export type {
+  DistinctUntilChangedOperatorLibraryEntry,
+  DistinctUntilChangedOperatorResourceLink,
+} from "./distinct-until-changed";
 export { FILTER_OPERATOR_LIBRARY_ENTRY } from "./filter";
 export type {
   FilterOperatorLibraryEntry,
