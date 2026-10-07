@@ -33,7 +33,6 @@ export function LearningTasksPage() {
   const {
     activeSectionId,
     activeTaskId,
-    continueAfterTask,
     handleTaskSolved,
     selectTask,
     toggleSection,
@@ -44,12 +43,13 @@ export function LearningTasksPage() {
   });
 
   const learningSearchItems: LearningSearchItem[] = LEARNING_SECTIONS.map(
-    (section) => ({
+    (section, sectionIndex) => ({
       id: section.id,
       label: section.label,
       searchText: `${section.description} ${section.operatorTypes?.join(" ") ?? ""}`,
       render: () => {
         const isExpanded = activeSectionId === section.id;
+        const nextSection = LEARNING_SECTIONS[sectionIndex + 1];
 
         return (
           <LearningTaskGroup
@@ -57,9 +57,10 @@ export function LearningTasksPage() {
             completedTaskIds={completedTaskIds}
             completedTasks={getCompletedTaskCount(section.id)}
             isExpanded={isExpanded}
+            nextSectionFirstTaskId={nextSection?.tasks[0]?.id}
+            nextSectionId={nextSection?.id}
             section={section}
             onGetNextIncompleteTaskId={getNextIncompleteTaskId}
-            onContinueAfterTask={continueAfterTask}
             onMarkTaskCompleted={markTaskCompleted}
             onSelectTask={selectTask}
             onTaskSolved={handleTaskSolved}

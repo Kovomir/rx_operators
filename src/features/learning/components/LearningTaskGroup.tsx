@@ -10,10 +10,11 @@ type LearningTaskGroupProps = {
   completedTaskIds: Set<string>;
   completedTasks: number;
   isExpanded: boolean;
+  nextSectionFirstTaskId?: string;
+  nextSectionId?: string;
   section: LearningSection;
   onGetNextIncompleteTaskId: (sectionId: string) => string | undefined;
   onMarkTaskCompleted: (taskId: string) => void;
-  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
   onToggle: () => void;
@@ -24,9 +25,10 @@ export function LearningTaskGroup({
   completedTaskIds,
   completedTasks,
   isExpanded,
+  nextSectionFirstTaskId,
+  nextSectionId,
   section,
   onGetNextIncompleteTaskId,
-  onContinueAfterTask,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
@@ -81,8 +83,9 @@ export function LearningTaskGroup({
             <TaskWorkspace
               activeTaskId={activeTaskId}
               completedTaskIds={completedTaskIds}
+              nextSectionFirstTaskId={nextSectionFirstTaskId}
+              nextSectionId={nextSectionId}
               section={section}
-              onContinueAfterTask={onContinueAfterTask}
               onMarkTaskCompleted={onMarkTaskCompleted}
               onSelectTask={onSelectTask}
               onTaskSolved={onTaskSolved}
@@ -99,9 +102,10 @@ export function LearningTaskGroup({
 type TaskWorkspaceProps = {
   activeTaskId: string | null;
   completedTaskIds: Set<string>;
+  nextSectionFirstTaskId?: string;
+  nextSectionId?: string;
   section: LearningSection;
   onMarkTaskCompleted: (taskId: string) => void;
-  onContinueAfterTask: (task: LearningSectionTask) => void;
   onSelectTask: (sectionId: string, taskId: string) => void;
   onTaskSolved: (task: LearningSectionTask) => void;
 };
@@ -109,29 +113,48 @@ type TaskWorkspaceProps = {
 function TaskWorkspace({
   activeTaskId,
   completedTaskIds,
+  nextSectionFirstTaskId,
+  nextSectionId,
   section,
-  onContinueAfterTask,
   onMarkTaskCompleted,
   onSelectTask,
   onTaskSolved,
 }: TaskWorkspaceProps) {
   return (
     <div className="grid gap-2">
-      {section.tasks.map((task) => (
-        <LearningTaskItem
-          key={task.id}
-          isActive={activeTaskId === task.id}
-          isCompleted={completedTaskIds.has(task.id)}
-          sectionId={section.id}
-          task={task}
-          onContinueAfterTask={onContinueAfterTask}
-          onMarkTaskCompleted={onMarkTaskCompleted}
-          onSelectTask={onSelectTask}
-          onTaskSolved={onTaskSolved}
-        />
-      ))}
+      {section.tasks.map((task, taskIndex) => {
+        const nextTask = section.tasks[taskIndex + 1];
+        const nextTaskTarget = nextTask
+          ? { sectionId: section.id, taskId: nextTask.id }
+          : getNextSectionTaskTarget(nextSectionId, nextSectionFirstTaskId);
+
+        return (
+          <LearningTaskItem
+            key={task.id}
+            isActive={activeTaskId === task.id}
+            isCompleted={completedTaskIds.has(task.id)}
+            nextTaskTarget={nextTaskTarget}
+            sectionId={section.id}
+            task={task}
+            onMarkTaskCompleted={onMarkTaskCompleted}
+            onSelectTask={onSelectTask}
+            onTaskSolved={onTaskSolved}
+          />
+        );
+      })}
     </div>
   );
+}
+
+function getNextSectionTaskTarget(
+  sectionId: string | undefined,
+  taskId: string | undefined
+) {
+  if (!sectionId || !taskId) {
+    return undefined;
+  }
+
+  return { sectionId, taskId };
 }
 
 function EmptySectionTasks() {
