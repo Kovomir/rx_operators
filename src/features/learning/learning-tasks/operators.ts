@@ -20,6 +20,12 @@ import {
   type MapOutputTestTaskDefinition,
 } from "./map";
 import {
+  SCAN_LEARNING_OPERATOR,
+  SCAN_TASKS,
+  type ScanLearningOperator,
+  type ScanOutputTestTaskDefinition,
+} from "./scan";
+import {
   SKIP_LEARNING_OPERATOR,
   SKIP_TASKS,
   type SkipLearningOperator,
@@ -51,7 +57,8 @@ export type LearningOperator =
   | TakeLearningOperator
   | DistinctUntilChangedLearningOperator
   | TapLearningOperator
-  | StartWithLearningOperator;
+  | StartWithLearningOperator
+  | ScanLearningOperator;
 
 export type LearningTaskDefinition =
   | MapOutputTestTaskDefinition
@@ -60,7 +67,8 @@ export type LearningTaskDefinition =
   | TakeOutputTestTaskDefinition
   | DistinctUntilChangedOutputTestTaskDefinition
   | TapOutputTestTaskDefinition
-  | StartWithOutputTestTaskDefinition;
+  | StartWithOutputTestTaskDefinition
+  | ScanOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
   "map",
@@ -70,6 +78,7 @@ export const LEARNING_OPERATOR_ORDER = [
   "distinctUntilChanged",
   "tap",
   "startWith",
+  "scan",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
@@ -80,6 +89,7 @@ export const LEARNING_OPERATORS = [
   DISTINCT_UNTIL_CHANGED_LEARNING_OPERATOR,
   TAP_LEARNING_OPERATOR,
   START_WITH_LEARNING_OPERATOR,
+  SCAN_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
@@ -90,6 +100,7 @@ export const TASKS_BY_OPERATOR = {
   distinctUntilChanged: DISTINCT_UNTIL_CHANGED_TASKS,
   tap: TAP_TASKS,
   startWith: START_WITH_TASKS,
+  scan: SCAN_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
@@ -99,6 +110,8 @@ export {
   FILTER_TASKS,
   MAP_LEARNING_OPERATOR,
   MAP_TASKS,
+  SCAN_LEARNING_OPERATOR,
+  SCAN_TASKS,
   SKIP_LEARNING_OPERATOR,
   SKIP_TASKS,
   START_WITH_LEARNING_OPERATOR,
@@ -115,6 +128,8 @@ export type {
   FilterOutputTestTaskDefinition,
   MapLearningOperator,
   MapOutputTestTaskDefinition,
+  ScanLearningOperator,
+  ScanOutputTestTaskDefinition,
   SkipLearningOperator,
   SkipOutputTestTaskDefinition,
   StartWithLearningOperator,
