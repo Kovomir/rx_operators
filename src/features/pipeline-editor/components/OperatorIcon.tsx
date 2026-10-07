@@ -1,30 +1,49 @@
-import {FilterIcon, PauseIcon, SkipForwardIcon} from "lucide-react";
+import { FilterIcon, PauseIcon, SkipForwardIcon } from "lucide-react";
 
-import type {PipelineOperatorType} from "../types";
+import { cn } from "@/lib/utils";
 
-export function OperatorIcon({ type }: { type: PipelineOperatorType }) {
+import type { PipelineOperatorType } from "../types";
+
+type OperatorIconSize = "sm" | "md";
+
+type OperatorIconProps = {
+  size?: OperatorIconSize;
+  type: PipelineOperatorType;
+};
+
+const OPERATOR_ICON_SIZE_CLASSES = {
+  sm: "size-8",
+  md: "size-9",
+} satisfies Record<OperatorIconSize, string>;
+
+export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
+  const className = cn(
+    "flex shrink-0 items-center justify-center rounded-md",
+    OPERATOR_ICON_SIZE_CLASSES[size]
+  );
+
   switch (type) {
     case "filter":
       return (
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
+        <span className={cn(className, "bg-amber-100 text-amber-700")}>
           <FilterIcon className="size-4" />
         </span>
       );
     case "map":
       return (
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
+        <span className={cn(className, "bg-violet-100 text-violet-700")}>
           <span className="text-sm font-semibold">f</span>
         </span>
       );
     case "skip":
       return (
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sky-100 text-sky-700">
+        <span className={cn(className, "bg-sky-100 text-sky-700")}>
           <SkipForwardIcon className="size-4" />
         </span>
       );
     case "take":
       return (
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
+        <span className={cn(className, "bg-emerald-100 text-emerald-700")}>
           <PauseIcon className="size-4" />
         </span>
       );

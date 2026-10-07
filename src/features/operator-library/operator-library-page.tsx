@@ -4,18 +4,15 @@ import {
   ChevronRightIcon,
   Code2Icon,
   ExternalLinkIcon,
-  FilterIcon,
   GraduationCapIcon,
   ListChecksIcon,
-  PauseIcon,
-  SkipForwardIcon,
 } from "lucide-react";
 import {useLocation, useNavigate} from "react-router-dom";
 
 import {OperatorSearchList} from "@/components/operator-search-list";
 import {Button} from "@/components/ui/button";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from "@/components/ui/tooltip";
-import type {PipelineOperatorType} from "@/features/pipeline-editor";
+import { OperatorIcon, type PipelineOperatorType } from "@/features/pipeline-editor";
 import {PipelineVisualizer} from "@/features/stream-visualizer";
 
 import {OPERATOR_LIBRARY, type OperatorLibraryEntry,} from ".";
@@ -112,7 +109,7 @@ function OperatorLibraryGroup({
           aria-expanded={isExpanded}
           onClick={onToggle}
         >
-          <OperatorIcon type={operator.type} />
+          <OperatorIcon size="md" type={operator.type} />
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold text-foreground">
               {operator.label}
@@ -256,31 +253,3 @@ function OperatorExample({ operator }: { operator: OperatorLibraryEntry }) {
   );
 }
 
-function OperatorIcon({ type }: { type: PipelineOperatorType }) {
-  switch (type) {
-    case "filter":
-      return (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700">
-          <FilterIcon className="size-4" />
-        </span>
-      );
-    case "map":
-      return (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-violet-100 text-violet-700">
-          <span className="text-sm font-semibold">f</span>
-        </span>
-      );
-    case "skip":
-      return (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-sky-100 text-sky-700">
-          <SkipForwardIcon className="size-4" />
-        </span>
-      );
-    case "take":
-      return (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700">
-          <PauseIcon className="size-4" />
-        </span>
-      );
-  }
-}
