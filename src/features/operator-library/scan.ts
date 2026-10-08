@@ -25,11 +25,11 @@ export const SCAN_OPERATOR_LIBRARY_ENTRY: ScanOperatorLibraryEntry = {
   label: "scan",
   description: "Průběžná akumulace hodnot ve streamu.",
   summary:
-    "Operátor scan drží průběžný stav a po každé hodnotě emituje nový akumulovaný výsledek. V této aplikaci používá průběžný součet s počáteční hodnotou 0.",
+    "Operátor scan drží průběžný stav a po každé příchozí hodnotě emituje nový akumulovaný výsledek. Lze použít například pro kumulativní součet.",
   usage: [
     "Používá se, když má výsledek záviset na předchozích hodnotách.",
-    "Akumulátor se aktualizuje po každé hodnotě, která se ke scan dostane.",
-    "Na rozdíl od reduce průběžně emituje každý mezivýsledek, ne až jediný finální výsledek.",
+    "Drží si poslední hodnotu v paměti a při zpracování další hodnoty jí aktualizuje.",
+    "Na rozdíl od operátoru reduce průběžně emituje každý mezivýsledek, ne až jediný finální výsledek.",
   ],
   exampleCode: `source$.pipe(
   scan((acc, value) => acc + value, 0) // Průběžný součet

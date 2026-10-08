@@ -14,6 +14,7 @@ import type { VisualTracePlayerState } from "./visual-trace-player-types";
 export function createVisualTracePlayerState(): VisualTracePlayerState {
   return {
     delayTimerEndAtMsByValue: new Map(),
+    hiddenTimerByValue: new Map(),
     nextSourceStartByStream: new Map(),
     previousValueLaneIndexByStream: new Map(),
     timerStartedAtMsByValue: new Map(),
@@ -28,6 +29,7 @@ export function removeVisualTracePlayerValue(
   valueId: string
 ) {
   state.delayTimerEndAtMsByValue.delete(valueId);
+  state.hiddenTimerByValue.delete(valueId);
   state.timerStartedAtMsByValue.delete(valueId);
   state.visualClockByValue.delete(valueId);
   state.streamIdByValue.delete(valueId);
