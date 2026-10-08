@@ -56,16 +56,27 @@ export function playOperatorCreateEvent({
     SOURCE_APPEAR_DURATION_MS,
     playbackSpeed
   );
+  const sourceValueId = event.sourceValue?.id;
+  const reservedValueId = sourceValueId ?? event.value.id;
   const startAtMs = reserveValueVisualTime(
     state,
-    event.value.id,
+    reservedValueId,
     transitionDurationMs,
     elapsedMs
   );
-  const valueLaneIndex = pickValueLaneIndex(state, event.streamId);
+  const valueLaneIndex = sourceValueId
+    ? getValueLaneIndex(state, sourceValueId)
+    : pickValueLaneIndex(state, event.streamId);
 
   state.streamIdByValue.set(event.value.id, event.streamId);
   state.valueLaneIndexByValue.set(event.value.id, valueLaneIndex);
+  state.visualClockByValue.set(
+    event.value.id,
+    Math.max(
+      state.visualClockByValue.get(event.value.id) ?? elapsedMs,
+      state.visualClockByValue.get(reservedValueId) ?? startAtMs
+    )
+  );
 
   return [
     {
@@ -101,9 +112,12 @@ export function playOperatorMapEvent({
 }): VisualTracePlayerAction[] {
   const pulseDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
   const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);
+  const visualValueId = state.visualClockByValue.has(event.after.id)
+    ? event.after.id
+    : event.before.id;
   const startAtMs = reserveValueVisualTime(
     state,
-    event.after.id,
+    visualValueId,
     pulseDurationMs + pauseDurationMs,
     elapsedMs
   );
@@ -113,13 +127,18 @@ export function playOperatorMapEvent({
     event.after.id,
     getValueLaneIndex(state, event.before.id)
   );
+  state.visualClockByValue.set(
+    event.after.id,
+    state.visualClockByValue.get(visualValueId) ?? startAtMs
+  );
 
   return [
     {
       type: "update-value",
       atMs: startAtMs,
-      valueId: event.after.id,
+      valueId: visualValueId,
       update: {
+        id: event.after.id,
         streamValue: event.after,
         displayValue: event.after.value,
         status: "mapped",

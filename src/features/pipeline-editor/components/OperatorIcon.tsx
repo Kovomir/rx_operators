@@ -1,6 +1,5 @@
 import {
   ClockIcon,
-  CircleOffIcon,
   FilterIcon,
   PauseIcon,
   PlusIcon,
@@ -8,6 +7,7 @@ import {
   SkipForwardIcon,
   TerminalIcon,
   TimerIcon,
+  TriangleAlertIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -90,7 +90,7 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
     case "catchError":
       return (
         <span className={cn(className, "bg-red-100 text-red-700")}>
-          <CircleOffIcon className="size-4" />
+          <TriangleAlertIcon className="size-4" />
         </span>
       );
     case "delay":

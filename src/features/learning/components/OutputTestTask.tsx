@@ -7,15 +7,9 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  PipelineEditor,
-  type PipelineOperator,
-  type PipelineOperatorType,
-} from "@/features/pipeline-editor";
+import { PipelineEditor, type PipelineOperator } from "@/features/pipeline-editor";
 import {
   PipelineVisualizer,
-  type DisplayStreamValue,
-  type StreamValue,
   ValueSequence,
 } from "@/features/stream-visualizer";
 import {
@@ -24,35 +18,16 @@ import {
 } from "@/lib/rx/evaluate-pipeline-output";
 import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
+import { clonePipelineOperators } from "./pipeline-operator-clone";
+import type { OutputTestTaskDefinition } from "./output-test-task-types";
+import {
+  getOutputTestResult,
+  type TestResult,
+} from "./output-test-task-validation";
 
-type TestResult = "passed" | "failed" | null;
+export type { OutputTestTaskDefinition } from "./output-test-task-types";
 
-export type ExpectedOutputValue = DisplayStreamValue;
-
-export type PipelineOperatorRequirement = {
-  type: "debounceTime";
-  durationMs: number;
-};
-
-export type OutputTestTaskDefinition = {
-  id: string;
-  taskNumber: number;
-  title: string;
-  taskType?: "output" | "behavior";
-  inputSummary?: string;
-  outputSummary?: string;
-  sourceValues: StreamValue[];
-  expectedOutputValues?: ExpectedOutputValue[];
-  validationOutputValues?: ExpectedOutputValue[];
-  expectedOperatorTypes?: PipelineOperatorType[];
-  operatorRequirements?: PipelineOperatorRequirement[];
-  expectedTapValues?: number[];
-  showSourceValueDetails?: boolean;
-  initialOperators?: PipelineOperator[];
-  enabledOperatorTypes?: PipelineOperatorType[];
-  lockedOperatorIds?: string[];
-  maxOperators: number;
-};
+type NullableTestResult = TestResult | null;
 
 type OutputTestTaskProps = {
   task: OutputTestTaskDefinition;
@@ -68,7 +43,7 @@ export function OutputTestTask({
   const [operators, setOperators] = useState<PipelineOperator[]>(() =>
     clonePipelineOperators(task.initialOperators ?? [])
   );
-  const [testResult, setTestResult] = useState<TestResult>(null);
+  const [testResult, setTestResult] = useState<NullableTestResult>(null);
   const pipelineScrollSync = usePipelineScrollSync();
   const [selectedOperatorId, setSelectedOperatorId] = useState<string | null>(
     null
@@ -88,11 +63,11 @@ export function OutputTestTask({
     () => evaluatePipelineTapValues(task.sourceValues, operators),
     [operators, task.sourceValues]
   );
-  const outputValuesForValidation =
-    task.validationOutputValues ?? task.expectedOutputValues;
   const displayedSourceValues = task.showSourceValueDetails
     ? task.sourceValues
     : task.sourceValues.map((value) => value.value);
+  const sourceValuesForDisplay =
+    task.sourceDisplayValues ?? displayedSourceValues;
 
   function handleOperatorsChange(nextOperators: PipelineOperator[]) {
     setOperators(nextOperators);
@@ -105,28 +80,12 @@ export function OutputTestTask({
   }
 
   function checkOutput() {
-    const hasExpectedOutput = outputValuesForValidation
-      ? areOutputValuesEqual(actualOutputValues, outputValuesForValidation)
-      : true;
-    const hasExpectedOperators = areOperatorTypesEqual(
-      operators,
-      task.expectedOperatorTypes
-    );
-    const hasExpectedOperatorRequirements = doOperatorsSatisfyRequirements(
-      operators,
-      task.operatorRequirements
-    );
-    const hasExpectedTapValues = areNumberArraysEqual(
+    const nextResult = getOutputTestResult({
+      actualOutputValues,
       actualTapValues,
-      task.expectedTapValues
-    );
-    const nextResult =
-      hasExpectedOutput &&
-      hasExpectedOperators &&
-      hasExpectedOperatorRequirements &&
-      hasExpectedTapValues
-        ? "passed"
-        : "failed";
+      operators,
+      task,
+    });
 
     setTestResult(nextResult);
 
@@ -179,6 +138,11 @@ export function OutputTestTask({
         <div className="min-w-0 border-l-0 pt-0 lg:border-l lg:pl-4">
           <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
           <div className="mt-3 grid gap-3">
+            {task.description && (
+              <p className="text-sm leading-6 text-muted-foreground">
+                {task.description}
+              </p>
+            )}
             {task.inputSummary && (
               <TaskSummaryLine label="Vstup" value={task.inputSummary} />
             )}
@@ -186,17 +150,17 @@ export function OutputTestTask({
               <TaskSummaryLine label="Výstup" value={task.outputSummary} />
             )}
             {!task.inputSummary && (
-              <ValueSequence label="Vstup" values={displayedSourceValues} />
+              <ValueSequence label="Vstup" values={sourceValuesForDisplay} />
             )}
             {task.expectedOutputValues && (
               <ValueSequence
-                label="Očekávaný výstup"
+                label={task.expectedOutputLabel ?? "Očekávaný výstup"}
                 values={task.expectedOutputValues}
               />
             )}
             {task.expectedTapValues && (
               <ValueSequence
-                label="Výpis tap(console.log)"
+                label={task.expectedTapValuesLabel ?? "Výpis tap(console.log)"}
                 values={task.expectedTapValues}
               />
             )}
@@ -251,7 +215,7 @@ function TestResultMessage({
   result,
 }: {
   failureMessage?: string;
-  result: TestResult;
+  result: NullableTestResult;
   onContinue?: () => void;
 }) {
   if (result === null) {
@@ -289,142 +253,4 @@ function TestResultMessage({
       )}
     </div>
   );
-}
-
-function areOutputValuesEqual(
-  actualValues: StreamValue[],
-  expectedValues: ExpectedOutputValue[]
-) {
-  return (
-    actualValues.length === expectedValues.length &&
-    actualValues.every((actualValue, index) => {
-      const expectedValue = expectedValues[index];
-
-      if (expectedValue === undefined) {
-        return false;
-      }
-
-      if (typeof expectedValue === "number") {
-        return actualValue.value === expectedValue;
-      }
-
-      return (
-        actualValue.value === expectedValue.value &&
-        actualValue.color === expectedValue.color &&
-        actualValue.shape === expectedValue.shape &&
-        (typeof expectedValue.emittedAtMs !== "number" ||
-          actualValue.emittedAtMs === expectedValue.emittedAtMs)
-      );
-    })
-  );
-}
-
-function areOperatorTypesEqual(
-  operators: PipelineOperator[],
-  expectedOperatorTypes: PipelineOperatorType[] | undefined
-) {
-  if (!expectedOperatorTypes) {
-    return true;
-  }
-
-  return (
-    operators.length === expectedOperatorTypes.length &&
-    operators.every(
-      (operator, index) => operator.type === expectedOperatorTypes[index]
-    )
-  );
-}
-
-function doOperatorsSatisfyRequirements(
-  operators: PipelineOperator[],
-  requirements: PipelineOperatorRequirement[] | undefined
-) {
-  if (!requirements) {
-    return true;
-  }
-
-  return requirements.every((requirement) =>
-    operators.some((operator) => {
-      switch (requirement.type) {
-        case "debounceTime":
-          return (
-            operator.type === "debounceTime" &&
-            operator.config.durationMs === requirement.durationMs
-          );
-      }
-    })
-  );
-}
-
-function areNumberArraysEqual(
-  actualValues: number[],
-  expectedValues: number[] | undefined
-) {
-  if (!expectedValues) {
-    return true;
-  }
-
-  return (
-    actualValues.length === expectedValues.length &&
-    actualValues.every((actualValue, index) => actualValue === expectedValues[index])
-  );
-}
-
-function clonePipelineOperators(operators: PipelineOperator[]) {
-  return operators.map((operator) => {
-    switch (operator.type) {
-      case "map":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "filter":
-        return {
-          ...operator,
-          config: {
-            ...operator.config,
-            allowedColors: [...operator.config.allowedColors],
-            allowedShapes: [...operator.config.allowedShapes],
-            allowedValueKinds: [...operator.config.allowedValueKinds],
-          },
-        };
-      case "skip":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "take":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "distinctUntilChanged":
-      case "scan":
-        return {
-          ...operator,
-          config: {},
-        };
-      case "tap":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "startWith":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "debounceTime":
-      case "delay":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "catchError":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-    }
-  });
 }

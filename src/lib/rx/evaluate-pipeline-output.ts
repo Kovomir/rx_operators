@@ -85,67 +85,64 @@ function applyPipelineOperator(
   state: PipelineEvaluationState,
   operator: PipelineOperator
 ): PipelineEvaluationState {
-  if (state.errorValue) {
-    if (operator.type !== "catchError") {
-      return state;
-    }
-
-    return {
-      errorValue: null,
-      values: [
-        ...state.values,
-        createCatchErrorReplacementValue(operator, state.errorValue),
-      ],
-    };
-  }
-
   switch (operator.type) {
     case "map":
-      return applyMapOperatorToState(state.values, operator);
+      return applyMapOperatorToState(state.values, operator, state.errorValue);
     case "filter":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: state.values.filter((value) =>
           passesFilterOperator(value, operator)
         ),
       };
     case "skip":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: applySkipOperator(state.values, operator),
       };
     case "take":
       return {
-        errorValue: null,
+        errorValue:
+          state.values.length >= operator.config.count ? null : state.errorValue,
         values: applyTakeOperator(state.values, operator),
       };
     case "distinctUntilChanged":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: applyDistinctUntilChangedOperator(state.values),
       };
     case "tap":
       return state;
     case "startWith":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: applyStartWithOperator(state.values, operator),
       };
     case "scan":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: applyScanOperator(state.values),
       };
     case "debounceTime":
       return {
-        errorValue: null,
+        errorValue: state.errorValue,
         values: applyDebounceTimeOperator(state.values, operator),
       };
     case "catchError":
-      return state;
-    case "delay":
+      if (!state.errorValue) {
+        return state;
+      }
+
       return {
         errorValue: null,
+        values: [
+          ...state.values,
+          createCatchErrorReplacementValue(operator, state.errorValue),
+        ],
+      };
+    case "delay":
+      return {
+        errorValue: state.errorValue,
         values: applyDelayOperator(state.values, operator),
       };
   }
@@ -153,7 +150,8 @@ function applyPipelineOperator(
 
 function applyMapOperatorToState(
   values: StreamValue[],
-  operator: Extract<PipelineOperator, { type: "map" }>
+  operator: Extract<PipelineOperator, { type: "map" }>,
+  forwardedErrorValue: StreamValue | null
 ): PipelineEvaluationState {
   const nextValues: StreamValue[] = [];
 
@@ -169,7 +167,7 @@ function applyMapOperatorToState(
   }
 
   return {
-    errorValue: null,
+    errorValue: forwardedErrorValue,
     values: nextValues,
   };
 }

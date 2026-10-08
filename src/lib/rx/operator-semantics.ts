@@ -59,7 +59,6 @@ export function createErrorStreamValue(
     ...streamValue,
     id: `${namespace}-${streamValue.id}-error`,
     kind: "error",
-    label: "ERROR",
   };
 }
 

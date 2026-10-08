@@ -26,6 +26,15 @@ export function StreamValueGlyph({
   const hasTimer = streamValue.timerDurationMs !== undefined;
   const displayValue = formatDisplayNumber(value);
 
+  if (streamValue.kind === "error") {
+    return (
+      <g>
+        <ErrorGlyph />
+        {isDropped && <FilteredOutMark />}
+      </g>
+    );
+  }
+
   return (
     <g>
       {streamValue.label ? (
@@ -57,6 +66,31 @@ export function StreamValueGlyph({
       {!streamValue.label && hasTimer && (
         <ShapeTimerOverlay streamValue={streamValue} />
       )}
+    </g>
+  );
+}
+
+function ErrorGlyph() {
+  return (
+    <g>
+      <rect
+        x="-16"
+        y="-16"
+        width="32"
+        height="32"
+        rx="6"
+        fill="#f1f5f9"
+        stroke="#94a3b8"
+        strokeWidth="2"
+      />
+      <text
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="select-none font-mono text-[10px] font-bold uppercase"
+        fill="#475569"
+      >
+        ERR
+      </text>
     </g>
   );
 }
