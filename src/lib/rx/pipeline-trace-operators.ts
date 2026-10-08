@@ -428,6 +428,7 @@ function tracedDebounceTime(
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
       let pendingValue: StreamValue | null = null;
+      let pendingDueAtMs: number | null = null;
       let pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
       function clearPendingTimeout() {
@@ -448,6 +449,7 @@ function tracedDebounceTime(
             (pendingValue.emittedAtMs ?? 0) + operator.config.durationMs,
         };
         pendingValue = null;
+        pendingDueAtMs = null;
         pendingTimeoutId = null;
 
         recorder.record({
@@ -460,8 +462,21 @@ function tracedDebounceTime(
         subscriber.next(value);
       }
 
+      function emitElapsedPendingValue() {
+        if (
+          pendingValue &&
+          pendingDueAtMs !== null &&
+          getCurrentTimeMs() >= pendingDueAtMs
+        ) {
+          clearPendingTimeout();
+          emitPendingValue();
+        }
+      }
+
       const subscription = source$.subscribe({
         next(value) {
+          emitElapsedPendingValue();
+
           recorder.record({
             streamId,
             type: "operator-enter",
@@ -480,6 +495,7 @@ function tracedDebounceTime(
 
           clearPendingTimeout();
           pendingValue = value;
+          pendingDueAtMs = getCurrentTimeMs() + operator.config.durationMs;
           pendingTimeoutId = setTimeout(
             emitPendingValue,
             operator.config.durationMs
@@ -501,6 +517,10 @@ function tracedDebounceTime(
         subscription.unsubscribe();
       };
     });
+}
+
+function getCurrentTimeMs() {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }
 
 function tracedDelay(

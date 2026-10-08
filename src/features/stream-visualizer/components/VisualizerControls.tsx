@@ -19,6 +19,7 @@ import { PLAYBACK_SPEED_OPTIONS, type PlaybackSpeed } from "../playback";
 type VisualizerControlsProps = {
   canEmitLiveValue?: boolean;
   canRandomizeValues?: boolean;
+  hideEmitLiveValue?: boolean;
   playbackSpeed: PlaybackSpeed;
   onEmitLiveValue: () => void;
   onPlaybackSpeedChange: (playbackSpeed: PlaybackSpeed) => void;
@@ -29,6 +30,7 @@ type VisualizerControlsProps = {
 export function VisualizerControls({
   canEmitLiveValue = true,
   canRandomizeValues = true,
+  hideEmitLiveValue = false,
   playbackSpeed,
   onEmitLiveValue,
   onPlaybackSpeedChange,
@@ -63,7 +65,7 @@ export function VisualizerControls({
         <RotateCcwIcon />
         Restart
       </Button>
-      {canEmitLiveValue && (
+      {canEmitLiveValue && !hideEmitLiveValue && (
         <Button
           type="button"
           variant="outline"

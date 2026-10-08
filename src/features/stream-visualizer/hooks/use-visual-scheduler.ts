@@ -17,12 +17,14 @@ import {
 } from "../visual-trace-player";
 
 type UseVisualSchedulerArgs = {
+  liveSourceMinStartGapMs?: number;
   playbackSpeed: PlaybackSpeed;
   stagePositionById: Map<string, StagePosition>;
   streamLanes: StreamLane[];
 };
 
 export function useVisualScheduler({
+  liveSourceMinStartGapMs,
   playbackSpeed,
   stagePositionById,
   streamLanes,
@@ -46,12 +48,13 @@ export function useVisualScheduler({
   const createPlayer = useCallback(
     () =>
       createVisualTracePlayer({
+        liveSourceMinStartGapMs,
         playbackSpeed,
         runId: runIdRef.current,
         stagePositionById,
         streamLanes,
       }),
-    [playbackSpeed, stagePositionById, streamLanes]
+    [liveSourceMinStartGapMs, playbackSpeed, stagePositionById, streamLanes]
   );
 
   useEffect(() => {

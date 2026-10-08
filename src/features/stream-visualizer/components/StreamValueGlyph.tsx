@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 import type { StreamValue, ValueAnimationStatus } from "../types";
 import {
   DROPPED_STREAM_COLOR_STYLES,
@@ -21,23 +23,183 @@ export function StreamValueGlyph({
   const colorStyle = isDropped
     ? DROPPED_STREAM_COLOR_STYLES[streamValue.color]
     : STREAM_COLOR_STYLES[streamValue.color];
+  const hasTimer = streamValue.timerDurationMs !== undefined;
 
   return (
     <g>
-      <ShapeGlyph streamValue={streamValue} colorStyle={colorStyle} />
+      {streamValue.label || hasTimer ? (
+        <TextValueGlyph
+          label={streamValue.label ?? formatDisplayNumber(value)}
+          timerDurationMs={streamValue.timerDurationMs}
+          timerFadeDurationMs={streamValue.timerFadeDurationMs}
+          timerOpacity={streamValue.timerOpacity}
+          timerShowCompleteMark={streamValue.timerShowCompleteMark}
+          timerStoppedAtMs={streamValue.timerStoppedAtMs}
+          colorStyle={colorStyle}
+        />
+      ) : (
+        <ShapeGlyph streamValue={streamValue} colorStyle={colorStyle} />
+      )}
       {isTapped && <TapEffectMark />}
       {isDropped && <FilteredOutMark />}
 
-      <text
-        textAnchor="middle"
-        dominantBaseline="central"
-        className="select-none text-[11px] font-semibold"
-        fill={colorStyle.text}
-      >
-        {formatDisplayNumber(value)}
-      </text>
+      {!streamValue.label && !hasTimer && (
+        <text
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="select-none text-[11px] font-semibold"
+          fill={colorStyle.text}
+        >
+          {formatDisplayNumber(value)}
+        </text>
+      )}
     </g>
   );
+}
+
+function TextValueGlyph({
+  colorStyle,
+  label,
+  timerDurationMs,
+  timerFadeDurationMs = 0,
+  timerOpacity = 1,
+  timerShowCompleteMark = true,
+  timerStoppedAtMs,
+}: {
+  colorStyle: {
+    fill: string;
+    stroke: string;
+    text: string;
+  };
+  label: string;
+  timerDurationMs?: number;
+  timerFadeDurationMs?: number;
+  timerOpacity?: number;
+  timerShowCompleteMark?: boolean;
+  timerStoppedAtMs?: number;
+}) {
+  const displayLabel = label.length > 16 ? `${label.slice(0, 15)}...` : label;
+  const width = Math.max(42, Math.min(132, displayLabel.length * 8 + 22));
+  const timer = useGlyphTimer(timerDurationMs, timerStoppedAtMs);
+  const timerText = timer?.text;
+  const height = timerText ? 42 : 32;
+
+  return (
+    <g>
+      <rect
+        x={-width / 2}
+        y={-height / 2}
+        width={width}
+        height={height}
+        rx="7"
+        fill={colorStyle.fill}
+        stroke={colorStyle.stroke}
+        strokeWidth="2"
+      />
+      <text
+        textAnchor="middle"
+        dominantBaseline={timerText ? "auto" : "central"}
+        y={timerText ? -3 : undefined}
+        className="select-none font-mono text-[11px] font-semibold"
+        fill={colorStyle.text}
+      >
+        {displayLabel}
+      </text>
+      {timerText && (
+        <text
+          y="12"
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="select-none font-mono text-[9px] font-medium"
+          fill="var(--muted-foreground)"
+          style={{
+            opacity: timerOpacity,
+            transition: `opacity ${timerFadeDurationMs}ms ease-in-out`,
+          }}
+        >
+          {timerText}
+        </text>
+      )}
+      {timerShowCompleteMark && timer?.isComplete && (
+        <TimerCompleteMark width={width} />
+      )}
+    </g>
+  );
+}
+
+function TimerCompleteMark({
+  width,
+}: {
+  width: number;
+}) {
+  const checkX = width / 2 + 5;
+
+  return (
+    <g className="pointer-events-none">
+      <circle
+        cx={checkX}
+        cy="0"
+        r="8"
+        fill="#dcfce7"
+        stroke="#22c55e"
+        strokeWidth="1.5"
+      />
+      <path
+        d={`M ${checkX - 4} 0 L ${checkX - 1} 3 L ${checkX + 5} -4`}
+        fill="none"
+        stroke="#15803d"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+}
+
+function useGlyphTimer(timerDurationMs?: number, timerStoppedAtMs?: number) {
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const startedAtMs = useMemo(() => getCurrentTimeMs(), []);
+
+  useEffect(() => {
+    if (!timerDurationMs) {
+      return;
+    }
+
+    if (timerStoppedAtMs !== undefined) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      const nextElapsedMs = getCurrentTimeMs() - startedAtMs;
+      setElapsedMs(Math.min(timerDurationMs, nextElapsedMs));
+
+      if (nextElapsedMs >= timerDurationMs) {
+        window.clearInterval(intervalId);
+      }
+    }, 50);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [startedAtMs, timerDurationMs, timerStoppedAtMs]);
+
+  if (!timerDurationMs) {
+    return null;
+  }
+
+  const cappedElapsedMs = Math.min(
+    timerStoppedAtMs ?? elapsedMs,
+    timerDurationMs
+  );
+
+  return {
+    isComplete: cappedElapsedMs >= timerDurationMs,
+    text: `${Math.round(cappedElapsedMs)} ms`,
+  };
+}
+
+function getCurrentTimeMs() {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }
 
 function TapEffectMark() {

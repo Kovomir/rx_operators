@@ -1,6 +1,8 @@
 import type { DelayPipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
+const DELAY_OPERATOR_LIBRARY_DURATION_MS = 9999;
+
 export type DelayOperatorLibraryEntry = {
   type: "delay";
   label: string;
@@ -32,7 +34,7 @@ export const DELAY_OPERATOR_LIBRARY_ENTRY: DelayOperatorLibraryEntry = {
     "Na rozdíl od debounceTime propustí všechny hodnoty, jen je časově posune.",
   ],
   exampleCode: `source$.pipe(
-  delay(500) // Každou hodnotu odloží o 500 ms
+  delay(${DELAY_OPERATOR_LIBRARY_DURATION_MS}) // Každou hodnotu odloží o 9999 ms
 ).subscribe(value => {
   console.log(value);
 });`,
@@ -48,13 +50,13 @@ export const DELAY_OPERATOR_LIBRARY_ENTRY: DelayOperatorLibraryEntry = {
   ],
   visualizerTitle: "Ukázka delay",
   visualizerDescription:
-    "Delay nechá každou hodnotu chvíli čekat u operátoru a potom ji beze změny pošle dál.",
+    "Delay nechá každou hodnotu čekat u operátoru 9999 ms a potom ji beze změny pošle dál.",
   operators: [
     {
-      id: "library-delay-500",
+      id: "library-delay-9999",
       type: "delay",
       config: {
-        durationMs: 500,
+        durationMs: DELAY_OPERATOR_LIBRARY_DURATION_MS,
       },
     },
   ],

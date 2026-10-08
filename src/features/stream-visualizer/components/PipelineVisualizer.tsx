@@ -1,8 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
-import { evaluatePipelineOutput } from "@/lib/rx/evaluate-pipeline-output";
+import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
+import { MousePointerClickIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { usePipelineRuntime } from "../hooks/use-pipeline-runtime";
 import { useVisualScheduler } from "../hooks/use-visual-scheduler";
@@ -26,11 +34,15 @@ import { VisualizerCanvas } from "./VisualizerCanvas";
 import { VisualizerControls } from "./VisualizerControls";
 
 type PipelineVisualizerProps = {
+  autoRunSourceValues?: boolean;
   canEmitLiveValue?: boolean;
   canRandomizeValues?: boolean;
   defaultPlaybackSpeed?: PlaybackSpeed;
   description?: string;
+  liveSourceMinStartGapMs?: number;
+  liveValueTimerDurationMs?: number;
   operators: PipelineOperator[];
+  placeLiveValueButtonUnderDescription?: boolean;
   scrollSync?: PipelineScrollSyncController;
   selectedOperatorId?: string | null;
   selectedOperatorFocusKey?: number;
@@ -40,11 +52,15 @@ type PipelineVisualizerProps = {
 };
 
 export function PipelineVisualizer({
+  autoRunSourceValues = true,
   canEmitLiveValue,
   canRandomizeValues,
   defaultPlaybackSpeed = DEFAULT_PLAYBACK_SPEED,
   description = "Vizualizace vaší Rx pipeline.",
+  liveSourceMinStartGapMs,
+  liveValueTimerDurationMs,
   operators,
+  placeLiveValueButtonUnderDescription = false,
   scrollSync,
   selectedOperatorId,
   selectedOperatorFocusKey,
@@ -59,16 +75,18 @@ export function PipelineVisualizer({
     defaultPlaybackSpeed
   );
   const sourceEmissionTimeoutsRef = useRef<number[]>([]);
+  const [stageValueCounts, setStageValueCounts] = useState({
+    output: 0,
+    source: 0,
+  });
   const sourceValues = providedSourceValues ?? localSourceValues;
-  const expectedOutputValues = useMemo(
-    () => evaluatePipelineOutput(sourceValues, operators),
-    [operators, sourceValues]
-  );
   const usesControlledSourceValues = providedSourceValues !== undefined;
   const canEmitLiveValueControl =
     canEmitLiveValue ?? !usesControlledSourceValues;
   const canRandomizeValuesControl =
     canRandomizeValues ?? !usesControlledSourceValues;
+  const showLiveValueButtonUnderDescription =
+    canEmitLiveValueControl && placeLiveValueButtonUnderDescription;
 
   const stages = useMemo(() => buildPipelineStages(operators), [operators]);
   const streamLanes = useMemo(() => buildStreamLanes([MAIN_STREAM_ID]), []);
@@ -94,6 +112,7 @@ export function PipelineVisualizer({
     resetVisualValues,
     visualValues,
   } = useVisualScheduler({
+    liveSourceMinStartGapMs,
     playbackSpeed,
     stagePositionById,
     streamLanes,
@@ -103,7 +122,32 @@ export function PipelineVisualizer({
 
   const resetRunState = useCallback(() => {
     resetVisualValues();
+    setStageValueCounts({
+      output: 0,
+      source: 0,
+    });
   }, [resetVisualValues]);
+
+  const handleRuntimeTraceEvent = useCallback(
+    (event: PipelineTraceEvent) => {
+      if (event.type === "source-next") {
+        setStageValueCounts((currentCounts) => ({
+          ...currentCounts,
+          source: currentCounts.source + 1,
+        }));
+      }
+
+      if (event.type === "subscriber-next") {
+        setStageValueCounts((currentCounts) => ({
+          ...currentCounts,
+          output: currentCounts.output + 1,
+        }));
+      }
+
+      handleTraceEvent(event);
+    },
+    [handleTraceEvent]
+  );
 
   const clearSourceEmissionTimeouts = useCallback(() => {
     for (const timeoutId of sourceEmissionTimeoutsRef.current) {
@@ -117,7 +161,7 @@ export function PipelineVisualizer({
     operators,
     onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
-    onTraceEvent: handleTraceEvent,
+    onTraceEvent: handleRuntimeTraceEvent,
   });
 
   const runSourceValues = useCallback(
@@ -138,6 +182,19 @@ export function PipelineVisualizer({
   );
 
   useEffect(() => {
+    if (!autoRunSourceValues) {
+      const timeoutId = window.setTimeout(() => {
+        clearSourceEmissionTimeouts();
+        resetRunState();
+        resetRuntime();
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+        clearSourceEmissionTimeouts();
+      };
+    }
+
     const timeoutId = window.setTimeout(() => {
       runSourceValues(sourceValues);
     }, 0);
@@ -147,9 +204,11 @@ export function PipelineVisualizer({
       clearSourceEmissionTimeouts();
     };
   }, [
+    autoRunSourceValues,
     clearSourceEmissionTimeouts,
-    operators,
     playbackSpeed,
+    resetRunState,
+    resetRuntime,
     restartKey,
     runSourceValues,
     sourceValues,
@@ -159,7 +218,12 @@ export function PipelineVisualizer({
     const [nextValue] = createDefaultStreamValues(1);
 
     if (nextValue) {
-      emitValue(nextValue, "live");
+      emitValue(
+        liveValueTimerDurationMs
+          ? { ...nextValue, timerDurationMs: liveValueTimerDurationMs }
+          : nextValue,
+        "live"
+      );
     }
   }
 
@@ -177,11 +241,24 @@ export function PipelineVisualizer({
           <p className="mt-0.5 text-xs text-muted-foreground">
             {description}
           </p>
+          {showLiveValueButtonUnderDescription && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={emitLiveValue}
+            >
+              <MousePointerClickIcon />
+              Vložit hodnotu
+            </Button>
+          )}
         </div>
 
         <VisualizerControls
           canEmitLiveValue={canEmitLiveValueControl}
           canRandomizeValues={canRandomizeValuesControl}
+          hideEmitLiveValue={showLiveValueButtonUnderDescription}
           playbackSpeed={playbackSpeed}
           onEmitLiveValue={emitLiveValue}
           onPlaybackSpeedChange={setPlaybackSpeed}
@@ -204,8 +281,8 @@ export function PipelineVisualizer({
         <StageLayer
           stagePositions={stagePositions}
           selectedStageId={selectedOperatorId}
-          sourceValueCount={sourceValues.length}
-          outputValueCount={expectedOutputValues.length}
+          sourceValueCount={stageValueCounts.source}
+          outputValueCount={stageValueCounts.output}
         />
         <ValueLayer visualValues={visualValues} />
       </VisualizerCanvas>

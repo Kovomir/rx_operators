@@ -51,7 +51,7 @@ export const DEFAULT_DEBOUNCE_TIME_CONFIG: DebounceTimeOperatorConfig = {
 };
 
 export const DEFAULT_DELAY_CONFIG: DelayOperatorConfig = {
-  durationMs: 500,
+  durationMs: 1000,
 };
 
 export function createDefaultPipelineOperator(

@@ -49,7 +49,10 @@ export const OPERATOR_LIBRARY = [
   DELAY_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
-export { DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY } from "./debounce-time";
+export {
+  DEBOUNCE_TIME_DEMO_DURATION_MS,
+  DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY,
+} from "./debounce-time";
 export type {
   DebounceTimeOperatorLibraryEntry,
   DebounceTimeOperatorResourceLink,
