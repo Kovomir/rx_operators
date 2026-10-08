@@ -2,6 +2,7 @@ import { Observable, type OperatorFunction } from "rxjs";
 
 import type {
   DebounceTimePipelineOperator,
+  CatchErrorPipelineOperator,
   DelayPipelineOperator,
   DistinctUntilChangedPipelineOperator,
   FilterPipelineOperator,
@@ -17,9 +18,13 @@ import type { StreamValue } from "@/types/stream";
 
 import {
   applyMapOperator,
+  createCatchErrorReplacementValue,
+  createErrorStreamValue,
   applyDistinctUntilChangedOperator,
   applyScanStep,
   createStartWithValue,
+  doesMapOperatorThrow,
+  isStreamPipelineError,
   passesFilterOperator,
 } from "./operator-semantics";
 import type { PipelineTraceRecorder } from "./pipeline-trace-recorder";
@@ -49,6 +54,8 @@ export function buildTracedOperator(
       return tracedScan(operator, recorder, streamId);
     case "debounceTime":
       return tracedDebounceTime(operator, recorder, streamId);
+    case "catchError":
+      return tracedCatchError(operator, recorder, streamId);
     case "delay":
       return tracedDelay(operator, recorder, streamId);
   }
@@ -69,6 +76,24 @@ function tracedMap(
             stageId: operator.id,
             value,
           });
+
+          if (doesMapOperatorThrow(value, operator)) {
+            const errorValue = createErrorStreamValue(value, operator.id);
+
+            recorder.record({
+              streamId,
+              type: "operator-map",
+              stageId: operator.id,
+              before: value,
+              after: errorValue,
+            });
+
+            subscriber.error({
+              kind: "stream-error",
+              value: errorValue,
+            });
+            return;
+          }
 
           const mappedValue = applyMapOperator(value, operator);
 
@@ -516,6 +541,78 @@ function tracedDebounceTime(
         clearPendingTimeout();
         subscription.unsubscribe();
       };
+    });
+}
+
+function tracedCatchError(
+  operator: CatchErrorPipelineOperator,
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId
+): OperatorFunction<StreamValue, StreamValue> {
+  return (source$) =>
+    new Observable<StreamValue>((subscriber) => {
+      const subscription = source$.subscribe({
+        next(value) {
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value,
+          });
+          recorder.record({
+            streamId,
+            type: "operator-pass",
+            stageId: operator.id,
+            value,
+          });
+          subscriber.next(value);
+        },
+        error(error: unknown) {
+          const errorValue = isStreamPipelineError(error)
+            ? error.value
+            : createErrorStreamValue(
+                {
+                  id: `${operator.id}-unknown-error`,
+                  kind: "error",
+                  shape: "circle",
+                  color: "red",
+                  value: 0,
+                },
+                operator.id
+              );
+          const replacementValue = createCatchErrorReplacementValue(
+            operator,
+            errorValue
+          );
+
+          recorder.record({
+            streamId,
+            type: "operator-enter",
+            stageId: operator.id,
+            value: errorValue,
+          });
+          recorder.record({
+            streamId,
+            type: "operator-drop",
+            stageId: operator.id,
+            value: errorValue,
+          });
+          recorder.record({
+            streamId,
+            type: "operator-create",
+            stageId: operator.id,
+            value: replacementValue,
+          });
+
+          subscriber.next(replacementValue);
+          subscriber.complete();
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+
+      return () => subscription.unsubscribe();
     });
 }
 

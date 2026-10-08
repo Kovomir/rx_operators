@@ -4,6 +4,7 @@ export type StreamId = string;
 
 export type StreamValue = {
   id: string;
+  kind?: "next" | "error" | "cancelled";
   shape: StreamShape;
   color: StreamColor;
   value: number;

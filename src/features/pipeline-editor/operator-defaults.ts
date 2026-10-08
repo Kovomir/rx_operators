@@ -1,5 +1,6 @@
 import type {
   DebounceTimeOperatorConfig,
+  CatchErrorOperatorConfig,
   DelayOperatorConfig,
   DistinctUntilChangedOperatorConfig,
   FilterOperatorConfig,
@@ -48,6 +49,10 @@ export const DEFAULT_SCAN_CONFIG: ScanOperatorConfig = {};
 
 export const DEFAULT_DEBOUNCE_TIME_CONFIG: DebounceTimeOperatorConfig = {
   durationMs: 500,
+};
+
+export const DEFAULT_CATCH_ERROR_CONFIG: CatchErrorOperatorConfig = {
+  replacementValue: 0,
 };
 
 export const DEFAULT_DELAY_CONFIG: DelayOperatorConfig = {
@@ -117,6 +122,12 @@ export function createDefaultPipelineOperator(
         id,
         type,
         config: { ...DEFAULT_DEBOUNCE_TIME_CONFIG },
+      };
+    case "catchError":
+      return {
+        id,
+        type,
+        config: { ...DEFAULT_CATCH_ERROR_CONFIG },
       };
     case "delay":
       return {

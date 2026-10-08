@@ -9,6 +9,7 @@ import {
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
+import { withPipelineTraceMetadata } from "@/lib/rx/pipeline-trace";
 import { MousePointerClickIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -75,6 +76,7 @@ export function PipelineVisualizer({
     defaultPlaybackSpeed
   );
   const sourceEmissionTimeoutsRef = useRef<number[]>([]);
+  const syntheticTraceSequenceRef = useRef(0);
   const [stageValueCounts, setStageValueCounts] = useState({
     output: 0,
     source: 0,
@@ -157,7 +159,7 @@ export function PipelineVisualizer({
     sourceEmissionTimeoutsRef.current = [];
   }, []);
 
-  const { emitValue, resetRuntime } = usePipelineRuntime({
+  const { emitError, emitValue, resetRuntime } = usePipelineRuntime({
     operators,
     onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
@@ -172,13 +174,41 @@ export function PipelineVisualizer({
 
       values.forEach((value) => {
         const timeoutId = window.setTimeout(() => {
+          if (value.kind === "cancelled") {
+            handleRuntimeTraceEvent(
+              withPipelineTraceMetadata(
+                {
+                  source: "demo",
+                  type: "source-cancelled",
+                  value,
+                },
+                syntheticTraceSequenceRef.current,
+                performance.now()
+              )
+            );
+            syntheticTraceSequenceRef.current += 1;
+            return;
+          }
+
+          if (value.kind === "error") {
+            emitError(value, "demo");
+            return;
+          }
+
           emitValue(value, "demo");
         }, value.emittedAtMs ?? 0);
 
         sourceEmissionTimeoutsRef.current.push(timeoutId);
       });
     },
-    [clearSourceEmissionTimeouts, emitValue, resetRunState, resetRuntime]
+    [
+      clearSourceEmissionTimeouts,
+      emitError,
+      emitValue,
+      handleRuntimeTraceEvent,
+      resetRunState,
+      resetRuntime,
+    ]
   );
 
   useEffect(() => {

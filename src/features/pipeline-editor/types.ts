@@ -14,6 +14,7 @@ export type PipelineOperatorType =
   | "startWith"
   | "scan"
   | "debounceTime"
+  | "catchError"
   | "delay";
 
 export type MapOperation = "add" | "subtract" | "multiply";
@@ -23,6 +24,7 @@ export type FilterTarget = "color" | "shape" | "value";
 export type MapOperatorConfig = {
   operation: MapOperation;
   operand: number;
+  throwOnValue?: number;
 };
 
 export type FilterOperatorConfig = {
@@ -54,6 +56,10 @@ export type ScanOperatorConfig = Record<string, never>;
 
 export type DebounceTimeOperatorConfig = {
   durationMs: number;
+};
+
+export type CatchErrorOperatorConfig = {
+  replacementValue: number;
 };
 
 export type DelayOperatorConfig = {
@@ -114,6 +120,12 @@ export type DebounceTimePipelineOperator = {
   config: DebounceTimeOperatorConfig;
 };
 
+export type CatchErrorPipelineOperator = {
+  id: string;
+  type: "catchError";
+  config: CatchErrorOperatorConfig;
+};
+
 export type DelayPipelineOperator = {
   id: string;
   type: "delay";
@@ -130,6 +142,7 @@ export type PipelineOperator =
   | StartWithPipelineOperator
   | ScanPipelineOperator
   | DebounceTimePipelineOperator
+  | CatchErrorPipelineOperator
   | DelayPipelineOperator;
 
 export type PipelineEditorMode = "editable" | "readonly";

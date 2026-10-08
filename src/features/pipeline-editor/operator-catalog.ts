@@ -61,6 +61,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     description: "Propustí hodnotu až po krátkém tichu ve streamu.",
   },
   {
+    type: "catchError",
+    label: "catchError",
+    description: "Zachytí chybu a nahradí původní stream novým streamem.",
+  },
+  {
     type: "delay",
     label: "delay",
     description: "Odloží každou hodnotu o nastavený čas.",
@@ -120,6 +125,8 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
       return "kumulativní součet";
     case "debounceTime":
       return `debounceTime(${operator.config.durationMs})`;
+    case "catchError":
+      return `catchError(${operator.config.replacementValue})`;
     case "delay":
       return `delay(${operator.config.durationMs})`;
   }

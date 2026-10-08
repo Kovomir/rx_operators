@@ -18,6 +18,7 @@ import type { StreamValue } from "../types";
 type RuntimeHandle = {
   complete: () => void;
   emit: ManualSourceRuntime["emit"];
+  emitError: ManualSourceRuntime["emitError"];
 };
 
 type UsePipelineRuntimeArgs = {
@@ -48,10 +49,12 @@ export function usePipelineRuntime({
       streamId,
     }).subscribe({
       next: onOutputValue,
+      error: () => undefined,
     });
 
     return {
       emit: sourceRuntime.emit,
+      emitError: sourceRuntime.emitError,
       complete() {
         traceSubscription.unsubscribe();
         outputSubscription.unsubscribe();
@@ -93,5 +96,12 @@ export function usePipelineRuntime({
     []
   );
 
-  return { emitValue, resetRuntime };
+  const emitError = useCallback(
+    (value: StreamValue, source?: PipelineTraceSource) => {
+      runtimeRef.current?.emitError(value, source);
+    },
+    []
+  );
+
+  return { emitError, emitValue, resetRuntime };
 }

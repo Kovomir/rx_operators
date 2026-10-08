@@ -17,6 +17,16 @@ export type PipelineTraceEventPayload =
       value: StreamValue;
     }
   | {
+      type: "source-error";
+      source: PipelineTraceSource;
+      value: StreamValue;
+    }
+  | {
+      type: "source-cancelled";
+      source: PipelineTraceSource;
+      value: StreamValue;
+    }
+  | {
       type: "operator-enter";
       stageId: string;
       value: StreamValue;
