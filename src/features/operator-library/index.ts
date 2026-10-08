@@ -11,6 +11,10 @@ import {
   type DebounceTimeOperatorLibraryEntry,
 } from "./debounce-time";
 import {
+  CATCH_ERROR_OPERATOR_LIBRARY_ENTRY,
+  type CatchErrorOperatorLibraryEntry,
+} from "./catch-error";
+import {
   DELAY_OPERATOR_LIBRARY_ENTRY,
   type DelayOperatorLibraryEntry,
 } from "./delay";
@@ -34,6 +38,7 @@ export type OperatorLibraryEntry =
   | StartWithOperatorLibraryEntry
   | ScanOperatorLibraryEntry
   | DebounceTimeOperatorLibraryEntry
+  | CatchErrorOperatorLibraryEntry
   | DelayOperatorLibraryEntry;
 
 export const OPERATOR_LIBRARY = [
@@ -46,9 +51,15 @@ export const OPERATOR_LIBRARY = [
   START_WITH_OPERATOR_LIBRARY_ENTRY,
   SCAN_OPERATOR_LIBRARY_ENTRY,
   DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY,
+  CATCH_ERROR_OPERATOR_LIBRARY_ENTRY,
   DELAY_OPERATOR_LIBRARY_ENTRY,
 ] satisfies OperatorLibraryEntry[];
 
+export { CATCH_ERROR_OPERATOR_LIBRARY_ENTRY } from "./catch-error";
+export type {
+  CatchErrorOperatorLibraryEntry,
+  CatchErrorOperatorResourceLink,
+} from "./catch-error";
 export {
   DEBOUNCE_TIME_DEMO_DURATION_MS,
   DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY,
