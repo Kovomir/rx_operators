@@ -12,9 +12,9 @@ export const DROP_DURATION_MS = 1145;
 export const SVG_HEIGHT = 320;
 export const SVG_PADDING_X = 76;
 export const STAGE_SPACING = 300;
-export const TRACK_Y = 210;
+export const TRACK_Y = 196;
 export const STREAM_LANE_GAP = 72;
-export const STREAM_VALUE_LANE_OFFSET_Y = 42;
+export const STREAM_VALUE_LANE_OFFSET_Y = 56;
 
 export const STREAM_COLOR_STYLES: Record<
   StreamColor,

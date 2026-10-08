@@ -24,12 +24,13 @@ export function StreamValueGlyph({
     ? DROPPED_STREAM_COLOR_STYLES[streamValue.color]
     : STREAM_COLOR_STYLES[streamValue.color];
   const hasTimer = streamValue.timerDurationMs !== undefined;
+  const displayValue = formatDisplayNumber(value);
 
   return (
     <g>
-      {streamValue.label || hasTimer ? (
+      {streamValue.label ? (
         <TextValueGlyph
-          label={streamValue.label ?? formatDisplayNumber(value)}
+          label={streamValue.label}
           timerDurationMs={streamValue.timerDurationMs}
           timerFadeDurationMs={streamValue.timerFadeDurationMs}
           timerOpacity={streamValue.timerOpacity}
@@ -43,17 +44,52 @@ export function StreamValueGlyph({
       {isTapped && <TapEffectMark />}
       {isDropped && <FilteredOutMark />}
 
-      {!streamValue.label && !hasTimer && (
+      {!streamValue.label && (
         <text
           textAnchor="middle"
           dominantBaseline="central"
           className="select-none text-[11px] font-semibold"
           fill={colorStyle.text}
         >
-          {formatDisplayNumber(value)}
+          {displayValue}
         </text>
       )}
+      {!streamValue.label && hasTimer && (
+        <ShapeTimerOverlay streamValue={streamValue} />
+      )}
     </g>
+  );
+}
+
+function ShapeTimerOverlay({ streamValue }: { streamValue: StreamValue }) {
+  const timer = useGlyphTimer(
+    streamValue.timerDurationMs,
+    streamValue.timerStoppedAtMs
+  );
+
+  if (!timer) {
+    return null;
+  }
+
+  return (
+    <>
+      <text
+        y="28"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="select-none font-mono text-[9px] font-medium"
+        fill="var(--muted-foreground)"
+        style={{
+          opacity: streamValue.timerOpacity ?? 1,
+          transition: `opacity ${streamValue.timerFadeDurationMs ?? 0}ms ease-in-out`,
+        }}
+      >
+        {timer.text}
+      </text>
+      {(streamValue.timerShowCompleteMark ?? true) && timer.isComplete && (
+        <TimerCompleteMark width={30} />
+      )}
+    </>
   );
 }
 
@@ -132,7 +168,7 @@ function TimerCompleteMark({
 }: {
   width: number;
 }) {
-  const checkX = width / 2 + 5;
+  const checkX = width / 2 + 6;
 
   return (
     <g className="pointer-events-none">

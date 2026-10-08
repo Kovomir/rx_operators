@@ -51,6 +51,8 @@ export function playSubscriberNextEvent({
   );
 
   state.streamIdByValue.set(event.value.id, event.streamId);
+  const streamValue =
+    state.hiddenTimerByValue.get(event.value.id) ?? event.value;
 
   return [
     {
@@ -58,7 +60,7 @@ export function playSubscriberNextEvent({
       atMs: startAtMs,
       valueId: event.value.id,
       update: {
-        streamValue: event.value,
+        streamValue,
         displayValue: event.value.value,
         status: "moving",
         x: subscriberPosition.x,

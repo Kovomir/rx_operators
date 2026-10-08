@@ -5,6 +5,7 @@ import type {
   LiveVisualValue,
   StagePosition,
   StreamLane,
+  StreamValue,
 } from "./types";
 
 export type VisualTracePlayerAction =
@@ -35,6 +36,7 @@ export type VisualTracePlayerArgs = {
 
 export type VisualTracePlayerState = {
   delayTimerEndAtMsByValue: Map<string, number>;
+  hiddenTimerByValue: Map<string, StreamValue>;
   nextSourceStartByStream: Map<string, number>;
   previousValueLaneIndexByStream: Map<StreamId, number>;
   timerStartedAtMsByValue: Map<string, number>;

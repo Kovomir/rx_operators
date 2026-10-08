@@ -194,13 +194,14 @@ export function playOperatorPassEvent({
           },
         ]
       : []),
-    ...(!isDelayOperator
-      ? getTimerFadeActions({
-          atMs: startAtMs,
-          playbackSpeed,
-          value: event.value,
-        })
-      : []),
+        ...(!isDelayOperator
+          ? getTimerFadeActions({
+              atMs: startAtMs,
+              playbackSpeed,
+              state,
+              value: event.value,
+            })
+          : []),
     {
       type: "update-value",
       atMs: startAtMs,
@@ -347,10 +348,12 @@ export function playOperatorDropEvent({
 function getTimerFadeActions({
   atMs,
   playbackSpeed,
+  state,
   value,
 }: {
   atMs: number;
   playbackSpeed: number;
+  state: VisualTracePlayerState;
   value: StreamValue;
 }): VisualTracePlayerAction[] {
   if (value.timerDurationMs === undefined) {
@@ -358,6 +361,14 @@ function getTimerFadeActions({
   }
 
   const timerFadeDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
+  const hiddenTimerValue = {
+    ...value,
+    timerFadeDurationMs,
+    timerOpacity: 0,
+    timerStoppedAtMs: value.timerDurationMs,
+  };
+
+  state.hiddenTimerByValue.set(value.id, hiddenTimerValue);
 
   return [
     {
@@ -365,12 +376,7 @@ function getTimerFadeActions({
       atMs,
       valueId: value.id,
       update: {
-        streamValue: {
-          ...value,
-          timerFadeDurationMs,
-          timerOpacity: 0,
-          timerStoppedAtMs: value.timerDurationMs,
-        },
+        streamValue: hiddenTimerValue,
       },
     },
   ];

@@ -117,7 +117,7 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
     case "startWith":
       return `startWith(${operator.config.value})`;
     case "scan":
-      return "scan((acc, value) => acc + value, 0)";
+      return "kumulativní součet";
     case "debounceTime":
       return `debounceTime(${operator.config.durationMs})`;
     case "delay":
