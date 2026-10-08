@@ -7,5 +7,11 @@ export type StreamValue = {
   shape: StreamShape;
   color: StreamColor;
   value: number;
+  label?: string;
+  timerDurationMs?: number;
+  timerFadeDurationMs?: number;
+  timerOpacity?: number;
+  timerShowCompleteMark?: boolean;
+  timerStoppedAtMs?: number;
   emittedAtMs?: number;
 };

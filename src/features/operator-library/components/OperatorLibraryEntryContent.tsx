@@ -5,10 +5,15 @@ import {
 } from "lucide-react";
 
 import { PipelineVisualizer } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
 
-import type { OperatorLibraryEntry } from "..";
+import {
+  DEBOUNCE_TIME_DEMO_DURATION_MS,
+  type OperatorLibraryEntry,
+} from "..";
 
 const OPERATOR_LIBRARY_PLAYBACK_SPEED = 0.5;
+const EMPTY_SOURCE_VALUES: StreamValue[] = [];
 
 type OperatorLibraryEntryContentProps = {
   operator: OperatorLibraryEntry;
@@ -17,16 +22,24 @@ type OperatorLibraryEntryContentProps = {
 export function OperatorLibraryEntryContent({
   operator,
 }: OperatorLibraryEntryContentProps) {
+  const isDebounceTime = operator.type === "debounceTime";
+
   return (
     <div className="grid gap-5">
       <OperatorExplanation operator={operator} />
       <PipelineVisualizer
-        canEmitLiveValue={false}
+        autoRunSourceValues={!isDebounceTime}
+        canEmitLiveValue={isDebounceTime}
         canRandomizeValues={false}
         defaultPlaybackSpeed={OPERATOR_LIBRARY_PLAYBACK_SPEED}
         description={operator.visualizerDescription}
+        liveSourceMinStartGapMs={isDebounceTime ? 0 : undefined}
+        liveValueTimerDurationMs={
+          isDebounceTime ? DEBOUNCE_TIME_DEMO_DURATION_MS : undefined
+        }
         operators={operator.operators}
-        sourceValues={operator.sourceValues}
+        placeLiveValueButtonUnderDescription={isDebounceTime}
+        sourceValues={isDebounceTime ? EMPTY_SOURCE_VALUES : operator.sourceValues}
         title={operator.visualizerTitle}
       />
     </div>

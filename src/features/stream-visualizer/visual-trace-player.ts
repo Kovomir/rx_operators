@@ -18,6 +18,7 @@ import type {
   LiveVisualValue,
   StagePosition,
   StreamLane,
+  StreamValue,
 } from "./types";
 import {
   reserveOrderedVisualStart,
@@ -43,6 +44,7 @@ export type VisualTracePlayerAction =
     };
 
 type VisualTracePlayerArgs = {
+  liveSourceMinStartGapMs?: number;
   playbackSpeed: number;
   runId: number;
   stagePositionById: Map<string, StagePosition>;
@@ -50,8 +52,10 @@ type VisualTracePlayerArgs = {
 };
 
 type VisualTracePlayerState = {
+  delayTimerEndAtMsByValue: Map<string, number>;
   nextSourceStartByStream: Map<string, number>;
   previousValueLaneIndexByStream: Map<StreamId, number>;
+  timerStartedAtMsByValue: Map<string, number>;
   valueLaneIndexByValue: Map<string, number>;
   streamIdByValue: Map<string, StreamId>;
   visualClockByValue: Map<string, number>;
@@ -62,14 +66,17 @@ const PASS_RESET_DURATION_MS = 435;
 const REMOVE_DROPPED_VALUE_DELAY_MS = 645;
 
 export function createVisualTracePlayer({
+  liveSourceMinStartGapMs,
   playbackSpeed,
   runId,
   stagePositionById,
   streamLanes,
 }: VisualTracePlayerArgs) {
   const state: VisualTracePlayerState = {
+    delayTimerEndAtMsByValue: new Map(),
     nextSourceStartByStream: new Map(),
     previousValueLaneIndexByStream: new Map(),
+    timerStartedAtMsByValue: new Map(),
     valueLaneIndexByValue: new Map(),
     streamIdByValue: new Map(),
     visualClockByValue: new Map(),
@@ -80,6 +87,7 @@ export function createVisualTracePlayer({
       return playTraceEvent({
         elapsedMs,
         event,
+        liveSourceMinStartGapMs,
         playbackSpeed,
         runId,
         stagePositionById,
@@ -88,6 +96,8 @@ export function createVisualTracePlayer({
       });
     },
     removeValue(valueId: string) {
+      state.delayTimerEndAtMsByValue.delete(valueId);
+      state.timerStartedAtMsByValue.delete(valueId);
       state.visualClockByValue.delete(valueId);
       state.streamIdByValue.delete(valueId);
       state.valueLaneIndexByValue.delete(valueId);
@@ -98,6 +108,7 @@ export function createVisualTracePlayer({
 type PlayTraceEventArgs = {
   elapsedMs: number;
   event: PipelineTraceEvent;
+  liveSourceMinStartGapMs?: number;
   playbackSpeed: number;
   runId: number;
   stagePositionById: Map<string, StagePosition>;
@@ -108,6 +119,7 @@ type PlayTraceEventArgs = {
 function playTraceEvent({
   elapsedMs,
   event,
+  liveSourceMinStartGapMs,
   playbackSpeed,
   runId,
   stagePositionById,
@@ -127,7 +139,7 @@ function playTraceEvent({
         playbackSpeed
       );
       const minStartGapMs = scaleDuration(
-        getVisualMinStartGapMs(event.source),
+        getVisualMinStartGapMs(event.source, liveSourceMinStartGapMs),
         playbackSpeed
       );
       const { delayMs } = reserveOrderedVisualStart(
@@ -142,6 +154,10 @@ function playTraceEvent({
 
       state.streamIdByValue.set(event.value.id, event.streamId);
       state.valueLaneIndexByValue.set(event.value.id, valueLaneIndex);
+      if (event.value.timerDurationMs !== undefined) {
+        state.timerStartedAtMsByValue.set(event.value.id, event.occurredAtMs);
+      }
+
       state.visualClockByValue.set(
         event.value.id,
         startAtMs + transitionDurationMs
@@ -181,8 +197,19 @@ function playTraceEvent({
         transitionDurationMs,
         elapsedMs
       );
+      const delayDurationMs =
+        operatorPosition.operator?.type === "delay"
+          ? operatorPosition.operator.config.durationMs
+          : undefined;
+      const delayTimerStartAtMs = startAtMs + transitionDurationMs;
 
       state.streamIdByValue.set(event.value.id, event.streamId);
+      if (delayDurationMs !== undefined) {
+        state.delayTimerEndAtMsByValue.set(
+          event.value.id,
+          delayTimerStartAtMs + delayDurationMs
+        );
+      }
 
       return [
         {
@@ -199,6 +226,26 @@ function playTraceEvent({
             transitionDurationMs,
           },
         },
+        ...(delayDurationMs === undefined
+          ? []
+          : [
+              {
+                type: "update-value" as const,
+                atMs: delayTimerStartAtMs,
+                valueId: event.value.id,
+                update: {
+                  streamValue: {
+                    ...event.value,
+                    timerDurationMs: delayDurationMs,
+                    timerFadeDurationMs: scaleDuration(
+                      MAP_PULSE_MS,
+                      playbackSpeed
+                    ),
+                    timerShowCompleteMark: false,
+                  },
+                },
+              },
+            ]),
       ];
     }
     case "operator-create": {
@@ -287,21 +334,59 @@ function playTraceEvent({
     case "operator-pass": {
       const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);
       const resetDurationMs = scaleDuration(PASS_RESET_DURATION_MS, playbackSpeed);
+      const timerFadeDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
+      const operator = stagePositionById.get(event.stageId)?.operator;
+      const delayDurationMs =
+        operator?.type === "delay" ? operator.config.durationMs : undefined;
+      const isDelayOperator = delayDurationMs !== undefined;
+      const earliestStartAtMs = isDelayOperator
+        ? Math.max(
+            elapsedMs,
+            state.delayTimerEndAtMsByValue.get(event.value.id) ?? elapsedMs
+          ) + timerFadeDurationMs
+        : elapsedMs;
       const startAtMs = reserveValueVisualTime(
         state,
         event.value.id,
         pauseDurationMs + resetDurationMs,
-        elapsedMs
+        earliestStartAtMs
       );
 
       state.streamIdByValue.set(event.value.id, event.streamId);
 
       return [
+        ...(isDelayOperator
+          ? [
+              {
+                type: "update-value" as const,
+                atMs: earliestStartAtMs - timerFadeDurationMs,
+                valueId: event.value.id,
+                update: {
+                  streamValue: {
+                    ...event.value,
+                    timerDurationMs: delayDurationMs,
+                    timerFadeDurationMs,
+                    timerOpacity: 0,
+                    timerShowCompleteMark: false,
+                    timerStoppedAtMs: delayDurationMs,
+                  },
+                },
+              },
+            ]
+          : []),
+        ...(!isDelayOperator
+          ? getTimerFadeActions({
+              atMs: startAtMs,
+              playbackSpeed,
+              value: event.value,
+            })
+          : []),
         {
           type: "update-value",
           atMs: startAtMs,
           valueId: event.value.id,
           update: {
+            ...(isDelayOperator ? { streamValue: event.value } : {}),
             status: "passed",
             scale: 1.08,
             transitionDurationMs: pauseDurationMs,
@@ -365,10 +450,30 @@ function playTraceEvent({
         pauseDurationMs + dropDurationMs,
         elapsedMs
       );
+      const timerStoppedAtMs = getTimerStoppedAtMs(
+        state,
+        event.value.id,
+        event.occurredAtMs
+      );
 
       state.streamIdByValue.set(event.value.id, event.streamId);
 
       return [
+        ...(timerStoppedAtMs === undefined
+          ? []
+          : [
+              {
+                type: "update-value" as const,
+                atMs: elapsedMs,
+                valueId: event.value.id,
+                update: {
+                  streamValue: {
+                    ...event.value,
+                    timerStoppedAtMs,
+                  },
+                },
+              },
+            ]),
         {
           type: "update-value",
           atMs: startAtMs,
@@ -455,6 +560,38 @@ function playTraceEvent({
   }
 }
 
+function getTimerFadeActions({
+  atMs,
+  playbackSpeed,
+  value,
+}: {
+  atMs: number;
+  playbackSpeed: number;
+  value: StreamValue;
+}): VisualTracePlayerAction[] {
+  if (value.timerDurationMs === undefined) {
+    return [];
+  }
+
+  const timerFadeDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
+
+  return [
+    {
+      type: "update-value",
+      atMs,
+      valueId: value.id,
+      update: {
+        streamValue: {
+          ...value,
+          timerFadeDurationMs,
+          timerOpacity: 0,
+          timerStoppedAtMs: value.timerDurationMs,
+        },
+      },
+    },
+  ];
+}
+
 function reserveValueVisualTime(
   state: VisualTracePlayerState,
   valueId: string,
@@ -511,9 +648,26 @@ function getValueLaneIndex(state: VisualTracePlayerState, valueId: string) {
   return state.valueLaneIndexByValue.get(valueId) ?? 1;
 }
 
-function getVisualMinStartGapMs(source: "demo" | "live") {
+function getTimerStoppedAtMs(
+  state: VisualTracePlayerState,
+  valueId: string,
+  stoppedAtMs: number
+) {
+  const startedAtMs = state.timerStartedAtMsByValue.get(valueId);
+
+  if (startedAtMs === undefined) {
+    return undefined;
+  }
+
+  return Math.max(0, stoppedAtMs - startedAtMs);
+}
+
+function getVisualMinStartGapMs(
+  source: "demo" | "live",
+  liveSourceMinStartGapMs?: number
+) {
   return source === "live"
-    ? LIVE_VISUAL_VALUE_MIN_START_GAP_MS
+    ? liveSourceMinStartGapMs ?? LIVE_VISUAL_VALUE_MIN_START_GAP_MS
     : DEMO_VISUAL_VALUE_MIN_START_GAP_MS;
 }
 

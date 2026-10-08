@@ -98,6 +98,13 @@ const TIME_DURATION_OPTIONS: SelectOption<number>[] = [
   { value: 1000, label: "1000 ms" },
 ];
 
+const DELAY_DURATION_OPTIONS: SelectOption<number>[] = [
+  { value: 1000, label: "1000 ms" },
+  { value: 3000, label: "3000 ms" },
+  { value: 5000, label: "5000 ms" },
+  { value: 9999, label: "9999 ms" },
+];
+
 export function OperatorConfigControls({
   operator,
   disabled,
@@ -473,7 +480,7 @@ function DebounceTimeConfigControls({
 }: DebounceTimeConfigControlsProps) {
   return (
     <label className="grid gap-1 text-xs text-muted-foreground">
-      Čas ticha
+      Interval
       <Select
         value={String(operator.config.durationMs)}
         disabled={disabled}
@@ -537,7 +544,7 @@ function DelayConfigControls({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {TIME_DURATION_OPTIONS.map((option) => (
+          {DELAY_DURATION_OPTIONS.map((option) => (
             <SelectItem
               key={option.value}
               value={String(option.value)}
