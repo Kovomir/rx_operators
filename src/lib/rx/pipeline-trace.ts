@@ -55,6 +55,7 @@ export type PipelineTraceEventPayload =
   | {
       type: "operator-create";
       stageId: string;
+      sourceValue?: StreamValue;
       value: StreamValue;
     }
   | {

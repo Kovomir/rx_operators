@@ -20,6 +20,12 @@ import {
   type DebounceTimeOutputTestTaskDefinition,
 } from "./debounce-time";
 import {
+  CATCH_ERROR_LEARNING_OPERATOR,
+  CATCH_ERROR_TASKS,
+  type CatchErrorLearningOperator,
+  type CatchErrorOutputTestTaskDefinition,
+} from "./catch-error";
+import {
   DELAY_LEARNING_OPERATOR,
   DELAY_TASKS,
   type DelayLearningOperator,
@@ -72,6 +78,7 @@ export type LearningOperator =
   | StartWithLearningOperator
   | ScanLearningOperator
   | DebounceTimeLearningOperator
+  | CatchErrorLearningOperator
   | DelayLearningOperator;
 
 export type LearningTaskDefinition =
@@ -84,6 +91,7 @@ export type LearningTaskDefinition =
   | StartWithOutputTestTaskDefinition
   | ScanOutputTestTaskDefinition
   | DebounceTimeOutputTestTaskDefinition
+  | CatchErrorOutputTestTaskDefinition
   | DelayOutputTestTaskDefinition;
 
 export const LEARNING_OPERATOR_ORDER = [
@@ -96,6 +104,7 @@ export const LEARNING_OPERATOR_ORDER = [
   "startWith",
   "scan",
   "debounceTime",
+  "catchError",
   "delay",
 ] satisfies PipelineOperatorType[];
 
@@ -109,6 +118,7 @@ export const LEARNING_OPERATORS = [
   START_WITH_LEARNING_OPERATOR,
   SCAN_LEARNING_OPERATOR,
   DEBOUNCE_TIME_LEARNING_OPERATOR,
+  CATCH_ERROR_LEARNING_OPERATOR,
   DELAY_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
@@ -122,10 +132,13 @@ export const TASKS_BY_OPERATOR = {
   startWith: START_WITH_TASKS,
   scan: SCAN_TASKS,
   debounceTime: DEBOUNCE_TIME_TASKS,
+  catchError: CATCH_ERROR_TASKS,
   delay: DELAY_TASKS,
 } satisfies Record<LearningOperator["type"], OutputTestTaskDefinition[]>;
 
 export {
+  CATCH_ERROR_LEARNING_OPERATOR,
+  CATCH_ERROR_TASKS,
   DEBOUNCE_TIME_LEARNING_OPERATOR,
   DEBOUNCE_TIME_TASKS,
   DELAY_LEARNING_OPERATOR,
@@ -148,6 +161,8 @@ export {
   TAKE_TASKS,
 };
 export type {
+  CatchErrorLearningOperator,
+  CatchErrorOutputTestTaskDefinition,
   DebounceTimeLearningOperator,
   DebounceTimeOutputTestTaskDefinition,
   DelayLearningOperator,

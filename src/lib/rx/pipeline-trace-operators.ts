@@ -61,6 +61,30 @@ export function buildTracedOperator(
   }
 }
 
+function recordForwardedError(
+  recorder: PipelineTraceRecorder,
+  streamId: StreamId,
+  stageId: string,
+  error: unknown
+) {
+  if (!isStreamPipelineError(error)) {
+    return;
+  }
+
+  recorder.record({
+    streamId,
+    type: "operator-enter",
+    stageId,
+    value: error.value,
+  });
+  recorder.record({
+    streamId,
+    type: "operator-pass",
+    stageId,
+    value: error.value,
+  });
+}
+
 function tracedMap(
   operator: MapPipelineOperator,
   recorder: PipelineTraceRecorder,
@@ -108,6 +132,7 @@ function tracedMap(
           subscriber.next(mappedValue);
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -154,6 +179,7 @@ function tracedFilter(
           });
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -203,6 +229,7 @@ function tracedSkip(
           subscriber.next(value);
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -252,6 +279,7 @@ function tracedTake(
           });
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -305,6 +333,7 @@ function tracedDistinctUntilChanged(
           });
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -346,6 +375,7 @@ function tracedTap(
           subscriber.next(value);
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -391,6 +421,7 @@ function tracedStartWith(
           subscriber.next(value);
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -434,6 +465,7 @@ function tracedScan(
           subscriber.next(scanStep.value);
         },
         error(error: unknown) {
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -528,6 +560,7 @@ function tracedDebounceTime(
         },
         error(error: unknown) {
           clearPendingTimeout();
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
@@ -601,6 +634,7 @@ function tracedCatchError(
             streamId,
             type: "operator-create",
             stageId: operator.id,
+            sourceValue: errorValue,
             value: replacementValue,
           });
 
@@ -676,6 +710,7 @@ function tracedDelay(
           }
 
           pendingTimeoutIds.clear();
+          recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {

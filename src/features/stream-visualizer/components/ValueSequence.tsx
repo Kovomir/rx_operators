@@ -4,7 +4,7 @@ import { StreamValueGlyph } from "./StreamValueGlyph";
 
 export type DisplayStreamValue =
   | number
-  | Pick<StreamValue, "color" | "shape" | "value" | "emittedAtMs">;
+  | Pick<StreamValue, "color" | "shape" | "value" | "kind" | "emittedAtMs">;
 
 type ValueSequenceProps = {
   label: string;
@@ -57,6 +57,7 @@ function ValueBadge({
             color: value.color,
             shape: value.shape,
             value: value.value,
+            kind: value.kind,
             emittedAtMs: value.emittedAtMs,
           }}
           value={value.value}
@@ -72,8 +73,12 @@ function ValueBadge({
 }
 
 function getStreamValuePreviewLabel(
-  value: Pick<StreamValue, "color" | "shape" | "value" | "emittedAtMs">
+  value: Pick<StreamValue, "color" | "shape" | "value" | "kind" | "emittedAtMs">
 ) {
+  if (value.kind === "error") {
+    return "ERR";
+  }
+
   const baseLabel = `${formatDisplayNumber(value.value)}, ${value.color}, ${value.shape}`;
 
   if (typeof value.emittedAtMs !== "number") {

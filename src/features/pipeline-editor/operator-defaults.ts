@@ -52,7 +52,7 @@ export const DEFAULT_DEBOUNCE_TIME_CONFIG: DebounceTimeOperatorConfig = {
 };
 
 export const DEFAULT_CATCH_ERROR_CONFIG: CatchErrorOperatorConfig = {
-  replacementValue: 0,
+  replacementValue: -1,
 };
 
 export const DEFAULT_DELAY_CONFIG: DelayOperatorConfig = {

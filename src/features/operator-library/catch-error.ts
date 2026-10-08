@@ -29,8 +29,8 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
       "Error v Rx streamu není běžná hodnota, ale terminální událost. Když nastane, původní stream se ukončí a už z něj nepřijdou žádné další hodnoty. Operátor catchError chybu zachytí a místo původního streamu připojí nový stream, který zde vrátí náhradní hodnotu -1.",
     usage: [
       "Používá se ve chvíli, kdy chyba nemá rozbít celou pipeline a má se převést na bezpečnou náhradní hodnotu.",
-      "Hodnoty před chybou projdou normálně, chyba se nahradí novým streamem a původní stream dál nepokračuje.",
-      "Na pořadí záleží: operátory za catchError uvidí i náhradní hodnotu, operátory před ním ji neuvidí.",
+      "Hodnoty před chybou projdou normálně. Jakmile je ale chyba zachycena, je původní stream ukončen a nahradí se novým streamem vytvořeným z catchError.",
+      "Na pořadí záleží. Operátory za catchError uvidí i hodnoty z náhradního streamu, operátory před ním ji neuvidí.",
     ],
     exampleCode: `source$.pipe(
   catchError(() => of(-1)) // Nahradí chybující stream novým streamem
@@ -49,7 +49,7 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
     ],
     visualizerTitle: "Ukázka catchError",
     visualizerDescription:
-      "Třetí událost je ERROR. catchError ukončený stream nahradí streamem s hodnotou -1; hodnoty za chybou už z původního streamu neprojdou.",
+      "Třetí událost je ERR. catchError ukončený stream nahradí streamem s hodnotou -1; hodnoty za chybou už z původního streamu neprojdou.",
     operators: [
       {
         id: "library-catch-error-default",
@@ -65,9 +65,8 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
       {
         id: "library-catch-error-error",
         kind: "error",
-        shape: "triangle",
+        shape: "square",
         color: "red",
-        label: "ERROR",
         value: 0,
       },
       {

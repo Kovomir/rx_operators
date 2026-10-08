@@ -26,7 +26,7 @@ const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
 const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
 const START_WITH_VALUES = Array.from({ length: 11 }, (_, value) => value) satisfies StartWithOperatorConfig["value"][];
 const DEBOUNCE_TIME_DURATIONS = [300, 500, 800, 1000] satisfies DebounceTimeOperatorConfig["durationMs"][];
-const CATCH_ERROR_REPLACEMENTS = [0, -1] satisfies CatchErrorOperatorConfig["replacementValue"][];
+const CATCH_ERROR_REPLACEMENTS = [-1] satisfies CatchErrorOperatorConfig["replacementValue"][];
 const DELAY_DURATIONS = [300, 500, 800, 1000] satisfies DelayOperatorConfig["durationMs"][];
 
 export function createSavedPlaygroundState(

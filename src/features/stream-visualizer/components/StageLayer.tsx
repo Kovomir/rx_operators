@@ -1,5 +1,5 @@
 import type {ReactNode} from "react";
-import {CircleOffIcon, ClockIcon, FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon,} from "lucide-react";
+import {ClockIcon, FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon, TriangleAlertIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
 
@@ -303,7 +303,7 @@ function OperatorStageIcon({ type, x, y }: OperatorStageIconProps) {
     case "catchError":
       return (
         <StageIconFrame x={x} y={y} className="fill-red-100">
-          <CircleOffIcon
+          <TriangleAlertIcon
             x={x + 7}
             y={y + 7}
             width={16}
