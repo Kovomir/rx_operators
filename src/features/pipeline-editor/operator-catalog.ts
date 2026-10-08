@@ -26,14 +26,14 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     description: "Propustí jen položky, které splní nastavenou podmínku.",
   },
   {
-    type: "skip",
-    label: "skip",
-    description: "Přeskočí zadaný počet prvních hodnot ve streamu.",
-  },
-  {
     type: "take",
     label: "take",
     description: "Propustí zadaný počet prvních hodnot ve streamu.",
+  },
+  {
+    type: "skip",
+    label: "skip",
+    description: "Přeskočí zadaný počet prvních hodnot ve streamu.",
   },
   {
     type: "distinctUntilChanged",
@@ -56,6 +56,11 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     description: "Akumuluje průběžný stav mezi hodnotami streamu.",
   },
   {
+    type: "delay",
+    label: "delay",
+    description: "Odloží každou hodnotu o nastavený čas.",
+  },
+  {
     type: "debounceTime",
     label: "debounceTime",
     description: "Propustí hodnotu až po krátkém tichu ve streamu.",
@@ -64,11 +69,6 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
     type: "catchError",
     label: "catchError",
     description: "Zachytí chybu a nahradí původní stream novým streamem.",
-  },
-  {
-    type: "delay",
-    label: "delay",
-    description: "Odloží každou hodnotu o nastavený čas.",
   },
 ];
 

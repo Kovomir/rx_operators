@@ -103,9 +103,9 @@ export const LEARNING_OPERATOR_ORDER = [
   "tap",
   "startWith",
   "scan",
+  "delay",
   "debounceTime",
   "catchError",
-  "delay",
 ] satisfies PipelineOperatorType[];
 
 export const LEARNING_OPERATORS = [
@@ -117,9 +117,9 @@ export const LEARNING_OPERATORS = [
   TAP_LEARNING_OPERATOR,
   START_WITH_LEARNING_OPERATOR,
   SCAN_LEARNING_OPERATOR,
+  DELAY_LEARNING_OPERATOR,
   DEBOUNCE_TIME_LEARNING_OPERATOR,
   CATCH_ERROR_LEARNING_OPERATOR,
-  DELAY_LEARNING_OPERATOR,
 ] satisfies LearningOperator[];
 
 export const TASKS_BY_OPERATOR = {
