@@ -5,6 +5,11 @@ import type { StreamValue } from "@/types/stream";
 import type { PipelineTraceSource } from "./pipeline-trace";
 
 export type SourceEmission = {
+  kind: "next";
+  source: PipelineTraceSource;
+  value: StreamValue;
+} | {
+  kind: "error";
   source: PipelineTraceSource;
   value: StreamValue;
 };
@@ -12,6 +17,7 @@ export type SourceEmission = {
 export type ManualSourceRuntime = {
   source$: Subject<SourceEmission>;
   emit: (value: StreamValue, source?: PipelineTraceSource) => void;
+  emitError: (value: StreamValue, source?: PipelineTraceSource) => void;
   complete: () => void;
 };
 
@@ -21,7 +27,10 @@ export function createManualSourceRuntime(): ManualSourceRuntime {
   return {
     source$,
     emit(value, source = "live") {
-      source$.next({ source, value });
+      source$.next({ kind: "next", source, value });
+    },
+    emitError(value, source = "live") {
+      source$.next({ kind: "error", source, value });
     },
     complete() {
       source$.complete();

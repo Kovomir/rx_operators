@@ -420,6 +420,11 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
           ...operator,
           config: { ...operator.config },
         };
+      case "catchError":
+        return {
+          ...operator,
+          config: { ...operator.config },
+        };
     }
   });
 }

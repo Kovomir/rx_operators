@@ -3,6 +3,7 @@ import { map, tap, type Observable } from "rxjs";
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
+import { createStreamError } from "./operator-semantics";
 import type { PipelineTraceRecorder } from "./pipeline-trace-recorder";
 import { buildTracedOperator } from "./pipeline-trace-operators";
 import { MAIN_STREAM_ID, type StreamId } from "./stream-identity";
@@ -26,11 +27,17 @@ export function buildRuntimePipeline({
       recorder.record({
         streamId,
         source: emission.source,
-        type: "source-next",
+        type: emission.kind === "error" ? "source-error" : "source-next",
         value: emission.value,
       });
     }),
-    map((emission) => emission.value)
+    map((emission) => {
+      if (emission.kind === "error") {
+        throw createStreamError(emission.value);
+      }
+
+      return emission.value;
+    })
   );
 
   for (const operator of operators) {

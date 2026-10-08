@@ -4,6 +4,8 @@ export { getOperatorExpressionPreview } from "./operator-catalog";
 export type {
   DebounceTimeOperatorConfig,
   DebounceTimePipelineOperator,
+  CatchErrorOperatorConfig,
+  CatchErrorPipelineOperator,
   DelayOperatorConfig,
   DelayPipelineOperator,
   DistinctUntilChangedOperatorConfig,

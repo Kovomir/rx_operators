@@ -18,6 +18,8 @@ import type {
 } from "./visual-trace-player-types";
 import {
   playOperatorEnterEvent,
+  playSourceCancelledEvent,
+  playSourceErrorEvent,
   playSourceNextEvent,
 } from "./visual-trace-source-events";
 import { playSubscriberNextEvent } from "./visual-trace-subscriber-events";
@@ -56,6 +58,10 @@ function playTraceEvent(args: PlayTraceEventArgs): VisualTracePlayerAction[] {
   switch (args.event.type) {
     case "source-next":
       return playSourceNextEvent({ ...args, event: args.event });
+    case "source-error":
+      return playSourceErrorEvent({ ...args, event: args.event });
+    case "source-cancelled":
+      return playSourceCancelledEvent({ ...args, event: args.event });
     case "operator-enter":
       return playOperatorEnterEvent({ ...args, event: args.event });
     case "operator-create":

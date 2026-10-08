@@ -1,5 +1,6 @@
 import {
   ClockIcon,
+  CircleOffIcon,
   FilterIcon,
   PauseIcon,
   PlusIcon,
@@ -84,6 +85,12 @@ export function OperatorIcon({ size = "sm", type }: OperatorIconProps) {
       return (
         <span className={cn(className, "bg-indigo-100 text-indigo-700")}>
           <TimerIcon className="size-4" />
+        </span>
+      );
+    case "catchError":
+      return (
+        <span className={cn(className, "bg-red-100 text-red-700")}>
+          <CircleOffIcon className="size-4" />
         </span>
       );
     case "delay":

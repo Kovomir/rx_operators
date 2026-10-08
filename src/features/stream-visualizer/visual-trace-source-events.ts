@@ -26,6 +26,11 @@ import type {
 const SOURCE_APPEAR_DURATION_MS = 500;
 
 type SourceNextEvent = Extract<PipelineTraceEvent, { type: "source-next" }>;
+type SourceErrorEvent = Extract<PipelineTraceEvent, { type: "source-error" }>;
+type SourceCancelledEvent = Extract<
+  PipelineTraceEvent,
+  { type: "source-cancelled" }
+>;
 type OperatorEnterEvent = Extract<PipelineTraceEvent, { type: "operator-enter" }>;
 
 export function playSourceNextEvent({
@@ -99,6 +104,79 @@ export function playSourceNextEvent({
         scale: 1,
         transitionDurationMs,
       },
+    },
+  ];
+}
+
+export function playSourceErrorEvent(args: {
+  elapsedMs: number;
+  event: SourceErrorEvent;
+  liveSourceMinStartGapMs?: number;
+  playbackSpeed: number;
+  runId: number;
+  stagePositionById: Map<string, StagePosition>;
+  state: VisualTracePlayerState;
+  streamLanes: StreamLane[];
+}): VisualTracePlayerAction[] {
+  return playSourceNextEvent({
+    ...args,
+    event: {
+      ...args.event,
+      type: "source-next",
+    },
+  });
+}
+
+export function playSourceCancelledEvent({
+  elapsedMs,
+  event,
+  liveSourceMinStartGapMs,
+  playbackSpeed,
+  runId,
+  stagePositionById,
+  state,
+  streamLanes,
+}: {
+  elapsedMs: number;
+  event: SourceCancelledEvent;
+  liveSourceMinStartGapMs?: number;
+  playbackSpeed: number;
+  runId: number;
+  stagePositionById: Map<string, StagePosition>;
+  state: VisualTracePlayerState;
+  streamLanes: StreamLane[];
+}): VisualTracePlayerAction[] {
+  return [
+    ...playSourceNextEvent({
+      elapsedMs,
+      event: {
+        ...event,
+        type: "source-next",
+      },
+      liveSourceMinStartGapMs,
+      playbackSpeed,
+      runId,
+      stagePositionById,
+      state,
+      streamLanes,
+    }),
+    {
+      type: "update-value",
+      atMs: elapsedMs + scaleDuration(SOURCE_APPEAR_DURATION_MS, playbackSpeed),
+      valueId: event.value.id,
+      update: {
+        status: "dropped",
+        opacity: 0,
+        scale: 0.75,
+        transitionDurationMs: scaleDuration(MAP_PULSE_MS, playbackSpeed),
+      },
+    },
+    {
+      type: "remove-value",
+      atMs:
+        elapsedMs +
+        scaleDuration(SOURCE_APPEAR_DURATION_MS + MAP_PULSE_MS, playbackSpeed),
+      valueId: event.value.id,
     },
   ];
 }

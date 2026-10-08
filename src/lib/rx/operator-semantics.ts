@@ -1,5 +1,6 @@
 import type {
   DebounceTimePipelineOperator,
+  CatchErrorPipelineOperator,
   DelayPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
@@ -13,6 +14,10 @@ export function applyMapOperator(
   streamValue: StreamValue,
   operator: MapPipelineOperator
 ): StreamValue {
+  if (doesMapOperatorThrow(streamValue, operator)) {
+    throw createStreamError(createErrorStreamValue(streamValue, operator.id));
+  }
+
   const { operation, operand } = operator.config;
 
   switch (operation) {
@@ -32,6 +37,49 @@ export function applyMapOperator(
         value: streamValue.value * operand,
       };
   }
+}
+
+export type StreamPipelineError = {
+  kind: "stream-error";
+  value: StreamValue;
+};
+
+export function doesMapOperatorThrow(
+  streamValue: StreamValue,
+  operator: MapPipelineOperator
+) {
+  return operator.config.throwOnValue === streamValue.value;
+}
+
+export function createErrorStreamValue(
+  streamValue: StreamValue,
+  namespace: string
+): StreamValue {
+  return {
+    ...streamValue,
+    id: `${namespace}-${streamValue.id}-error`,
+    kind: "error",
+    label: "ERROR",
+  };
+}
+
+export function createStreamError(value: StreamValue): StreamPipelineError {
+  return {
+    kind: "stream-error",
+    value,
+  };
+}
+
+export function isStreamPipelineError(
+  error: unknown
+): error is StreamPipelineError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "kind" in error &&
+    error.kind === "stream-error" &&
+    "value" in error
+  );
 }
 
 export function passesFilterOperator(
@@ -138,6 +186,18 @@ export function applyDebounceTimeOperator(
       emittedAtMs:
         getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
     }));
+}
+
+export function createCatchErrorReplacementValue(
+  operator: CatchErrorPipelineOperator,
+  errorValue?: StreamValue
+): StreamValue {
+  return {
+    id: `${operator.id}-replacement-${errorValue?.id ?? "value"}`,
+    shape: errorValue?.shape ?? "circle",
+    color: "green",
+    value: operator.config.replacementValue,
+  };
 }
 
 export function applyDelayOperator(

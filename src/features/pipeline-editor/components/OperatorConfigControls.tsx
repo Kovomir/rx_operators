@@ -165,6 +165,8 @@ export function OperatorConfigControls({
           onChange={onChange}
         />
       );
+    case "catchError":
+      return <NoConfigControls label={`náhrada ${operator.config.replacementValue}`} />;
     case "delay":
       return (
         <DelayConfigControls
