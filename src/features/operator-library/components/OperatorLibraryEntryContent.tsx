@@ -65,7 +65,12 @@ function OperatorExplanation({
             {operator.usage.map((item) => (
               <li key={item} className="flex gap-2">
                 <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                <span>{item}</span>
+                <span>
+                  <OperatorUsageText
+                    item={item}
+                    operatorType={operator.type}
+                  />
+                </span>
               </li>
             ))}
           </ul>
@@ -74,6 +79,32 @@ function OperatorExplanation({
 
       <OperatorExample operator={operator} />
     </div>
+  );
+}
+
+function OperatorUsageText({
+  item,
+  operatorType,
+}: {
+  item: string;
+  operatorType: OperatorLibraryEntry["type"];
+}) {
+  if (operatorType !== "tap" || !item.includes("Ctrl + Shift + I")) {
+    return item;
+  }
+
+  return (
+    <>
+      Konzoli otevřete pomocí{" "}
+      <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+        Ctrl + Shift + I
+      </kbd>
+      , případně klávesou{" "}
+      <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+        F12
+      </kbd>
+      .
+    </>
   );
 }
 

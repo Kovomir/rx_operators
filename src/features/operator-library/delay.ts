@@ -50,7 +50,7 @@ export const DELAY_OPERATOR_LIBRARY_ENTRY: DelayOperatorLibraryEntry = {
   ],
   visualizerTitle: "Ukázka delay",
   visualizerDescription:
-    "Delay nechá každou hodnotu čekat u operátoru 9999 ms a potom ji beze změny pošle dál.",
+    "Delay nechá každou hodnotu čekat u operátoru 10 sekund a potom ji beze změny pošle dál.",
   operators: [
     {
       id: "library-delay-9999",

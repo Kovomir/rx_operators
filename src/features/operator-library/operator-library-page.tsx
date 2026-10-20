@@ -49,7 +49,7 @@ export function OperatorLibraryPage() {
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Knihovna základních Rx operátorů. Zjistěte, co jednotlivé operátory
-          dělají a jaké mají typické použití.
+          dělají a jak se typicky používají.
         </p>
       </section>
 

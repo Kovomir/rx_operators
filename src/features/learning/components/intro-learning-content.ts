@@ -39,7 +39,7 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
     points: [
       {
         label: "Představa",
-        text: "Pipeline si představte jako potrubí: hodnoty vstoupí na začátku, postupují jedním směrem a cestou mohou projít úpravami.",
+        text: "Pipeline si představte jako vodovodní potrubí. Hodnoty vystupují ze zdroje, postupují jedním směrem a cestou protékají přes operátory, kde mohou projít úpravami.",
       },
       {
         label: "V aplikaci",
@@ -60,12 +60,13 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
       {
         label: "Co to znamená",
         text: [
-          { text: "V Reactive Extensions je zdroj typicky reprezentován jako " },
           {
-            text: "Pozorovatelný zdroj (Observable)",
+            text: "Observable (pozorovatelný zdroj)",
             href: "https://reactivex.io/documentation/observable.html",
           },
-          { text: ", tedy objekt, který umí posílat hodnoty dál." },
+          {
+            text: " je objekt, který postupně posílá hodnoty do datového proudu.",
+          },
         ],
       },
       {
@@ -120,10 +121,12 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
         label: "Co to znamená",
         text: [
           {
-            text: "Odběratel je koncový příjemce ReactiveX Observable. ",
+            text: "Observer (odběratel)",
             href: "https://reactivex.io/documentation/observable.html",
           },
-          { text: "Dostane jen hodnoty, které prošly celou pipeline." },
+          {
+            text: " je objekt, který přijímá hodnoty z Observable a určuje, jak na ně aplikace zareaguje. V pipeline dostává hodnoty po zpracování předchozími operátory.",
+          },
         ],
       },
       {

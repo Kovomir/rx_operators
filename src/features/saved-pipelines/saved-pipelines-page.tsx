@@ -118,7 +118,7 @@ export function SavedPipelinesPage() {
             Uložené projekty
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Navraťte se k rozpracované práci.
+            Pokračujte v rozpracované práci.
           </p>
         </div>
 
@@ -226,7 +226,7 @@ function EmptySavedPipelines() {
         </span>
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-foreground">
-            Zatím nemáte uloženou žádnou pipeline
+            Zatím nemáte uloženou žádnou pipeline.
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Pipeline uložíte přímo z playgroundu.

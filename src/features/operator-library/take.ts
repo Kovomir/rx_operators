@@ -48,7 +48,7 @@ export const TAKE_OPERATOR_LIBRARY_ENTRY: TakeOperatorLibraryEntry = {
   ],
   visualizerTitle: "Ukázka take",
   visualizerDescription:
-    "Take propustí první tři hodnoty. Další hodnoty už do výstupu nepokračují.",
+    "Take propustí první tři hodnoty. Další hodnoty jsou odfiltrovány.",
   operators: [
     {
       id: "library-take-three",

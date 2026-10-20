@@ -36,7 +36,6 @@ export type OutputTestTaskDefinition = {
   taskNumber: number;
   title: string;
   taskType?: "output" | "behavior";
-  description?: string;
   inputSummary?: string;
   outputSummary?: string;
   sourceValues: StreamValue[];
@@ -47,7 +46,6 @@ export type OutputTestTaskDefinition = {
   expectedOperatorTypes?: PipelineOperatorType[];
   operatorRequirements?: PipelineOperatorRequirement[];
   expectedTapValues?: number[];
-  expectedTapValuesLabel?: string;
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];
   enabledOperatorTypes?: PipelineOperatorType[];

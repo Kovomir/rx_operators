@@ -26,7 +26,7 @@ export const LEARNING_SECTIONS: LearningSection[] = [
   {
     id: INTRO_LEARNING_SECTION_ID,
     label: "Úvod",
-    description: "Základní části Rx pipeline a průchod hodnot streamem.",
+    description: "Úvod do Rx pipeline a jejích základních částí.",
     kind: "intro",
     tasks: [INTRO_LEARNING_TASK],
   },

@@ -48,7 +48,7 @@ export const SKIP_OPERATOR_LIBRARY_ENTRY: SkipOperatorLibraryEntry = {
   ],
   visualizerTitle: "Ukázka skip",
   visualizerDescription:
-    "Skip přeskočí první dvě hodnoty. Další hodnoty už pokračují k subscriberovi.",
+    "Skip přeskočí první dvě hodnoty. Další hodnoty pustí dále beze změny.",
   operators: [
     {
       id: "library-skip-two",

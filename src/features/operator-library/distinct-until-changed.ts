@@ -50,7 +50,7 @@ export const DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY: DistinctUntilChanged
     ],
     visualizerTitle: "Ukázka distinctUntilChanged",
     visualizerDescription:
-      "Sousední duplicity jsou odfiltrovány. Hodnota 1 se ale po hodnotě 3 může objevit znovu.",
+      "Sousední duplicity jsou odfiltrovány.",
     operators: [
       {
         id: "library-distinct-until-changed",
