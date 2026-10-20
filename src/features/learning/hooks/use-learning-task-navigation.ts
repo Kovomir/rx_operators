@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import {
   getNextIncompleteLearningTaskTarget,
-  INTRO_LEARNING_SECTION_ID,
   type LearningSectionTask,
 } from "../learning-tasks";
 
@@ -26,7 +25,7 @@ export function useLearningTaskNavigation({
   const initialSectionId =
     navigationState?.activeSectionId ??
     navigationState?.activeOperatorType ??
-    INTRO_LEARNING_SECTION_ID;
+    null;
   const [activeSectionId, setActiveSectionId] = useState<string | null>(
     initialSectionId
   );

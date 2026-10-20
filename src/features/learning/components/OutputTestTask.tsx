@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { InfoBox } from "@/components/ui/info-box";
 import { PipelineEditor, type PipelineOperator } from "@/features/pipeline-editor";
 import {
   PipelineVisualizer,
@@ -138,11 +139,6 @@ export function OutputTestTask({
         <div className="min-w-0 border-l-0 pt-0 lg:border-l lg:pl-4">
           <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
           <div className="mt-3 grid gap-3">
-            {task.description && (
-              <p className="text-sm leading-6 text-muted-foreground">
-                {task.description}
-              </p>
-            )}
             {task.inputSummary && (
               <TaskSummaryLine label="Vstup" value={task.inputSummary} />
             )}
@@ -152,17 +148,30 @@ export function OutputTestTask({
             {!task.inputSummary && (
               <ValueSequence label="Vstup" values={sourceValuesForDisplay} />
             )}
-            {task.expectedOutputValues && (
+            {task.expectedOutputValues && !task.expectedTapValues && (
               <ValueSequence
                 label={task.expectedOutputLabel ?? "Očekávaný výstup"}
                 values={task.expectedOutputValues}
               />
             )}
             {task.expectedTapValues && (
-              <ValueSequence
-                label={task.expectedTapValuesLabel ?? "Výpis tap(console.log)"}
-                values={task.expectedTapValues}
-              />
+              <>
+                <ValueSequence
+                  label="Výpis v konzoli"
+                  values={task.expectedTapValues}
+                />
+                <InfoBox>
+                  Konzoli otevřete pomocí{" "}
+                  <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+                    Ctrl + Shift + I
+                  </kbd>{" "}
+                  nebo klávesy{" "}
+                  <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+                    F12
+                  </kbd>
+                  .
+                </InfoBox>
+              </>
             )}
           </div>
         </div>

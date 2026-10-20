@@ -25,7 +25,7 @@ export const TAP_OPERATOR_LIBRARY_ENTRY: TapOperatorLibraryEntry = {
   label: "tap",
   description: "Vedlejší efekt bez změny hodnot ve streamu.",
   summary:
-    "Operátor tap provede vedlejší efekt pro každou hodnotu, ale samotnou hodnotu nemění. V této aplikaci používá tap(console.log), takže hodnoty uvidíte ve vývojářské konzoli po spuštění vizualizace.",
+    "Operátor tap provede vedlejší efekt pro každou hodnotu, ale samotnou hodnotu nemění. V této aplikaci se používá tap(console.log), takže hodnoty uvidíte ve vývojářské konzoli po spuštění vizualizace.",
   usage: [
     "Používá se hlavně pro ladění a pozorování hodnot uvnitř pipeline.",
     "Hodnota pokračuje dál ve stejné podobě, v jaké do tap vstoupila.",
@@ -48,7 +48,7 @@ export const TAP_OPERATOR_LIBRARY_ENTRY: TapOperatorLibraryEntry = {
   ],
   visualizerTitle: "Ukázka tap",
   visualizerDescription:
-    "Tap vypíše každou hodnotu do konzole a ve vizualizaci ji krátce zvýrazní. Hodnoty do subscriberu pokračují beze změny.",
+    "Tap vyvolá vedlejší efekt, zatímco hodnoty dále pokračují beze změny.",
   operators: [
     {
       id: "library-tap-console-log",

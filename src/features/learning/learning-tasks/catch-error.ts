@@ -16,7 +16,7 @@ export type CatchErrorOutputTestTaskDefinition = OutputTestTaskDefinition & {
 export const CATCH_ERROR_LEARNING_OPERATOR: CatchErrorLearningOperator = {
   type: "catchError",
   label: "catchError",
-  description: "Zachytí terminální chybu a nahradí stream náhradní hodnotou.",
+  description: "Ošetření chyb.",
 };
 
 const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
@@ -106,8 +106,6 @@ export const CATCH_ERROR_TASKS: CatchErrorOutputTestTaskDefinition[] = [
     id: "catch-error-terminal-event",
     taskNumber: 1,
     title: "Zachyťte chybu ve streamu",
-    description:
-      "Propusťte jen zelené trojúhelníky se sudou hodnotou, vynásobte je pěti a chybu nahraďte hodnotou -1.",
     sourceValues: CATCH_ERROR_TASK_SOURCE_VALUES,
     sourceDisplayValues: CATCH_ERROR_TASK_DISPLAY_VALUES,
     expectedOutputValues: [

@@ -78,7 +78,8 @@ export function LearningTasksPage() {
           Výukové úlohy
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Vyberte část výuky a řešte navazující úlohy.
+          Projděte si výuková témata a získané znalosti si procvičte v
+          interaktivních úlohách.
         </p>
       </section>
 
