@@ -41,6 +41,30 @@ const DEBOUNCE_BEFORE_DISTINCT_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const IMMEDIATE_INITIAL_DELAYED_DATA_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-immediate-initial-source-1",
+    shape: "circle",
+    color: "red",
+    value: 1,
+    emittedAtMs: 0,
+  },
+  {
+    id: "challenge-immediate-initial-source-2",
+    shape: "square",
+    color: "blue",
+    value: 2,
+    emittedAtMs: 250,
+  },
+  {
+    id: "challenge-immediate-initial-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 3,
+    emittedAtMs: 500,
+  },
+];
+
 export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   {
     id: "challenge-debounce-before-distinct",
@@ -55,6 +79,43 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
         color: "green",
         value: 30,
         emittedAtMs: 1300,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 3,
+  },
+  {
+    id: "challenge-immediate-initial-delayed-data",
+    taskNumber: 2,
+    taskLabelPrefix: "Výzva",
+    difficulty: "easy",
+    title: "",
+    sourceValues: IMMEDIATE_INITIAL_DELAYED_DATA_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "circle",
+        color: "green",
+        value: 10,
+        emittedAtMs: 0,
+      },
+      {
+        shape: "circle",
+        color: "red",
+        value: 2,
+        emittedAtMs: 1000,
+      },
+      {
+        shape: "square",
+        color: "blue",
+        value: 4,
+        emittedAtMs: 1250,
+      },
+      {
+        shape: "triangle",
+        color: "green",
+        value: 6,
+        emittedAtMs: 1500,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,

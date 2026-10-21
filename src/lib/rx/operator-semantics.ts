@@ -107,6 +107,7 @@ export function createStartWithValue(
     shape: "circle",
     color: "green",
     value: operator.config.value,
+    emittedAtMs: 0,
   };
 }
 
