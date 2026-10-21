@@ -56,6 +56,57 @@ const FIRST_LIMIT_MARKERS_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const RELEVANT_EVEN_SUBTOTALS_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-even-subtotals-source-1",
+    shape: "circle",
+    color: "red",
+    value: 99,
+  },
+  {
+    id: "challenge-even-subtotals-source-2",
+    shape: "square",
+    color: "blue",
+    value: 2,
+  },
+  {
+    id: "challenge-even-subtotals-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 0,
+  },
+  {
+    id: "challenge-even-subtotals-source-4",
+    shape: "circle",
+    color: "blue",
+    value: 2,
+  },
+  {
+    id: "challenge-even-subtotals-source-5",
+    shape: "square",
+    color: "red",
+    value: 1,
+  },
+  {
+    id: "challenge-even-subtotals-source-6",
+    shape: "triangle",
+    color: "green",
+    value: 1,
+  },
+  {
+    id: "challenge-even-subtotals-source-7",
+    shape: "circle",
+    color: "red",
+    value: 0,
+  },
+  {
+    id: "challenge-even-subtotals-source-8",
+    shape: "square",
+    color: "blue",
+    value: 2,
+  },
+];
+
 const SKIP_AFTER_CALCULATION_SOURCE_VALUES: StreamValue[] = [
   {
     id: "challenge-skip-after-calculation-source-1",
@@ -295,6 +346,34 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
         shape: "triangle",
         color: "green",
         value: 22,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 5,
+  },
+  {
+    id: "challenge-relevant-even-subtotals",
+    taskNumber: 6,
+    taskLabelPrefix: "Výzva",
+    difficulty: "hard",
+    title: "",
+    sourceValues: RELEVANT_EVEN_SUBTOTALS_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "square",
+        color: "blue",
+        value: 2,
+      },
+      {
+        shape: "circle",
+        color: "blue",
+        value: 4,
+      },
+      {
+        shape: "triangle",
+        color: "green",
+        value: 6,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
