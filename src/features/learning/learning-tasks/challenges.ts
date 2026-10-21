@@ -216,6 +216,67 @@ const ERROR_RECOVERY_WITHOUT_DUPLICATE_STATE_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const DISTINCT_RUNNING_TOTALS_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-distinct-running-totals-source-1",
+    shape: "circle",
+    color: "red",
+    value: 2,
+  },
+  {
+    id: "challenge-distinct-running-totals-source-2",
+    shape: "square",
+    color: "blue",
+    value: 0,
+  },
+  {
+    id: "challenge-distinct-running-totals-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 3,
+  },
+  {
+    id: "challenge-distinct-running-totals-source-4",
+    shape: "square",
+    color: "red",
+    value: 0,
+  },
+  {
+    id: "challenge-distinct-running-totals-source-5",
+    shape: "circle",
+    color: "blue",
+    value: 0,
+  },
+  {
+    id: "challenge-distinct-running-totals-source-6",
+    shape: "square",
+    color: "blue",
+    value: 4,
+  },
+];
+
+const TRANSFORM_ERROR_REPLACEMENT_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-transform-error-replacement-source-1",
+    shape: "circle",
+    color: "red",
+    value: 2,
+  },
+  {
+    id: "challenge-transform-error-replacement-source-2",
+    shape: "square",
+    color: "blue",
+    value: 4,
+  },
+  {
+    id: "challenge-transform-error-replacement-source-error",
+    kind: "error",
+    shape: "triangle",
+    color: "red",
+    value: 0,
+  },
+];
+
 export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   {
     id: "challenge-debounce-before-distinct",
@@ -274,8 +335,64 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     maxOperators: 3,
   },
   {
-    id: "challenge-first-limit-markers",
+    id: "challenge-distinct-running-totals",
     taskNumber: 3,
+    taskLabelPrefix: "Výzva",
+    difficulty: "easy",
+    title: "",
+    sourceValues: DISTINCT_RUNNING_TOTALS_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "circle",
+        color: "red",
+        value: 2,
+      },
+      {
+        shape: "triangle",
+        color: "green",
+        value: 5,
+      },
+      {
+        shape: "square",
+        color: "blue",
+        value: 9,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 2,
+  },
+  {
+    id: "challenge-transform-error-replacement",
+    taskNumber: 4,
+    taskLabelPrefix: "Výzva",
+    difficulty: "easy",
+    title: "",
+    sourceValues: TRANSFORM_ERROR_REPLACEMENT_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "circle",
+        color: "red",
+        value: 3,
+      },
+      {
+        shape: "square",
+        color: "blue",
+        value: 5,
+      },
+      {
+        shape: "triangle",
+        color: "green",
+        value: 0,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 2,
+  },
+  {
+    id: "challenge-first-limit-markers",
+    taskNumber: 5,
     taskLabelPrefix: "Výzva",
     difficulty: "medium",
     title: "",
@@ -298,7 +415,7 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   },
   {
     id: "challenge-skip-after-calculation",
-    taskNumber: 4,
+    taskNumber: 6,
     taskLabelPrefix: "Výzva",
     difficulty: "medium",
     title: "",
@@ -321,7 +438,7 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   },
   {
     id: "challenge-error-recovery-without-duplicate-state",
-    taskNumber: 5,
+    taskNumber: 7,
     taskLabelPrefix: "Výzva",
     difficulty: "hard",
     title: "",
@@ -354,7 +471,7 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   },
   {
     id: "challenge-relevant-even-subtotals",
-    taskNumber: 6,
+    taskNumber: 8,
     taskLabelPrefix: "Výzva",
     difficulty: "hard",
     title: "",
