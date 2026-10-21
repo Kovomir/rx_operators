@@ -17,6 +17,45 @@ const ALL_CHALLENGE_OPERATOR_TYPES = [
   "catchError",
 ] satisfies PipelineOperatorType[];
 
+const FIRST_LIMIT_MARKERS_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-first-limit-marker-source-1",
+    shape: "circle",
+    color: "red",
+    value: 3,
+  },
+  {
+    id: "challenge-first-limit-marker-source-2",
+    shape: "square",
+    color: "blue",
+    value: 2,
+  },
+  {
+    id: "challenge-first-limit-marker-source-3",
+    shape: "triangle",
+    color: "red",
+    value: 4,
+  },
+  {
+    id: "challenge-first-limit-marker-source-4",
+    shape: "circle",
+    color: "green",
+    value: 1,
+  },
+  {
+    id: "challenge-first-limit-marker-source-5",
+    shape: "square",
+    color: "green",
+    value: 5,
+  },
+  {
+    id: "challenge-first-limit-marker-source-6",
+    shape: "triangle",
+    color: "green",
+    value: 2,
+  },
+];
+
 const DEBOUNCE_BEFORE_DISTINCT_SOURCE_VALUES: StreamValue[] = [
   {
     id: "challenge-debounce-before-distinct-source-1",
@@ -116,6 +155,29 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
         color: "green",
         value: 6,
         emittedAtMs: 1500,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 3,
+  },
+  {
+    id: "challenge-first-limit-markers",
+    taskNumber: 3,
+    taskLabelPrefix: "Výzva",
+    difficulty: "medium",
+    title: "",
+    sourceValues: FIRST_LIMIT_MARKERS_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "circle",
+        color: "green",
+        value: 10,
+      },
+      {
+        shape: "square",
+        color: "green",
+        value: 15,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
