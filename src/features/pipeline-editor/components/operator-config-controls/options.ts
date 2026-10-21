@@ -43,6 +43,7 @@ export const TIME_DURATION_OPTIONS: SelectOption<number>[] = [
 ];
 
 export const DELAY_DURATION_OPTIONS: SelectOption<number>[] = [
+  { value: 500, label: "500 ms" },
   { value: 1000, label: "1000 ms" },
   { value: 3000, label: "3000 ms" },
   { value: 5000, label: "5000 ms" },

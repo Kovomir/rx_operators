@@ -1,6 +1,7 @@
 import { OPERATOR_LIBRARY } from "@/features/operator-library";
 
 import { LEARNING_OPERATORS, TASKS_BY_OPERATOR } from "./operators";
+import { CHALLENGE_TASKS } from "./challenges";
 import type {
   IntroLearningTaskDefinition,
   LearningSection,
@@ -45,6 +46,16 @@ export const LEARNING_SECTIONS: LearningSection[] = [
       })),
     ],
   })),
+  {
+    id: "challenges",
+    label: "Výzvy",
+    description: "Složitější úlohy pro procvičení kombinace naučených operátorů.",
+    kind: "challenge-group",
+    tasks: CHALLENGE_TASKS.map((task) => ({
+      ...task,
+      kind: "output-test" as const,
+    })),
+  },
 ];
 
 export const LEARNING_TASK_IDS = LEARNING_SECTIONS.flatMap((section) =>

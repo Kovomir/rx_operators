@@ -34,6 +34,8 @@ export type PipelineOperatorRequirement =
 export type OutputTestTaskDefinition = {
   id: string;
   taskNumber: number;
+  taskLabelPrefix?: string;
+  difficulty?: "easy" | "medium" | "hard";
   title: string;
   taskType?: "output" | "behavior";
   inputSummary?: string;

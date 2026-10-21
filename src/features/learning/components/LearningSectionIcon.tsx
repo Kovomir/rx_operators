@@ -1,4 +1,4 @@
-import { BookOpenIcon } from "lucide-react";
+import { BookOpenIcon, SwordsIcon } from "lucide-react";
 
 import { OperatorIcon } from "@/features/pipeline-editor";
 
@@ -9,6 +9,14 @@ export function LearningSectionIcon({
 }: {
   section: LearningSection;
 }) {
+  if (section.kind === "challenge-group") {
+    return (
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+        <SwordsIcon className="size-4" />
+      </span>
+    );
+  }
+
   if (!section.operatorType) {
     return (
       <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">

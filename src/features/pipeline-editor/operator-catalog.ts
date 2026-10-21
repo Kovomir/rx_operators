@@ -38,7 +38,7 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
   {
     type: "distinctUntilChanged",
     label: "distinctUntilChanged",
-    description: "Zahodí jen sousední duplicitní hodnoty.",
+    description: "Zahodí sousední duplicitní hodnoty.",
   },
   {
     type: "tap",
