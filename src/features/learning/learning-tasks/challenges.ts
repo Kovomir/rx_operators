@@ -277,6 +277,128 @@ const TRANSFORM_ERROR_REPLACEMENT_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const CLEANED_EVEN_VALUES_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-cleaned-even-values-source-1",
+    shape: "circle",
+    color: "red",
+    value: 1,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-2",
+    shape: "square",
+    color: "blue",
+    value: 1,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 2,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-4",
+    shape: "circle",
+    color: "red",
+    value: 2,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-5",
+    shape: "square",
+    color: "blue",
+    value: 3,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-6",
+    shape: "triangle",
+    color: "red",
+    value: 4,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-7",
+    shape: "square",
+    color: "green",
+    value: 4,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-8",
+    shape: "circle",
+    color: "blue",
+    value: 6,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-9",
+    shape: "triangle",
+    color: "green",
+    value: 7,
+  },
+  {
+    id: "challenge-cleaned-even-values-source-10",
+    shape: "square",
+    color: "red",
+    value: 8,
+  },
+];
+
+const STABLE_SENSOR_READINGS_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-stable-sensor-readings-source-1",
+    shape: "circle",
+    color: "red",
+    value: 9,
+    emittedAtMs: 0,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-2",
+    shape: "square",
+    color: "blue",
+    value: 8,
+    emittedAtMs: 200,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-3",
+    shape: "circle",
+    color: "red",
+    value: 5,
+    emittedAtMs: 1200,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-4",
+    shape: "triangle",
+    color: "green",
+    value: 6,
+    emittedAtMs: 1400,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-5",
+    shape: "square",
+    color: "blue",
+    value: 7,
+    emittedAtMs: 1600,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-6",
+    shape: "circle",
+    color: "green",
+    value: 4,
+    emittedAtMs: 2600,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-7",
+    shape: "triangle",
+    color: "red",
+    value: 8,
+    emittedAtMs: 2800,
+  },
+  {
+    id: "challenge-stable-sensor-readings-source-8",
+    shape: "circle",
+    color: "blue",
+    value: 3,
+    emittedAtMs: 3800,
+  },
+];
+
 export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   {
     id: "challenge-debounce-before-distinct",
@@ -437,8 +559,61 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     maxOperators: 4,
   },
   {
-    id: "challenge-error-recovery-without-duplicate-state",
+    id: "challenge-cleaned-even-values",
     taskNumber: 7,
+    taskLabelPrefix: "Výzva",
+    difficulty: "medium",
+    title: "",
+    sourceValues: CLEANED_EVEN_VALUES_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "triangle",
+        color: "green",
+        value: 6,
+      },
+      {
+        shape: "triangle",
+        color: "red",
+        value: 12,
+      },
+      {
+        shape: "circle",
+        color: "blue",
+        value: 18,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 4,
+  },
+  {
+    id: "challenge-stable-sensor-readings",
+    taskNumber: 8,
+    taskLabelPrefix: "Výzva",
+    difficulty: "medium",
+    title: "",
+    sourceValues: STABLE_SENSOR_READINGS_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "square",
+        color: "blue",
+        value: 14,
+        emittedAtMs: 2100,
+      },
+      {
+        shape: "triangle",
+        color: "red",
+        value: 16,
+        emittedAtMs: 3300,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 4,
+  },
+  {
+    id: "challenge-error-recovery-without-duplicate-state",
+    taskNumber: 9,
     taskLabelPrefix: "Výzva",
     difficulty: "hard",
     title: "",
@@ -471,7 +646,7 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   },
   {
     id: "challenge-relevant-even-subtotals",
-    taskNumber: 8,
+    taskNumber: 10,
     taskLabelPrefix: "Výzva",
     difficulty: "hard",
     title: "",
