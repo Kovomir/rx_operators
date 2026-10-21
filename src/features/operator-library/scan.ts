@@ -53,7 +53,6 @@ export const SCAN_OPERATOR_LIBRARY_ENTRY: ScanOperatorLibraryEntry = {
     {
       id: "library-scan-sum",
       type: "scan",
-      config: {},
     },
   ],
   sourceValues: [

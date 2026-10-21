@@ -1,13 +1,10 @@
 import type {
   DebounceTimeOperatorConfig,
-  CatchErrorOperatorConfig,
   DelayOperatorConfig,
-  DistinctUntilChangedOperatorConfig,
   FilterOperatorConfig,
   MapOperatorConfig,
   PipelineOperator,
   PipelineOperatorType,
-  ScanOperatorConfig,
   SkipOperatorConfig,
   StartWithOperatorConfig,
   TapOperatorConfig,
@@ -34,9 +31,6 @@ export const DEFAULT_TAKE_CONFIG: TakeOperatorConfig = {
   count: 1,
 };
 
-export const DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG: DistinctUntilChangedOperatorConfig =
-  {};
-
 export const DEFAULT_TAP_CONFIG: TapOperatorConfig = {
   effect: "consoleLog",
 };
@@ -45,14 +39,8 @@ export const DEFAULT_START_WITH_CONFIG: StartWithOperatorConfig = {
   value: 0,
 };
 
-export const DEFAULT_SCAN_CONFIG: ScanOperatorConfig = {};
-
 export const DEFAULT_DEBOUNCE_TIME_CONFIG: DebounceTimeOperatorConfig = {
   durationMs: 500,
-};
-
-export const DEFAULT_CATCH_ERROR_CONFIG: CatchErrorOperatorConfig = {
-  replacementValue: -1,
 };
 
 export const DEFAULT_DELAY_CONFIG: DelayOperatorConfig = {
@@ -93,12 +81,6 @@ export function createDefaultPipelineOperator(
         type,
         config: { ...DEFAULT_TAKE_CONFIG },
       };
-    case "distinctUntilChanged":
-      return {
-        id,
-        type,
-        config: { ...DEFAULT_DISTINCT_UNTIL_CHANGED_CONFIG },
-      };
     case "tap":
       return {
         id,
@@ -111,12 +93,6 @@ export function createDefaultPipelineOperator(
         type,
         config: { ...DEFAULT_START_WITH_CONFIG },
       };
-    case "scan":
-      return {
-        id,
-        type,
-        config: { ...DEFAULT_SCAN_CONFIG },
-      };
     case "debounceTime":
       return {
         id,
@@ -124,11 +100,9 @@ export function createDefaultPipelineOperator(
         config: { ...DEFAULT_DEBOUNCE_TIME_CONFIG },
       };
     case "catchError":
-      return {
-        id,
-        type,
-        config: { ...DEFAULT_CATCH_ERROR_CONFIG },
-      };
+    case "scan":
+    case "distinctUntilChanged":
+      return { id, type };
     case "delay":
       return {
         id,

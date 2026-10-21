@@ -55,7 +55,6 @@ export const DISTINCT_UNTIL_CHANGED_OPERATOR_LIBRARY_ENTRY: DistinctUntilChanged
       {
         id: "library-distinct-until-changed",
         type: "distinctUntilChanged",
-        config: {},
       },
     ],
     sourceValues: [

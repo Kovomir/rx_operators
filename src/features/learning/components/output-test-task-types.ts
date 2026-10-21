@@ -25,10 +25,6 @@ export type PipelineOperatorRequirement =
   | {
       type: "debounceTime";
       durationMs: number;
-    }
-  | {
-      type: "catchError";
-      replacementValue: number;
     };
 
 export type OutputTestTaskDefinition = {

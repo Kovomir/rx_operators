@@ -1,6 +1,5 @@
 import type {
   DebounceTimeOperatorConfig,
-  CatchErrorOperatorConfig,
   DelayOperatorConfig,
   FilterPipelineOperator,
   FilterTarget,
@@ -26,7 +25,6 @@ const STREAM_VALUE_KINDS = ["odd", "even"] satisfies StreamValueKind[];
 const TAP_EFFECTS = ["consoleLog"] satisfies TapOperatorConfig["effect"][];
 const START_WITH_VALUES = Array.from({ length: 11 }, (_, value) => value) satisfies StartWithOperatorConfig["value"][];
 const DEBOUNCE_TIME_DURATIONS = [300, 500, 800, 1000] satisfies DebounceTimeOperatorConfig["durationMs"][];
-const CATCH_ERROR_REPLACEMENTS = [-1] satisfies CatchErrorOperatorConfig["replacementValue"][];
 const DELAY_DURATIONS = [300, 500, 800, 1000] satisfies DelayOperatorConfig["durationMs"][];
 
 export function createSavedPlaygroundState(
@@ -82,7 +80,7 @@ function parsePipelineOperator(value: unknown): PipelineOperator | null {
     case "debounceTime":
       return parseDebounceTimePipelineOperator(value.id, value.config);
     case "catchError":
-      return parseCatchErrorPipelineOperator(value.id, value.config);
+      return parseNoConfigPipelineOperator(value.id, "catchError");
     case "delay":
       return parseDelayPipelineOperator(value.id, value.config);
     case "tap":
@@ -172,12 +170,11 @@ function parseCountPipelineOperator(
 
 function parseNoConfigPipelineOperator(
   id: string,
-  type: "distinctUntilChanged" | "scan"
+  type: "distinctUntilChanged" | "scan" | "catchError"
 ): PipelineOperator {
   return {
     id,
     type,
-    config: {},
   };
 }
 
@@ -252,26 +249,6 @@ function parseDelayPipelineOperator(
   };
 }
 
-function parseCatchErrorPipelineOperator(
-  id: string,
-  config: unknown
-): PipelineOperator | null {
-  if (
-    !isRecord(config) ||
-    !isOneOfNumber(config.replacementValue, CATCH_ERROR_REPLACEMENTS)
-  ) {
-    return null;
-  }
-
-  return {
-    id,
-    type: "catchError",
-    config: {
-      replacementValue: config.replacementValue,
-    },
-  };
-}
-
 function clonePipelineOperators(operators: PipelineOperator[]) {
   return operators.map((operator) => {
     switch (operator.type) {
@@ -298,9 +275,10 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
         };
       case "distinctUntilChanged":
       case "scan":
+      case "catchError":
         return {
-          ...operator,
-          config: {},
+          id: operator.id,
+          type: operator.type,
         };
       case "tap":
         return {
@@ -314,11 +292,6 @@ function clonePipelineOperators(operators: PipelineOperator[]) {
         };
       case "debounceTime":
       case "delay":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
-      case "catchError":
         return {
           ...operator,
           config: { ...operator.config },
