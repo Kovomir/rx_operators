@@ -68,7 +68,7 @@ export const OPERATOR_CATALOG: OperatorCatalogItem[] = [
   {
     type: "catchError",
     label: "catchError",
-    description: "Zachytí chybu a nahradí původní stream novým streamem.",
+    description: "Zachytí chybu a přejde na náhradní stream s hodnotou -1.",
   },
 ];
 
@@ -126,7 +126,7 @@ export function getOperatorExpressionPreview(operator: PipelineOperator) {
     case "debounceTime":
       return `debounceTime(${operator.config.durationMs})`;
     case "catchError":
-      return `catchError(${operator.config.replacementValue})`;
+      return "catchError(-1)";
     case "delay":
       return `delay(${operator.config.durationMs})`;
   }

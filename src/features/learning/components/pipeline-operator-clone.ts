@@ -51,15 +51,11 @@ export function clonePipelineOperators(
           config: { ...operator.config },
         };
       case "catchError":
-        return {
-          ...operator,
-          config: { ...operator.config },
-        };
       case "distinctUntilChanged":
       case "scan":
         return {
-          ...operator,
-          config: {},
+          id: operator.id,
+          type: operator.type,
         };
     }
   });

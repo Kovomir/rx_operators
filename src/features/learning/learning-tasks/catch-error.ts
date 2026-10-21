@@ -148,7 +148,6 @@ export const CATCH_ERROR_TASKS: CatchErrorOutputTestTaskDefinition[] = [
         operation: "multiply",
         operand: 5,
       },
-      { type: "catchError", replacementValue: -1 },
     ],
     showSourceValueDetails: true,
     maxOperators: 5,

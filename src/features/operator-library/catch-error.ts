@@ -54,9 +54,6 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
       {
         id: "library-catch-error-default",
         type: "catchError",
-        config: {
-          replacementValue: -1,
-        },
       },
     ],
     sourceValues: [

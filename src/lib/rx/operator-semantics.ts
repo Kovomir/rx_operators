@@ -134,6 +134,6 @@ export function createCatchErrorReplacementValue(
     id: `${operator.id}-replacement-${errorValue?.id ?? "value"}`,
     shape: errorValue?.shape ?? "circle",
     color: "green",
-    value: operator.config.replacementValue,
+    value: -1,
   };
 }

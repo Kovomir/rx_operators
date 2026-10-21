@@ -137,6 +137,34 @@ const IMMEDIATE_INITIAL_DELAYED_DATA_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const ERROR_RECOVERY_WITHOUT_DUPLICATE_STATE_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-error-recovery-source-1",
+    shape: "circle",
+    color: "red",
+    value: 1,
+  },
+  {
+    id: "challenge-error-recovery-source-2",
+    shape: "square",
+    color: "blue",
+    value: 2,
+  },
+  {
+    id: "challenge-error-recovery-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 3,
+  },
+  {
+    id: "challenge-error-recovery-source-error",
+    kind: "error",
+    shape: "square",
+    color: "red",
+    value: 0,
+  },
+];
+
 export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
   {
     id: "challenge-debounce-before-distinct",
@@ -239,5 +267,38 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
     showSourceValueDetails: true,
     maxOperators: 4,
+  },
+  {
+    id: "challenge-error-recovery-without-duplicate-state",
+    taskNumber: 5,
+    taskLabelPrefix: "Výzva",
+    difficulty: "hard",
+    title: "",
+    sourceValues: ERROR_RECOVERY_WITHOUT_DUPLICATE_STATE_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "circle",
+        color: "green",
+        value: 10,
+      },
+      {
+        shape: "circle",
+        color: "red",
+        value: 12,
+      },
+      {
+        shape: "square",
+        color: "blue",
+        value: 16,
+      },
+      {
+        shape: "triangle",
+        color: "green",
+        value: 22,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 5,
   },
 ];

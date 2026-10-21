@@ -134,11 +134,6 @@ function doOperatorsSatisfyRequirements(
             operator.type === "debounceTime" &&
             operator.config.durationMs === requirement.durationMs
           );
-        case "catchError":
-          return (
-            operator.type === "catchError" &&
-            operator.config.replacementValue === requirement.replacementValue
-          );
       }
     })
   );

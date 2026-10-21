@@ -42,8 +42,6 @@ export type TakeOperatorConfig = {
   count: number;
 };
 
-export type DistinctUntilChangedOperatorConfig = Record<string, never>;
-
 export type TapOperatorConfig = {
   effect: "consoleLog";
 };
@@ -52,14 +50,8 @@ export type StartWithOperatorConfig = {
   value: number;
 };
 
-export type ScanOperatorConfig = Record<string, never>;
-
 export type DebounceTimeOperatorConfig = {
   durationMs: number;
-};
-
-export type CatchErrorOperatorConfig = {
-  replacementValue: number;
 };
 
 export type DelayOperatorConfig = {
@@ -93,7 +85,6 @@ export type TakePipelineOperator = {
 export type DistinctUntilChangedPipelineOperator = {
   id: string;
   type: "distinctUntilChanged";
-  config: DistinctUntilChangedOperatorConfig;
 };
 
 export type TapPipelineOperator = {
@@ -111,7 +102,6 @@ export type StartWithPipelineOperator = {
 export type ScanPipelineOperator = {
   id: string;
   type: "scan";
-  config: ScanOperatorConfig;
 };
 
 export type DebounceTimePipelineOperator = {
@@ -123,7 +113,6 @@ export type DebounceTimePipelineOperator = {
 export type CatchErrorPipelineOperator = {
   id: string;
   type: "catchError";
-  config: CatchErrorOperatorConfig;
 };
 
 export type DelayPipelineOperator = {
