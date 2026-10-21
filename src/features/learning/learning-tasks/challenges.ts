@@ -56,6 +56,39 @@ const FIRST_LIMIT_MARKERS_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const SKIP_AFTER_CALCULATION_SOURCE_VALUES: StreamValue[] = [
+  {
+    id: "challenge-skip-after-calculation-source-1",
+    shape: "circle",
+    color: "red",
+    value: 1,
+  },
+  {
+    id: "challenge-skip-after-calculation-source-2",
+    shape: "square",
+    color: "blue",
+    value: 2,
+  },
+  {
+    id: "challenge-skip-after-calculation-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 3,
+  },
+  {
+    id: "challenge-skip-after-calculation-source-4",
+    shape: "circle",
+    color: "blue",
+    value: 4,
+  },
+  {
+    id: "challenge-skip-after-calculation-source-5",
+    shape: "square",
+    color: "red",
+    value: 5,
+  },
+];
+
 const DEBOUNCE_BEFORE_DISTINCT_SOURCE_VALUES: StreamValue[] = [
   {
     id: "challenge-debounce-before-distinct-source-1",
@@ -183,5 +216,28 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
     showSourceValueDetails: true,
     maxOperators: 3,
+  },
+  {
+    id: "challenge-skip-after-calculation",
+    taskNumber: 4,
+    taskLabelPrefix: "Výzva",
+    difficulty: "medium",
+    title: "",
+    sourceValues: SKIP_AFTER_CALCULATION_SOURCE_VALUES,
+    expectedOutputValues: [
+      {
+        shape: "triangle",
+        color: "green",
+        value: 12,
+      },
+      {
+        shape: "circle",
+        color: "blue",
+        value: 20,
+      },
+    ],
+    enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
+    showSourceValueDetails: true,
+    maxOperators: 4,
   },
 ];
