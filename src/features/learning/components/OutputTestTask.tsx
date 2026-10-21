@@ -69,6 +69,8 @@ export function OutputTestTask({
     : task.sourceValues.map((value) => value.value);
   const sourceValuesForDisplay =
     task.sourceDisplayValues ?? displayedSourceValues;
+  const taskLabel = `${task.taskLabelPrefix ?? "Úloha"} ${task.taskNumber}`;
+  const isChallengeTask = task.taskLabelPrefix === "Výzva";
 
   function handleOperatorsChange(nextOperators: PipelineOperator[]) {
     setOperators(nextOperators);
@@ -107,11 +109,18 @@ export function OutputTestTask({
         <div className="min-w-0">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-normal text-primary">
-              Úloha {task.taskNumber}
+              {taskLabel}
             </p>
-            <h2 className="mt-1 text-sm font-semibold text-foreground">
-              {task.title}
-            </h2>
+            {isChallengeTask && (
+              <p className="mt-1 text-sm leading-6 text-foreground">
+                Vyřešte složitější úlohu.
+              </p>
+            )}
+            {task.title && (
+              <h2 className="mt-1 text-sm font-semibold text-foreground">
+                {task.title}
+              </h2>
+            )}
           </div>
 
           <TestResultMessage

@@ -12,6 +12,12 @@ import {
 } from "./LearningTaskStatus";
 import type { LearningSectionTask } from "../learning-tasks";
 
+const DIFFICULTY_LABELS = {
+  easy: "snadná",
+  medium: "střední",
+  hard: "těžká",
+} as const;
+
 type LearningTaskItemProps = {
   isActive: boolean;
   isCompleted: boolean;
@@ -71,10 +77,14 @@ export function LearningTaskItem({
   }
 
   const TaskIcon = task.kind === "output-test" ? TargetIcon : BookOpenIcon;
+  const taskLabelPrefix =
+    task.kind === "output-test" ? task.taskLabelPrefix ?? "Úloha" : "Úloha";
   const taskLabel =
     task.kind === "operator-library"
       ? "Představení operátoru"
-      : `Úloha ${task.taskNumber}`;
+      : `${taskLabelPrefix} ${task.taskNumber}`;
+  const taskDifficulty =
+    task.kind === "output-test" ? task.difficulty : undefined;
 
   return (
     <div ref={taskRef} className="min-w-0 scroll-mt-20">
@@ -93,10 +103,17 @@ export function LearningTaskItem({
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-foreground">
             {taskLabel}
+            {taskDifficulty && (
+              <span className="ml-2 inline-flex rounded-md border bg-muted px-1.5 py-0.5 text-[0.6875rem] font-medium text-muted-foreground">
+                {DIFFICULTY_LABELS[taskDifficulty]}
+              </span>
+            )}
           </span>
-          <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
-            {task.title}
-          </span>
+          {task.title && (
+            <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
+              {task.title}
+            </span>
+          )}
         </span>
         {isCompleted ? <CompletedStatusIcon /> : <IncompleteStatusIcon />}
       </button>
