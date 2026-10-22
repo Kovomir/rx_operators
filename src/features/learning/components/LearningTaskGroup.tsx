@@ -56,10 +56,6 @@ export function LearningTaskGroup({
     if (nextTaskId) {
       onSelectTask(section.id, nextTaskId);
     }
-
-    if (!isExpanded) {
-      onToggle();
-    }
   }
 
   return (
