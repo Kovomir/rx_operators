@@ -22,7 +22,7 @@ import {
   passesFilterOperator,
 } from "../operator-semantics";
 import type { PipelineTraceRecorder } from "../pipeline-trace-recorder";
-import type { StreamId } from "../stream-identity";
+import type { StreamId } from "@/types/stream.ts";
 import { recordForwardedError } from "./error-forwarding";
 
 export function tracedMap(
@@ -219,6 +219,10 @@ export function tracedTake(
           });
         },
         error(error: unknown) {
+          if (takenValueCount >= operator.config.count) {
+            subscriber.complete();
+            return;
+          }
           recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
@@ -288,7 +292,8 @@ export function tracedDistinctUntilChanged(
 export function tracedTap(
   operator: TapPipelineOperator,
   recorder: PipelineTraceRecorder,
-  streamId: StreamId
+  streamId: StreamId,
+  logValues: boolean
 ): OperatorFunction<StreamValue, StreamValue> {
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
@@ -301,7 +306,7 @@ export function tracedTap(
             value,
           });
 
-          if (operator.config.effect === "consoleLog") {
+          if (logValues && operator.config.effect === "consoleLog") {
             console.log(value.value);
           }
 

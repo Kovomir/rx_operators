@@ -12,7 +12,9 @@ export type PipelineTraceRecorder = {
   complete: () => void;
 };
 
-export function createPipelineTraceRecorder(): PipelineTraceRecorder {
+export function createPipelineTraceRecorder(
+  now: () => number
+): PipelineTraceRecorder {
   const eventsSubject = new Subject<PipelineTraceEvent>();
   let nextSequence = 0;
 
@@ -20,7 +22,7 @@ export function createPipelineTraceRecorder(): PipelineTraceRecorder {
     events$: eventsSubject.asObservable(),
     record(event) {
       eventsSubject.next(
-        withPipelineTraceMetadata(event, nextSequence, getCurrentTimeMs())
+        withPipelineTraceMetadata(event, nextSequence, now())
       );
       nextSequence += 1;
     },
@@ -28,8 +30,4 @@ export function createPipelineTraceRecorder(): PipelineTraceRecorder {
       eventsSubject.complete();
     },
   };
-}
-
-function getCurrentTimeMs() {
-  return typeof performance === "undefined" ? Date.now() : performance.now();
 }

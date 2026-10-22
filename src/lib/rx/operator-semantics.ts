@@ -1,12 +1,8 @@
 import type {
-  DebounceTimePipelineOperator,
   CatchErrorPipelineOperator,
-  DelayPipelineOperator,
   FilterPipelineOperator,
   MapPipelineOperator,
-  SkipPipelineOperator,
   StartWithPipelineOperator,
-  TakePipelineOperator,
 } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
 
@@ -97,31 +93,10 @@ export function passesFilterOperator(
   }
 }
 
-export function applySkipOperator(
-  values: StreamValue[],
-  operator: SkipPipelineOperator
-) {
-  return values.slice(operator.config.count);
-}
-
-export function applyTakeOperator(
-  values: StreamValue[],
-  operator: TakePipelineOperator
-) {
-  return values.slice(0, operator.config.count);
-}
-
 export function applyDistinctUntilChangedOperator(values: StreamValue[]) {
   return values.filter(
     (value, index) => index === 0 || value.value !== values[index - 1].value
   );
-}
-
-export function applyStartWithOperator(
-  values: StreamValue[],
-  operator: StartWithPipelineOperator
-) {
-  return [createStartWithValue(operator), ...values];
 }
 
 export function createStartWithValue(
@@ -133,18 +108,6 @@ export function createStartWithValue(
     color: "green",
     value: operator.config.value,
   };
-}
-
-export function applyScanOperator(values: StreamValue[]) {
-  let accumulator = 0;
-
-  return values.map((value) => {
-    accumulator += value.value;
-    return {
-      ...value,
-      value: accumulator,
-    };
-  });
 }
 
 export function applyScanStep(
@@ -162,31 +125,6 @@ export function applyScanStep(
   };
 }
 
-export function applyDebounceTimeOperator(
-  values: StreamValue[],
-  operator: DebounceTimePipelineOperator
-) {
-  return values
-    .filter((value, index) => {
-      const nextValue = values[index + 1];
-
-      if (!nextValue) {
-        return true;
-      }
-
-      return (
-        getStreamValueEmissionTimeMs(nextValue) -
-          getStreamValueEmissionTimeMs(value) >=
-        operator.config.durationMs
-      );
-    })
-    .map((value) => ({
-      ...value,
-      emittedAtMs:
-        getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
-    }));
-}
-
 export function createCatchErrorReplacementValue(
   operator: CatchErrorPipelineOperator,
   errorValue?: StreamValue
@@ -197,18 +135,4 @@ export function createCatchErrorReplacementValue(
     color: "green",
     value: operator.config.replacementValue,
   };
-}
-
-export function applyDelayOperator(
-  values: StreamValue[],
-  operator: DelayPipelineOperator
-) {
-  return values.map((value) => ({
-    ...value,
-    emittedAtMs: getStreamValueEmissionTimeMs(value) + operator.config.durationMs,
-  }));
-}
-
-function getStreamValueEmissionTimeMs(value: StreamValue) {
-  return value.emittedAtMs ?? 0;
 }
