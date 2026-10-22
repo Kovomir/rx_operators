@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import { memo, type ReactNode } from "react";
 import {ClockIcon, FilterIcon, FlagIcon, PauseIcon, PlusIcon, RadioIcon, SigmaIcon, SkipForwardIcon, TerminalIcon, TimerIcon, TriangleAlertIcon,} from "lucide-react";
 
 import type {PipelineOperator} from "@/features/pipeline-editor";
@@ -21,7 +21,7 @@ const STAGE_DETAIL_BADGE_HEIGHT = 26;
 const STAGE_DETAIL_BADGE_MIN_WIDTH = 106;
 const STAGE_DETAIL_BADGE_MAX_WIDTH = 230;
 
-export function StageLayer({
+export const StageLayer = memo(function StageLayer({
   outputValueCount,
   selectedStageId,
   sourceValueCount,
@@ -69,7 +69,7 @@ export function StageLayer({
       ))}
     </>
   );
-}
+});
 
 type StageLabelProps = {
   stagePosition: StagePosition;

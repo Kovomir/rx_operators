@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { motion } from "motion/react";
 
 import type { LiveVisualValue } from "../types";
@@ -7,7 +8,7 @@ type VisualValueAnimatorProps = {
   visualValue: LiveVisualValue;
 };
 
-export function VisualValueAnimator({
+export const VisualValueAnimator = memo(function VisualValueAnimator({
   visualValue,
 }: VisualValueAnimatorProps) {
   return (
@@ -36,4 +37,4 @@ export function VisualValueAnimator({
       />
     </motion.g>
   );
-}
+});

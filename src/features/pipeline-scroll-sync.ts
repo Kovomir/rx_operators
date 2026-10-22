@@ -1,122 +1,82 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useMemo } from "react";
 
-export type PipelineScrollSyncSource = "editor" | "visualizer";
+type PipelineScrollSyncSource = "editor" | "visualizer";
 
 export type PipelineScrollSyncController = {
-  register: (
-    source: PipelineScrollSyncSource,
-    element: HTMLDivElement | null
-  ) => void;
-  scrollTo: (
-    source: PipelineScrollSyncSource,
-    scrollLeft: number
-  ) => void;
-  syncScrollLeft: (
-    source: PipelineScrollSyncSource,
-    scrollLeft: number
-  ) => void;
+  register: (source: PipelineScrollSyncSource, element: HTMLDivElement | null) => void;
+  scrollTo: (source: PipelineScrollSyncSource, scrollLeft: number) => void;
 };
 
 export function usePipelineScrollSync(): PipelineScrollSyncController {
-  const elementsRef = useRef<Record<PipelineScrollSyncSource, HTMLDivElement | null>>({
-    editor: null,
-    visualizer: null,
-  });
-  const ignoredSourceRef = useRef<PipelineScrollSyncSource | null>(null);
-  const clearIgnoredSourceFrameRef = useRef<number | null>(null);
+  return useMemo(() => {
+    const elements: Record<PipelineScrollSyncSource, HTMLDivElement | null> = {
+      editor: null,
+      visualizer: null,
+    };
+    const expectedPositions = new WeakMap<HTMLDivElement, number>();
+    let activeElement: HTMLDivElement | null = null;
+    let observer: ResizeObserver | null = null;
 
-  const register = useCallback(
-    (source: PipelineScrollSyncSource, element: HTMLDivElement | null) => {
-      elementsRef.current[source] = element;
-    },
-    []
-  );
+    function sync(source: HTMLDivElement) {
+      const target = source === elements.editor ? elements.visualizer : elements.editor;
+      if (!target) return;
 
-  const updateTargetScrollLeft = useCallback(
-    (source: PipelineScrollSyncSource, scrollLeft: number) => {
-      const targetSource: PipelineScrollSyncSource =
-        source === "editor" ? "visualizer" : "editor";
-      const sourceElement = elementsRef.current[source];
-      const targetElement = elementsRef.current[targetSource];
-      const sourceMaxScrollLeft = getMaxScrollLeft(sourceElement);
-      const targetMaxScrollLeft = getMaxScrollLeft(targetElement);
-      const sourceScrollRatio =
-        sourceMaxScrollLeft > 0
-          ? clampScrollLeft(scrollLeft, sourceMaxScrollLeft) /
-            sourceMaxScrollLeft
-          : 0;
-      const targetScrollLeft = targetMaxScrollLeft * sourceScrollRatio;
+      const sourceRange = source.scrollWidth - source.clientWidth;
+      const targetRange = Math.max(0, target.scrollWidth - target.clientWidth);
+      const ratio = sourceRange > 0
+        ? Math.max(0, Math.min(1, source.scrollLeft / sourceRange))
+        : 0;
+      const targetLeft = ratio * targetRange;
+      if (Math.abs(target.scrollLeft - targetLeft) <= 0.5) return;
 
-      if (
-        !targetElement ||
-        Math.abs(targetElement.scrollLeft - targetScrollLeft) <= 0.5
-      ) {
-        return;
-      }
+      target.scrollLeft = targetLeft;
+      expectedPositions.set(target, target.scrollLeft);
+    }
 
-      ignoredSourceRef.current = targetSource;
-      targetElement.scrollLeft = targetScrollLeft;
+    function onScroll(event: Event) {
+      const source = event.currentTarget as HTMLDivElement;
+      const expected = expectedPositions.get(source);
+      // Ignore our own writes even if their scroll event arrives later.
+      if (expected !== undefined && Math.abs(source.scrollLeft - expected) <= 0.5) return;
 
-      if (clearIgnoredSourceFrameRef.current !== null) {
-        window.cancelAnimationFrame(clearIgnoredSourceFrameRef.current);
-      }
+      expectedPositions.delete(source);
+      activeElement = source;
+      sync(source);
+    }
 
-      clearIgnoredSourceFrameRef.current = window.requestAnimationFrame(() => {
-        ignoredSourceRef.current = null;
-        clearIgnoredSourceFrameRef.current = null;
-      });
-    },
-    []
-  );
+    return {
+      register(source, element) {
+        const previous = elements[source];
+        if (previous) {
+          previous.removeEventListener("scroll", onScroll);
+          expectedPositions.delete(previous);
+          observer?.unobserve(previous);
+          if (previous.firstElementChild) observer?.unobserve(previous.firstElementChild);
+          if (activeElement === previous) activeElement = null;
+        }
+        elements[source] = element;
 
-  const syncScrollLeft = useCallback(
-    (source: PipelineScrollSyncSource, scrollLeft: number) => {
-      if (ignoredSourceRef.current === source) {
-        ignoredSourceRef.current = null;
-        return;
-      }
+        if (element) {
+          observer ??= new ResizeObserver(() => {
+            if (activeElement) sync(activeElement);
+          });
+          element.addEventListener("scroll", onScroll, { passive: true });
+          observer.observe(element);
+          if (element.firstElementChild) observer.observe(element.firstElementChild);
+        } else if (!elements.editor && !elements.visualizer) {
+          observer?.disconnect();
+          observer = null;
+        }
+      },
+      scrollTo(source, scrollLeft) {
+        const element = elements[source];
+        if (!element) return;
 
-      updateTargetScrollLeft(source, scrollLeft);
-    },
-    [updateTargetScrollLeft]
-  );
-
-  const scrollTo = useCallback(
-    (source: PipelineScrollSyncSource, scrollLeft: number) => {
-      const sourceElement = elementsRef.current[source];
-      const sourceMaxScrollLeft = getMaxScrollLeft(sourceElement);
-      const sourceScrollLeft = clampScrollLeft(scrollLeft, sourceMaxScrollLeft);
-
-      if (
-        sourceElement &&
-        Math.abs(sourceElement.scrollLeft - sourceScrollLeft) > 0.5
-      ) {
-        sourceElement.scrollLeft = sourceScrollLeft;
-      }
-
-      updateTargetScrollLeft(source, sourceScrollLeft);
-    },
-    [updateTargetScrollLeft]
-  );
-
-  return useMemo(
-    () => ({
-      register,
-      scrollTo,
-      syncScrollLeft,
-    }),
-    [register, scrollTo, syncScrollLeft]
-  );
-}
-
-function getMaxScrollLeft(element: HTMLDivElement | null) {
-  if (!element) {
-    return 0;
-  }
-
-  return Math.max(0, element.scrollWidth - element.clientWidth);
-}
-
-function clampScrollLeft(scrollLeft: number, maxScrollLeft: number) {
-  return Math.max(0, Math.min(maxScrollLeft, scrollLeft));
+        expectedPositions.delete(element);
+        element.scrollLeft = scrollLeft;
+        activeElement = element;
+        sync(element);
+      },
+    };
+  }, []);
 }
