@@ -2,14 +2,12 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
-import { withPipelineTraceMetadata } from "@/lib/rx/pipeline-trace";
 import { MousePointerClickIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -75,8 +73,6 @@ export function PipelineVisualizer({
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(
     defaultPlaybackSpeed
   );
-  const sourceEmissionTimeoutsRef = useRef<number[]>([]);
-  const syntheticTraceSequenceRef = useRef(0);
   const [stageValueCounts, setStageValueCounts] = useState({
     output: 0,
     source: 0,
@@ -120,8 +116,6 @@ export function PipelineVisualizer({
     streamLanes,
   });
 
-  const handleOutputValue = useCallback(() => undefined, []);
-
   const resetRunState = useCallback(() => {
     resetVisualValues();
     setStageValueCounts({
@@ -151,94 +145,31 @@ export function PipelineVisualizer({
     [handleTraceEvent]
   );
 
-  const clearSourceEmissionTimeouts = useCallback(() => {
-    for (const timeoutId of sourceEmissionTimeoutsRef.current) {
-      window.clearTimeout(timeoutId);
-    }
-
-    sourceEmissionTimeoutsRef.current = [];
-  }, []);
-
-  const { emitError, emitValue, resetRuntime } = usePipelineRuntime({
+  const { emitValue, resetRuntime } = usePipelineRuntime({
     operators,
-    onOutputValue: handleOutputValue,
     onRuntimeCleanup: clearScheduledTimeouts,
     onTraceEvent: handleRuntimeTraceEvent,
   });
 
   const runSourceValues = useCallback(
     (values: StreamValue[]) => {
-      clearSourceEmissionTimeouts();
       resetRunState();
-      resetRuntime();
-
-      values.forEach((value) => {
-        const timeoutId = window.setTimeout(() => {
-          if (value.kind === "cancelled") {
-            handleRuntimeTraceEvent(
-              withPipelineTraceMetadata(
-                {
-                  source: "demo",
-                  type: "source-cancelled",
-                  value,
-                },
-                syntheticTraceSequenceRef.current,
-                performance.now()
-              )
-            );
-            syntheticTraceSequenceRef.current += 1;
-            return;
-          }
-
-          if (value.kind === "error") {
-            emitError(value, "demo");
-            return;
-          }
-
-          emitValue(value, "demo");
-        }, value.emittedAtMs ?? 0);
-
-        sourceEmissionTimeoutsRef.current.push(timeoutId);
-      });
+      resetRuntime(values);
     },
-    [
-      clearSourceEmissionTimeouts,
-      emitError,
-      emitValue,
-      handleRuntimeTraceEvent,
-      resetRunState,
-      resetRuntime,
-    ]
+    [resetRunState, resetRuntime]
   );
 
   useEffect(() => {
-    if (!autoRunSourceValues) {
-      const timeoutId = window.setTimeout(() => {
-        clearSourceEmissionTimeouts();
-        resetRunState();
-        resetRuntime();
-      }, 0);
-
-      return () => {
-        window.clearTimeout(timeoutId);
-        clearSourceEmissionTimeouts();
-      };
-    }
-
     const timeoutId = window.setTimeout(() => {
-      runSourceValues(sourceValues);
+      runSourceValues(autoRunSourceValues ? sourceValues : []);
     }, 0);
 
     return () => {
       window.clearTimeout(timeoutId);
-      clearSourceEmissionTimeouts();
     };
   }, [
     autoRunSourceValues,
-    clearSourceEmissionTimeouts,
     playbackSpeed,
-    resetRunState,
-    resetRuntime,
     restartKey,
     runSourceValues,
     sourceValues,
@@ -251,8 +182,7 @@ export function PipelineVisualizer({
       emitValue(
         liveValueTimerDurationMs
           ? { ...nextValue, timerDurationMs: liveValueTimerDurationMs }
-          : nextValue,
-        "live"
+          : nextValue
       );
     }
   }

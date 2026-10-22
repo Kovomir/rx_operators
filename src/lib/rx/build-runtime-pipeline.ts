@@ -1,4 +1,4 @@
-import { map, tap, type Observable } from "rxjs";
+import { map, tap, type Observable, type SchedulerLike } from "rxjs";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
@@ -14,6 +14,8 @@ type BuildRuntimePipelineArgs = {
   operators: PipelineOperator[];
   recorder: PipelineTraceRecorder;
   streamId?: StreamId;
+  scheduler: SchedulerLike;
+  logTapValues?: boolean;
 };
 
 export function buildRuntimePipeline({
@@ -21,6 +23,8 @@ export function buildRuntimePipeline({
   operators,
   recorder,
   streamId = MAIN_STREAM_ID,
+  scheduler,
+  logTapValues = true,
 }: BuildRuntimePipelineArgs): Observable<StreamValue> {
   let stream$ = source$.pipe(
     tap((emission) => {
@@ -41,7 +45,9 @@ export function buildRuntimePipeline({
   );
 
   for (const operator of operators) {
-    stream$ = stream$.pipe(buildTracedOperator(operator, recorder, streamId));
+    stream$ = stream$.pipe(
+      buildTracedOperator(operator, recorder, streamId, scheduler, logTapValues)
+    );
   }
 
   return stream$.pipe(

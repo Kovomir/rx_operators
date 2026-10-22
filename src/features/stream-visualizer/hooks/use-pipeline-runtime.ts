@@ -1,107 +1,55 @@
 import { useCallback, useEffect, useRef } from "react";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
-import { buildRuntimePipeline } from "@/lib/rx/build-runtime-pipeline";
-import type {
-  PipelineTraceEvent,
-  PipelineTraceSource,
-} from "@/lib/rx/pipeline-trace";
-import { createPipelineTraceRecorder } from "@/lib/rx/pipeline-trace-recorder";
-import { MAIN_STREAM_ID, type StreamId } from "@/lib/rx/stream-identity";
 import {
-  createManualSourceRuntime,
-  type ManualSourceRuntime,
-} from "@/lib/rx/source-runtime";
+  createPipelineRuntime,
+  type PipelineRuntime,
+} from "@/lib/rx/pipeline-runtime";
+import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
 
 import type { StreamValue } from "../types";
 
-type RuntimeHandle = {
-  complete: () => void;
-  emit: ManualSourceRuntime["emit"];
-  emitError: ManualSourceRuntime["emitError"];
-};
-
 type UsePipelineRuntimeArgs = {
   operators: PipelineOperator[];
-  streamId?: StreamId;
-  onOutputValue: (value: StreamValue) => void;
   onTraceEvent: (event: PipelineTraceEvent) => void;
   onRuntimeCleanup: () => void;
 };
 
 export function usePipelineRuntime({
   operators,
-  streamId = MAIN_STREAM_ID,
-  onOutputValue,
   onTraceEvent,
   onRuntimeCleanup,
 }: UsePipelineRuntimeArgs) {
-  const runtimeRef = useRef<RuntimeHandle | null>(null);
+  const runtimeRef = useRef<PipelineRuntime | null>(null);
 
-  const createRuntime = useCallback((): RuntimeHandle => {
-    const recorder = createPipelineTraceRecorder();
-    const sourceRuntime = createManualSourceRuntime();
-    const traceSubscription = recorder.events$.subscribe(onTraceEvent);
-    const outputSubscription = buildRuntimePipeline({
-      source$: sourceRuntime.source$,
-      operators,
-      recorder,
-      streamId,
-    }).subscribe({
-      next: onOutputValue,
-      error: () => undefined,
-    });
+  const cleanupRuntime = useCallback(() => {
+    runtimeRef.current?.dispose();
+    runtimeRef.current = null;
+    onRuntimeCleanup();
+  }, [onRuntimeCleanup]);
 
-    return {
-      emit: sourceRuntime.emit,
-      emitError: sourceRuntime.emitError,
-      complete() {
-        traceSubscription.unsubscribe();
-        outputSubscription.unsubscribe();
-        sourceRuntime.complete();
-        recorder.complete();
-      },
-    };
-  }, [onOutputValue, onTraceEvent, operators, streamId]);
-
-  const cleanupRuntime = useCallback(
-    (runtime: RuntimeHandle | null) => {
-      runtime?.complete();
-      onRuntimeCleanup();
-
-      if (runtimeRef.current === runtime) {
-        runtimeRef.current = null;
-      }
+  const resetRuntime = useCallback(
+    (sourceValues: StreamValue[] = []) => {
+      cleanupRuntime();
+      runtimeRef.current = createPipelineRuntime({
+        operators,
+        sourceValues,
+        realtime: true,
+        onTraceEvent,
+      });
     },
-    [onRuntimeCleanup]
+    [cleanupRuntime, onTraceEvent, operators]
   );
-
-  const resetRuntime = useCallback(() => {
-    cleanupRuntime(runtimeRef.current);
-    runtimeRef.current = createRuntime();
-  }, [cleanupRuntime, createRuntime]);
 
   useEffect(() => {
     resetRuntime();
 
-    return () => {
-      cleanupRuntime(runtimeRef.current);
-    };
+    return cleanupRuntime;
   }, [cleanupRuntime, resetRuntime]);
 
-  const emitValue = useCallback(
-    (value: StreamValue, source?: PipelineTraceSource) => {
-      runtimeRef.current?.emit(value, source);
-    },
-    []
-  );
+  const emitValue = useCallback((value: StreamValue) => {
+    runtimeRef.current?.emit(value);
+  }, []);
 
-  const emitError = useCallback(
-    (value: StreamValue, source?: PipelineTraceSource) => {
-      runtimeRef.current?.emitError(value, source);
-    },
-    []
-  );
-
-  return { emitError, emitValue, resetRuntime };
+  return { emitValue, resetRuntime };
 }

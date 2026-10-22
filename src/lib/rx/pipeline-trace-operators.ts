@@ -1,4 +1,4 @@
-import type { OperatorFunction } from "rxjs";
+import type { OperatorFunction, SchedulerLike } from "rxjs";
 
 import type { PipelineOperator } from "@/features/pipeline-editor";
 import type { StreamValue } from "@/types/stream";
@@ -24,7 +24,9 @@ import type { StreamId } from "./stream-identity";
 export function buildTracedOperator(
   operator: PipelineOperator,
   recorder: PipelineTraceRecorder,
-  streamId: StreamId
+  streamId: StreamId,
+  scheduler: SchedulerLike,
+  logTapValues: boolean
 ): OperatorFunction<StreamValue, StreamValue> {
   switch (operator.type) {
     case "map":
@@ -38,16 +40,16 @@ export function buildTracedOperator(
     case "distinctUntilChanged":
       return tracedDistinctUntilChanged(operator, recorder, streamId);
     case "tap":
-      return tracedTap(operator, recorder, streamId);
+      return tracedTap(operator, recorder, streamId, logTapValues);
     case "startWith":
       return tracedStartWith(operator, recorder, streamId);
     case "scan":
       return tracedScan(operator, recorder, streamId);
     case "debounceTime":
-      return tracedDebounceTime(operator, recorder, streamId);
+      return tracedDebounceTime(operator, recorder, streamId, scheduler);
     case "catchError":
       return tracedCatchError(operator, recorder, streamId);
     case "delay":
-      return tracedDelay(operator, recorder, streamId);
+      return tracedDelay(operator, recorder, streamId, scheduler);
   }
 }

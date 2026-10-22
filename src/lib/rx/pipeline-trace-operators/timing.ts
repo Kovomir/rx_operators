@@ -1,31 +1,27 @@
-import { Observable, type OperatorFunction } from "rxjs";
+import {Observable, type OperatorFunction, type SchedulerLike, type Subscription,} from "rxjs";
 
-import type {
-  DebounceTimePipelineOperator,
-  DelayPipelineOperator,
-} from "@/features/pipeline-editor";
-import type { StreamValue } from "@/types/stream";
+import type {DebounceTimePipelineOperator, DelayPipelineOperator,} from "@/features/pipeline-editor";
+import type {StreamValue} from "@/types/stream";
 
-import type { PipelineTraceRecorder } from "../pipeline-trace-recorder";
-import type { StreamId } from "../stream-identity";
-import { recordForwardedError } from "./error-forwarding";
+import type {PipelineTraceRecorder} from "../pipeline-trace-recorder";
+import type {StreamId} from "@/types/stream.ts";
+import {recordForwardedError} from "./error-forwarding";
 
 export function tracedDebounceTime(
   operator: DebounceTimePipelineOperator,
   recorder: PipelineTraceRecorder,
-  streamId: StreamId
+  streamId: StreamId,
+  scheduler: SchedulerLike
 ): OperatorFunction<StreamValue, StreamValue> {
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
       let pendingValue: StreamValue | null = null;
       let pendingDueAtMs: number | null = null;
-      let pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+      let pendingAction: Subscription | undefined;
 
-      function clearPendingTimeout() {
-        if (pendingTimeoutId !== null) {
-          clearTimeout(pendingTimeoutId);
-          pendingTimeoutId = null;
-        }
+      function cancelPendingEmission() {
+        pendingAction?.unsubscribe();
+        pendingAction = undefined;
       }
 
       function emitPendingValue() {
@@ -35,12 +31,11 @@ export function tracedDebounceTime(
 
         const value = {
           ...pendingValue,
-          emittedAtMs:
-            (pendingValue.emittedAtMs ?? 0) + operator.config.durationMs,
+          emittedAtMs: scheduler.now(),
         };
         pendingValue = null;
         pendingDueAtMs = null;
-        pendingTimeoutId = null;
+        pendingAction = undefined;
 
         recorder.record({
           streamId,
@@ -56,9 +51,9 @@ export function tracedDebounceTime(
         if (
           pendingValue &&
           pendingDueAtMs !== null &&
-          getCurrentTimeMs() >= pendingDueAtMs
+          scheduler.now() >= pendingDueAtMs
         ) {
-          clearPendingTimeout();
+          cancelPendingEmission();
           emitPendingValue();
         }
       }
@@ -83,28 +78,28 @@ export function tracedDebounceTime(
             });
           }
 
-          clearPendingTimeout();
+          cancelPendingEmission();
           pendingValue = value;
-          pendingDueAtMs = getCurrentTimeMs() + operator.config.durationMs;
-          pendingTimeoutId = setTimeout(
+          pendingDueAtMs = scheduler.now() + operator.config.durationMs;
+          pendingAction = scheduler.schedule(
             emitPendingValue,
             operator.config.durationMs
           );
         },
         error(error: unknown) {
-          clearPendingTimeout();
+          cancelPendingEmission();
           recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
         complete() {
-          clearPendingTimeout();
+          cancelPendingEmission();
           emitPendingValue();
           subscriber.complete();
         },
       });
 
       return () => {
-        clearPendingTimeout();
+        cancelPendingEmission();
         subscription.unsubscribe();
       };
     });
@@ -113,15 +108,16 @@ export function tracedDebounceTime(
 export function tracedDelay(
   operator: DelayPipelineOperator,
   recorder: PipelineTraceRecorder,
-  streamId: StreamId
+  streamId: StreamId,
+  scheduler: SchedulerLike
 ): OperatorFunction<StreamValue, StreamValue> {
   return (source$) =>
     new Observable<StreamValue>((subscriber) => {
-      const pendingTimeoutIds = new Set<ReturnType<typeof setTimeout>>();
+      const pendingActions = new Set<Subscription>();
       let isSourceComplete = false;
 
       function completeWhenReady() {
-        if (isSourceComplete && pendingTimeoutIds.size === 0) {
+        if (isSourceComplete && pendingActions.size === 0) {
           subscriber.complete();
         }
       }
@@ -135,8 +131,8 @@ export function tracedDelay(
             value,
           });
 
-          const timeoutId = setTimeout(() => {
-            pendingTimeoutIds.delete(timeoutId);
+          const action = scheduler.schedule(() => {
+            pendingActions.delete(action);
 
             if (subscriber.closed) {
               return;
@@ -144,7 +140,7 @@ export function tracedDelay(
 
             const delayedValue = {
               ...value,
-              emittedAtMs: (value.emittedAtMs ?? 0) + operator.config.durationMs,
+              emittedAtMs: scheduler.now(),
             };
 
             recorder.record({
@@ -158,14 +154,14 @@ export function tracedDelay(
             completeWhenReady();
           }, operator.config.durationMs);
 
-          pendingTimeoutIds.add(timeoutId);
+          pendingActions.add(action);
         },
         error(error: unknown) {
-          for (const timeoutId of pendingTimeoutIds) {
-            clearTimeout(timeoutId);
+          for (const action of pendingActions) {
+            action.unsubscribe();
           }
 
-          pendingTimeoutIds.clear();
+          pendingActions.clear();
           recordForwardedError(recorder, streamId, operator.id, error);
           subscriber.error(error);
         },
@@ -176,16 +172,12 @@ export function tracedDelay(
       });
 
       return () => {
-        for (const timeoutId of pendingTimeoutIds) {
-          clearTimeout(timeoutId);
+        for (const action of pendingActions) {
+          action.unsubscribe();
         }
 
-        pendingTimeoutIds.clear();
+        pendingActions.clear();
         subscription.unsubscribe();
       };
     });
-}
-
-function getCurrentTimeMs() {
-  return typeof performance === "undefined" ? Date.now() : performance.now();
 }

@@ -71,9 +71,13 @@ export function useVisualScheduler({
   }, [clearScheduledTimeouts, createPlayer]);
 
   const scheduleAction = useCallback((action: VisualTracePlayerAction) => {
+    const runId = runIdRef.current;
     const elapsedMs = getAnimationNowMs() - runStartedAtMsRef.current;
     const delayMs = Math.max(0, action.atMs - elapsedMs);
     const timeoutId = window.setTimeout(() => {
+      if (runId !== runIdRef.current) {
+        return;
+      }
       applyVisualAction(action, setVisualValues);
 
       if (action.type === "remove-value") {
@@ -91,8 +95,7 @@ export function useVisualScheduler({
         runStartedAtMsRef.current = getAnimationNowMs();
       }
 
-      const elapsedMs = getAnimationNowMs() - runStartedAtMsRef.current;
-      const actions = playerRef.current.play(event, elapsedMs);
+      const actions = playerRef.current.play(event, event.occurredAtMs);
 
       for (const action of actions) {
         scheduleAction(action);
