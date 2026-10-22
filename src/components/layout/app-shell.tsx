@@ -14,6 +14,7 @@ import { OperatorLibraryPage } from "@/features/operator-library/operator-librar
 import { PlaygroundPage } from "@/features/playground/playground-page";
 import { SavedPipelinesPage } from "@/features/saved-pipelines/saved-pipelines-page";
 
+import { AppFooter } from "./app-footer";
 import { AppHeader } from "./app-header";
 import { AppSidebar } from "./app-sidebar";
 import {
@@ -83,6 +84,7 @@ export function AppShell() {
           <Route path="/saved" element={<AppContent page="saved" />} />
           <Route path="*" element={<Navigate to={DEFAULT_APP_PATH} replace />} />
         </Routes>
+        <AppFooter />
       </SidebarInset>
     </SidebarProvider>
   );
@@ -152,4 +154,3 @@ function AppShellSkeleton() {
     </main>
   );
 }
-

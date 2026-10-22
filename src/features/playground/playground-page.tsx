@@ -225,7 +225,7 @@ export function PlaygroundPage() {
         selectedOperatorFocusKey={selectedOperatorFocusKey}
       />
 
-      <div className="fixed right-4 bottom-4 z-40 grid justify-items-end gap-2 md:right-6 md:bottom-6">
+      <div className="grid shrink-0 self-end justify-items-end gap-2">
         {saveStatus?.type === "success" && (
           <p className="max-w-xs rounded-md border border-emerald-200 bg-background px-3 py-2 text-xs text-emerald-700 shadow-sm">
             {saveStatus.message}

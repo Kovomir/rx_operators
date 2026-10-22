@@ -28,7 +28,7 @@ export const DEBOUNCE_TIME_OPERATOR_LIBRARY_ENTRY: DebounceTimeOperatorLibraryEn
     label: "debounceTime",
     description: "Propustí poslední hodnotu až po chvíli klidu ve streamu.",
     summary:
-      "Operátor debounceTime čeká po každé hodnotě nastavený čas. Pokud mezitím přijde nová hodnota, předchozí hodnotu zahodí a začne čekat znovu. Výsledek je poslední hodnota z rychlé skupiny emisí.",
+      "Operátor debounceTime čeká po každé hodnotě nastavený čas. Pokud mezitím přijde nová hodnota, předchozí hodnotu zahodí a začne čekat znovu. Výsledek je poslední hodnota z rychlé skupiny emisí. Její emise se tím zároveň zpozdí o nastavený čas.",
     usage: [
       "Používá se pro rychlé události, kde má smysl až poslední stabilní hodnota. Mezihodnoty jsou zahozeny.",
       "Typicky se hodí pro vyhledávání při psaní nebo rychlé klikání uživatele.",
