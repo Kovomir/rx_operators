@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode, type UIEvent } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 
@@ -29,10 +29,6 @@ export function VisualizerCanvas({
     };
   }, [scrollSync]);
 
-  function handleScroll(event: UIEvent<HTMLDivElement>) {
-    scrollSync?.syncScrollLeft("visualizer", event.currentTarget.scrollLeft);
-  }
-
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
 
@@ -47,14 +43,17 @@ export function VisualizerCanvas({
       Math.min(maxScrollLeft, centeredX - scrollContainer.clientWidth / 2)
     );
 
-    scrollSync?.scrollTo("visualizer", nextScrollLeft);
+    if (scrollSync) {
+      scrollSync.scrollTo("visualizer", nextScrollLeft);
+    } else {
+      scrollContainer.scrollLeft = nextScrollLeft;
+    }
   }, [centerRequestKey, centeredX, scrollSync]);
 
   return (
     <div
       ref={scrollContainerRef}
       className="max-w-full overflow-x-auto bg-muted/20"
-      onScroll={handleScroll}
     >
       <svg
         width={width}

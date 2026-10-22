@@ -1,4 +1,4 @@
-import { useEffect, useRef, type UIEvent } from "react";
+import { useEffect, useRef } from "react";
 
 import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sync";
 
@@ -56,15 +56,10 @@ export function PipelineFlow({
     };
   }, [scrollSync]);
 
-  function handleScroll(event: UIEvent<HTMLDivElement>) {
-    scrollSync?.syncScrollLeft("editor", event.currentTarget.scrollLeft);
-  }
-
   return (
     <div
       ref={scrollContainerRef}
       className="max-w-full overflow-x-auto"
-      onScroll={handleScroll}
     >
       <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
         <EndpointNode
