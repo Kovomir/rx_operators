@@ -10,7 +10,7 @@ export type SkipLearningOperator = {
 };
 
 export type SkipOutputTestTaskDefinition = OutputTestTaskDefinition & {
-  id: "skip-noisy-start" | "skip-all-values";
+  id: "skip-noisy-start" | "skip-all-values" | "take-middle-value";
 };
 
 export const SKIP_LEARNING_OPERATOR: SkipLearningOperator = {
@@ -56,6 +56,24 @@ const SKIP_NOISY_START_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
+const SKIP_MIDDLE_SOURCE_VALUES: StreamValue[] = [
+  { id: "skip-middle-task-source-1", shape: "circle", color: "red", value: 2 },
+  { id: "skip-middle-task-source-2", shape: "square", color: "blue", value: 4 },
+  {
+    id: "skip-middle-task-source-3",
+    shape: "triangle",
+    color: "green",
+    value: 6,
+  },
+  { id: "skip-middle-task-source-4", shape: "circle", color: "blue", value: 8 },
+  {
+    id: "skip-middle-task-source-5",
+    shape: "square",
+    color: "green",
+    value: 10,
+  },
+];
+
 export const SKIP_TASKS: SkipOutputTestTaskDefinition[] = [
   {
     id: "skip-noisy-start",
@@ -74,5 +92,14 @@ export const SKIP_TASKS: SkipOutputTestTaskDefinition[] = [
     expectedOutputValues: [],
     enabledOperatorTypes: ["skip"],
     maxOperators: 1,
+  },
+  {
+    id: "take-middle-value",
+    taskNumber: 3,
+    title: "Zkombinujte operátory skip a take",
+    sourceValues: SKIP_MIDDLE_SOURCE_VALUES,
+    expectedOutputValues: [6],
+    enabledOperatorTypes: ["skip", "take"],
+    maxOperators: 2,
   },
 ];
