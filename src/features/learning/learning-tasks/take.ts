@@ -10,7 +10,7 @@ export type TakeLearningOperator = {
 };
 
 export type TakeOutputTestTaskDefinition = OutputTestTaskDefinition & {
-  id: "take-first-two-values" | "take-no-values" | "take-middle-value";
+  id: "take-first-two-values" | "take-no-values";
 };
 
 export const TAKE_LEARNING_OPERATOR: TakeLearningOperator = {
@@ -56,24 +56,6 @@ const TAKE_SIGNAL_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
-const TAKE_MIDDLE_SOURCE_VALUES: StreamValue[] = [
-  { id: "take-middle-task-source-1", shape: "circle", color: "red", value: 2 },
-  { id: "take-middle-task-source-2", shape: "square", color: "blue", value: 4 },
-  {
-    id: "take-middle-task-source-3",
-    shape: "triangle",
-    color: "green",
-    value: 6,
-  },
-  { id: "take-middle-task-source-4", shape: "circle", color: "blue", value: 8 },
-  {
-    id: "take-middle-task-source-5",
-    shape: "square",
-    color: "green",
-    value: 10,
-  },
-];
-
 export const TAKE_TASKS: TakeOutputTestTaskDefinition[] = [
   {
     id: "take-first-two-values",
@@ -92,14 +74,5 @@ export const TAKE_TASKS: TakeOutputTestTaskDefinition[] = [
     expectedOutputValues: [],
     enabledOperatorTypes: ["take"],
     maxOperators: 1,
-  },
-  {
-    id: "take-middle-value",
-    taskNumber: 3,
-    title: "Použijte operátor take",
-    sourceValues: TAKE_MIDDLE_SOURCE_VALUES,
-    expectedOutputValues: [6],
-    enabledOperatorTypes: ["skip", "take"],
-    maxOperators: 2,
   },
 ];
