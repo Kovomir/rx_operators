@@ -50,10 +50,18 @@ npm run build
 
 ## Environment variables
 
-Projekt používá Supabase. Lokální proměnné prostředí nastavte v souboru `.env` podle `.env.example`.
+Projekt používá Supabase. Pro přihlašování a práci s databází je potřeba vytvořit vlastní projekt
+v [Supabase](https://supabase.com/dashboard) a aplikaci na něj napojit. Lokální proměnné prostředí
+nastavte v souboru `.env` podle `.env.example`.
 
 ```text
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 VITE_SUPABASE_OAUTH_REDIRECT_TO=http://localhost:5173
 ```
+
+## Licence
+
+Projekt je dostupný pod [licencí MIT](LICENSE).
+
+Copyright © 2026 Jan Kovář.
