@@ -20,7 +20,7 @@ export const PRIMARY_NAV_ITEMS: AppNavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboardIcon, path: "/dashboard" },
   { id: "playground", label: "Playground", icon: PlayIcon, path: "/playground" },
   { id: "challenges", label: "Výukové úlohy", icon: GraduationCapIcon, path: "/challenges" },
-  { id: "operators", label: "Operátory", icon: LibraryIcon, path: "/operators" },
+  { id: "operators", label: "Knihovna operátorů", icon: LibraryIcon, path: "/operators" },
   { id: "saved", label: "Uložené projekty", icon: SaveIcon, path: "/saved" },
 ];
 
