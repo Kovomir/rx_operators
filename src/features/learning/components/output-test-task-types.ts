@@ -39,7 +39,6 @@ export type OutputTestTaskDefinition = {
   sourceValues: StreamValue[];
   sourceDisplayValues?: Array<DisplayStreamValue | StreamValue>;
   expectedOutputValues?: ExpectedOutputValue[];
-  expectedOutputLabel?: string;
   validationOutputValues?: ExpectedOutputValue[];
   expectedOperatorTypes?: PipelineOperatorType[];
   operatorRequirements?: PipelineOperatorRequirement[];

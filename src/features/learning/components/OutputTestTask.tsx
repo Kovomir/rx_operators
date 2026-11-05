@@ -157,18 +157,23 @@ export function OutputTestTask({
             {!task.inputSummary && (
               <ValueSequence label="Vstup" values={sourceValuesForDisplay} />
             )}
-            {task.expectedOutputValues && !task.expectedTapValues && (
-              <ValueSequence
-                label={task.expectedOutputLabel ?? "Očekávaný výstup"}
-                values={task.expectedOutputValues}
-              />
+            {(task.expectedOutputValues || task.expectedTapValues) && (
+              <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
+                {task.expectedOutputValues && (
+                  <ValueSequence
+                    label="Očekávaný výstup"
+                    values={task.expectedOutputValues}
+                  />
+                )}
+                {task.expectedTapValues && (
+                  <ValueSequence
+                    label="Očekávaný výpis v konzoli"
+                    values={task.expectedTapValues}
+                  />
+                )}
+              </div>
             )}
             {task.expectedTapValues && (
-              <>
-                <ValueSequence
-                  label="Výpis v konzoli"
-                  values={task.expectedTapValues}
-                />
                 <InfoBox>
                   Konzoli otevřete pomocí{" "}
                   <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
@@ -180,7 +185,6 @@ export function OutputTestTask({
                   </kbd>
                   .
                 </InfoBox>
-              </>
             )}
           </div>
         </div>
