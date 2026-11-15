@@ -131,11 +131,11 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
       },
       {
         label: "V aplikaci",
-        text: "Odběratel může vykreslit výsledky hledání, aktualizovat počitadlo, zobrazit toast nebo uložit výsledek do stavu komponenty.",
+        text: "Odběratel může vykreslit výsledky hledání, aktualizovat počítadlo, zobrazit toast nebo uložit výsledek do stavu komponenty.",
       },
       {
         label: "Co sledovat",
-        text: "Ve vizualizaci je odběratel vpravo. Hodnoty, které sem dorazí, tvoří výstup pipeline. Aplikace na ně potom může reagovat například překreslením komponenty, změnou počitadla nebo zobrazením výsledku.",
+        text: "Ve vizualizaci je odběratel vpravo. Hodnoty, které sem dorazí, tvoří výstup pipeline. Aplikace na ně potom může reagovat například překreslením komponenty, změnou počítadla nebo zobrazením výsledku.",
       },
     ],
   },
@@ -157,10 +157,11 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
         text: "Knihovna operátorů slouží jako rychlé vysvětlení a vizuální ukázka. Výukové úlohy potom ověří, že operátor umíte použít ve správné části pipeline.",
       },
     ],
-    codeExample: `source$.pipe(
-  map(value => value * 2) // každou hodnotu vynásobí 2
-).subscribe(value => {
-  console.log(value); // odběratel reaguje na výsledek, například výpisem do konzole
+    codeExample: `source$.pipe(                       // vytvoří řetězec operátorů nad zdrojovým proudem
+  map(value => value * 2),          // každou hodnotu vynásobí 2
+  filter(value => value > 0)        // propustí pouze hodnoty větší než 0
+).subscribe(value => {              // přihlásí odběratele k odběru hodnot
+  console.log(value);               // vypíše přijatou hodnotu do konzole
 });`,
     resources: [
       {
