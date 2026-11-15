@@ -126,29 +126,6 @@ export const CATCH_ERROR_TASKS: CatchErrorOutputTestTaskDefinition[] = [
       },
     ],
     enabledOperatorTypes: ["filter", "map", "catchError"],
-    expectedOperatorTypes: ["filter", "filter", "filter", "map", "catchError"],
-    operatorRequirements: [
-      {
-        type: "filter",
-        target: "color",
-        allowedColors: ["green"],
-      },
-      {
-        type: "filter",
-        target: "shape",
-        allowedShapes: ["triangle"],
-      },
-      {
-        type: "filter",
-        target: "value",
-        allowedValueKinds: ["even"],
-      },
-      {
-        type: "map",
-        operation: "multiply",
-        operand: 5,
-      },
-    ],
     showSourceValueDetails: true,
     maxOperators: 5,
   },

@@ -59,7 +59,6 @@ export const START_WITH_TASKS: StartWithOutputTestTaskDefinition[] = [
     sourceValues: START_WITH_INITIAL_SOURCE_VALUES,
     expectedOutputValues: [1, 2, 3, 4],
     enabledOperatorTypes: ["startWith"],
-    expectedOperatorTypes: ["startWith"],
     maxOperators: 1,
   },
   {
@@ -69,7 +68,6 @@ export const START_WITH_TASKS: StartWithOutputTestTaskDefinition[] = [
     sourceValues: START_WITH_FILTER_SOURCE_VALUES,
     expectedOutputValues: [10, 30],
     enabledOperatorTypes: ["startWith", "filter", "map"],
-    expectedOperatorTypes: ["startWith", "filter", "map"],
     maxOperators: 3,
   },
 ];

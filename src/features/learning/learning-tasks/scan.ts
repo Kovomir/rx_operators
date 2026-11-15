@@ -66,7 +66,6 @@ export const SCAN_TASKS: ScanOutputTestTaskDefinition[] = [
     sourceValues: SCAN_RUNNING_SUM_SOURCE_VALUES,
     expectedOutputValues: [1, 3, 6, 10],
     enabledOperatorTypes: ["scan"],
-    expectedOperatorTypes: ["scan"],
     maxOperators: 1,
   },
   {
@@ -76,7 +75,6 @@ export const SCAN_TASKS: ScanOutputTestTaskDefinition[] = [
     sourceValues: SCAN_EVEN_SOURCE_VALUES,
     expectedOutputValues: [2, 6, 12],
     enabledOperatorTypes: ["filter", "scan"],
-    expectedOperatorTypes: ["filter", "scan"],
     maxOperators: 2,
   },
   {
@@ -86,7 +84,6 @@ export const SCAN_TASKS: ScanOutputTestTaskDefinition[] = [
     sourceValues: SCAN_AFTER_SKIP_SOURCE_VALUES,
     expectedOutputValues: [3, 7, 12],
     enabledOperatorTypes: ["skip", "scan"],
-    expectedOperatorTypes: ["skip", "scan"],
     maxOperators: 2,
   },
 ];

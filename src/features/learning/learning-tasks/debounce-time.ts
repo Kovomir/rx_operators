@@ -64,8 +64,6 @@ export const DEBOUNCE_TIME_TASKS: DebounceTimeOutputTestTaskDefinition[] = [
       { color: "blue", shape: "circle", value: 4, emittedAtMs: 1850 },
     ],
     enabledOperatorTypes: ["debounceTime"],
-    expectedOperatorTypes: ["debounceTime"],
-    operatorRequirements: [{ type: "debounceTime", durationMs: 1000 }],
     maxOperators: 1,
   },
 ];

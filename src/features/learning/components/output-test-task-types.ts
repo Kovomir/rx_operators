@@ -9,24 +9,6 @@ import type {
 
 export type ExpectedOutputValue = DisplayStreamValue;
 
-export type PipelineOperatorRequirement =
-  | {
-      type: "filter";
-      target: "color" | "shape" | "value";
-      allowedColors?: string[];
-      allowedShapes?: string[];
-      allowedValueKinds?: string[];
-    }
-  | {
-      type: "map";
-      operation: "add" | "subtract" | "multiply";
-      operand: number;
-    }
-  | {
-      type: "debounceTime";
-      durationMs: number;
-    };
-
 export type OutputTestTaskDefinition = {
   id: string;
   taskNumber: number;
@@ -40,8 +22,6 @@ export type OutputTestTaskDefinition = {
   sourceDisplayValues?: Array<DisplayStreamValue | StreamValue>;
   expectedOutputValues?: ExpectedOutputValue[];
   validationOutputValues?: ExpectedOutputValue[];
-  expectedOperatorTypes?: PipelineOperatorType[];
-  operatorRequirements?: PipelineOperatorRequirement[];
   expectedTapValues?: number[];
   showSourceValueDetails?: boolean;
   initialOperators?: PipelineOperator[];

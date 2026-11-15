@@ -139,7 +139,6 @@ export const DISTINCT_UNTIL_CHANGED_TASKS: DistinctUntilChangedOutputTestTaskDef
       sourceValues: DISTINCT_NEIGHBOR_DUPLICATES_SOURCE_VALUES,
       expectedOutputValues: [1, 2, 3, 1],
       enabledOperatorTypes: ["distinctUntilChanged"],
-      expectedOperatorTypes: ["distinctUntilChanged"],
       maxOperators: 1,
     },
     {
@@ -149,7 +148,6 @@ export const DISTINCT_UNTIL_CHANGED_TASKS: DistinctUntilChangedOutputTestTaskDef
       sourceValues: DISTINCT_FILTER_SOURCE_VALUES,
       expectedOutputValues: [2, 4],
       enabledOperatorTypes: ["filter", "distinctUntilChanged"],
-      expectedOperatorTypes: ["filter", "distinctUntilChanged"],
       maxOperators: 2,
     },
     {
@@ -159,7 +157,6 @@ export const DISTINCT_UNTIL_CHANGED_TASKS: DistinctUntilChangedOutputTestTaskDef
       sourceValues: DISTINCT_MAP_SOURCE_VALUES,
       expectedOutputValues: [10, 20, 30],
       enabledOperatorTypes: ["map", "distinctUntilChanged"],
-      expectedOperatorTypes: ["map", "distinctUntilChanged"],
       maxOperators: 2,
     },
   ];

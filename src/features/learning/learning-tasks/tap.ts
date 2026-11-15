@@ -62,7 +62,6 @@ export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
     expectedOutputValues: [1, 2, 3],
     expectedTapValues: [1, 2, 3],
     enabledOperatorTypes: ["tap"],
-    expectedOperatorTypes: ["tap"],
     maxOperators: 1,
   },
   {
@@ -73,7 +72,6 @@ export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
     expectedOutputValues: [2, 4, 6],
     expectedTapValues: [2, 4, 6],
     enabledOperatorTypes: ["filter", "tap"],
-    expectedOperatorTypes: ["filter", "tap"],
     maxOperators: 2,
   },
   {
@@ -84,7 +82,6 @@ export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
     expectedOutputValues: [10, 20, 30],
     expectedTapValues: [1, 2, 3],
     enabledOperatorTypes: ["tap", "map"],
-    expectedOperatorTypes: ["tap", "map"],
     maxOperators: 2,
   },
 ];

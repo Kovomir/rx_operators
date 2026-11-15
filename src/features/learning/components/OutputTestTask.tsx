@@ -86,7 +86,6 @@ export function OutputTestTask({
     const nextResult = getOutputTestResult({
       actualOutputValues,
       actualTapValues,
-      operators,
       task,
     });
 
