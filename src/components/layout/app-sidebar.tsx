@@ -47,12 +47,12 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to={DEFAULT_APP_PATH}>
-                <div className="flex size-8 items-center justify-center overflow-hidden rounded-lg bg-white text-foreground ring-1 ring-border">
+                <div className="size-8 shrink-0 overflow-hidden rounded-lg">
                   <img
                     src="/rx-icon.png"
                     alt=""
                     aria-hidden="true"
-                    className="size-full object-contain"
+                    className="size-full scale-[1.4] object-cover"
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

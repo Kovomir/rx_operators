@@ -15,7 +15,7 @@ export function ValueSequence({ label, values }: ValueSequenceProps) {
   return (
     <div className="grid w-fit max-w-full gap-1">
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
-      <div className="flex min-h-9 w-fit max-w-full flex-wrap items-center gap-2 rounded-md border bg-muted/35 px-2 py-1.5">
+      <div className="flex min-h-9 w-fit max-w-full flex-wrap items-center gap-2 rounded-md border bg-card px-2 py-1.5">
         {values.length === 0 ? (
           <span className="px-1.5 text-xs text-muted-foreground">Prázdný</span>
         ) : (
@@ -35,7 +35,7 @@ function ValueBadge({
 }) {
   if (typeof value === "number") {
     return (
-      <span className="flex size-7 items-center justify-center rounded-md border bg-background font-mono text-xs font-semibold text-foreground shadow-xs">
+      <span className="flex size-7 items-center justify-center rounded-md border bg-muted font-mono text-xs font-semibold text-foreground shadow-xs dark:bg-background">
         {formatDisplayNumber(value)}
       </span>
     );

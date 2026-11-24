@@ -63,7 +63,7 @@ export function PipelineEditor({
   return (
     <div
       className={cn(
-        "min-w-0 max-w-full overflow-hidden rounded-lg border bg-background shadow-sm",
+        "min-w-0 max-w-full overflow-hidden rounded-lg border bg-card shadow-sm",
         className
       )}
     >

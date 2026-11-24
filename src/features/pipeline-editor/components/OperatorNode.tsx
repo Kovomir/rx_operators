@@ -39,9 +39,8 @@ export function OperatorNode({
     <div
       className={cn(
         "flex h-44 w-48 shrink-0 cursor-pointer flex-col justify-between rounded-md border bg-card p-2.5 text-card-foreground shadow-sm outline-none transition-colors",
-        "hover:border-primary/35 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring",
-        highlighted && "border-primary bg-primary/5 ring-2 ring-primary/20",
-        selected && "border-primary bg-primary/5 ring-2 ring-primary/20"
+        "hover:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring",
+        (highlighted || selected) && "border-primary ring-2 ring-primary/20 hover:border-primary"
       )}
       role="button"
       tabIndex={0}

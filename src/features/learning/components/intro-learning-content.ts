@@ -157,11 +157,11 @@ export const INTRO_LEARNING_STEPS: IntroLearningStep[] = [
         text: "Knihovna operátorů slouží jako rychlé vysvětlení a vizuální ukázka. Výukové úlohy potom ověří, že operátor umíte použít ve správné části pipeline.",
       },
     ],
-    codeExample: `source$.pipe(                       // vytvoří řetězec operátorů nad zdrojovým proudem
-  map(value => value * 2),          // každou hodnotu vynásobí 2
-  filter(value => value > 0)        // propustí pouze hodnoty větší než 0
-).subscribe(value => {              // přihlásí odběratele k odběru hodnot
-  console.log(value);               // vypíše přijatou hodnotu do konzole
+    codeExample: `source$.pipe(                    // vytvoří řetězec operátorů nad zdrojovým proudem
+  map(value => value * 2),       // každou hodnotu vynásobí 2
+  filter(value => value > 0)     // propustí pouze hodnoty větší než 0
+).subscribe(value => {           // přihlásí odběratele k odběru hodnot
+  console.log(value);            // vypíše přijatou hodnotu do konzole
 });`,
     resources: [
       {

@@ -59,7 +59,7 @@ export function PipelineFlow({
   return (
     <div
       ref={scrollContainerRef}
-      className="max-w-full overflow-x-auto"
+      className="max-w-full overflow-x-auto bg-muted/60 dark:bg-background/40"
     >
       <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
         <EndpointNode

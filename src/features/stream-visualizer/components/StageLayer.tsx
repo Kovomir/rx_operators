@@ -36,10 +36,10 @@ export const StageLayer = memo(function StageLayer({
             x2={stagePosition.x}
             y1={STAGE_GUIDE_TOP_Y}
             y2={STAGE_GUIDE_BOTTOM_Y}
-            stroke={
+            className={
               stagePosition.id === selectedStageId
-                ? "var(--primary)"
-                : "var(--border)"
+                ? "stroke-primary"
+                : "stroke-muted-foreground/45"
             }
             strokeWidth={stagePosition.id === selectedStageId ? "2" : "1"}
             strokeDasharray={stagePosition.id === selectedStageId ? "5 7" : "4 8"}
@@ -48,15 +48,10 @@ export const StageLayer = memo(function StageLayer({
             cx={stagePosition.x}
             cy={stagePosition.y}
             r={stagePosition.id === selectedStageId ? "6" : "4"}
-            fill={
+            className={
               stagePosition.id === selectedStageId
-                ? "var(--primary)"
-                : "var(--background)"
-            }
-            stroke={
-              stagePosition.id === selectedStageId
-                ? "var(--background)"
-                : "var(--border)"
+                ? "fill-primary stroke-card"
+                : "fill-card stroke-muted-foreground/65"
             }
             strokeWidth={stagePosition.id === selectedStageId ? "2" : "1.5"}
           />
@@ -345,7 +340,7 @@ function StageDetailBadge({ x, text }: StageDetailBadgeProps) {
       width={badgeWidth}
       height={STAGE_DETAIL_BADGE_HEIGHT}
     >
-      <div className="flex h-full items-center justify-center truncate rounded-md bg-muted px-2 font-mono text-xs text-muted-foreground">
+      <div className="flex h-full items-center justify-center truncate rounded-md border bg-card px-2 font-mono text-xs text-muted-foreground">
         <span className="truncate">{text}</span>
       </div>
     </foreignObject>

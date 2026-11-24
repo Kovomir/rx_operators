@@ -27,7 +27,7 @@ export function LearningProgressCard({
     : "Všechny úlohy splněny";
 
   return (
-    <article className="grid min-w-0 gap-5 rounded-lg border bg-background p-5 shadow-sm lg:row-span-2">
+    <article className="grid min-w-0 gap-5 rounded-lg border bg-primary/5 p-5 shadow-sm dark:bg-primary/10 lg:row-span-2">
       <div className="grid min-w-0 gap-5">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -45,7 +45,7 @@ export function LearningProgressCard({
           </div>
         </div>
 
-        <div className="grid gap-4 rounded-md border bg-muted/35 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div className="grid gap-4 rounded-md border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <div className="grid min-w-0 gap-3">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
@@ -56,7 +56,7 @@ export function LearningProgressCard({
               </p>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-full bg-background">
+            <div className="h-2 overflow-hidden rounded-full bg-muted dark:bg-background">
               <div
                 className="h-full rounded-full bg-primary"
                 style={{

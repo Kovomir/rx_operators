@@ -20,7 +20,7 @@ export function TrackLayer({
           x2={stagePositions[stagePositions.length - 1]?.x ?? visualizerWidth}
           y1={streamLane.y}
           y2={streamLane.y}
-          stroke="var(--border)"
+          className="stroke-muted-foreground/65"
           strokeWidth="1.5"
           strokeDasharray="8 10"
         />

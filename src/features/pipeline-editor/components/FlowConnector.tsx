@@ -13,8 +13,8 @@ export function FlowConnector({
   return (
     <div
       className={cn(
-        "flex h-8 w-7 shrink-0 items-center justify-center text-muted-foreground/45",
-        muted && "text-muted-foreground/25",
+        "flex h-8 w-7 shrink-0 items-center justify-center text-muted-foreground/75",
+        muted && "text-muted-foreground/65",
         className
       )}
       aria-hidden="true"

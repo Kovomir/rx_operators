@@ -53,7 +53,7 @@ export function VisualizerCanvas({
   return (
     <div
       ref={scrollContainerRef}
-      className="max-w-full overflow-x-auto bg-muted/20"
+      className="max-w-full overflow-x-auto bg-muted/60 dark:bg-background/40"
     >
       <svg
         width={width}

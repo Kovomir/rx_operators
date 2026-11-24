@@ -104,7 +104,7 @@ export function OutputTestTask({
 
   return (
     <div className="grid min-w-0 gap-5">
-      <section className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+      <section className="grid min-w-0 gap-4 rounded-lg border bg-primary/5 p-4 dark:bg-primary/10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <div className="min-w-0">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-normal text-primary">
@@ -116,7 +116,7 @@ export function OutputTestTask({
               </p>
             )}
             {task.title && (
-              <h2 className="mt-1 text-sm font-semibold text-foreground">
+              <h2 className="mt-1 text-base font-semibold text-foreground">
                 {task.title}
               </h2>
             )}
@@ -144,7 +144,7 @@ export function OutputTestTask({
           </div>
         </div>
 
-        <div className="min-w-0 border-l-0 pt-0 lg:border-l lg:pl-4">
+        <div className="min-w-0 border-t pt-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
           <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
           <div className="mt-3 grid gap-3">
             {task.inputSummary && (
@@ -223,7 +223,7 @@ function TaskSummaryLine({
   value: string;
 }) {
   return (
-    <div className="rounded-md border bg-muted/35 px-3 py-2 text-sm leading-6 text-foreground">
+    <div className="rounded-md border bg-card px-3 py-2 text-sm leading-6 text-card-foreground">
       <span className="font-semibold">{label}:</span>{" "}
       <span className="text-muted-foreground">{value}</span>
     </div>

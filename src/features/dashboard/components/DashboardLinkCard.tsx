@@ -16,7 +16,7 @@ export function DashboardLinkCard({
   onOpen,
 }: DashboardLinkCardProps) {
   return (
-    <article className="grid min-w-0 gap-4 rounded-lg border bg-background p-5 shadow-sm">
+    <article className="grid min-w-0 gap-4 rounded-lg border bg-card p-5 shadow-sm dark:bg-background">
       <div className="flex min-w-0 items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
           <Icon className="size-5" />

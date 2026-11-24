@@ -31,12 +31,12 @@ function BrandPanel() {
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.18)_0%,transparent_38%,rgba(255,255,255,0.12)_100%)]" />
       <div className="relative flex min-h-88 flex-col justify-between gap-10 p-8 md:min-h-full lg:p-10 xl:p-12">
         <div className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center overflow-hidden rounded-xl bg-white/95 text-foreground shadow-sm">
+          <div className="size-12 shrink-0 overflow-hidden rounded-xl">
             <img
               src="/rx-icon.png"
               alt=""
               aria-hidden="true"
-              className="size-full object-contain"
+              className="size-full scale-[1.34] object-cover"
             />
           </div>
           <div>
