@@ -32,7 +32,7 @@ export function OperatorLibraryPage() {
   const navigationState = location.state as OperatorLibraryNavigationState | null;
   const [expandedOperator, setExpandedOperator] =
     useState<PipelineOperatorType | null>(
-      navigationState?.activeOperatorType ?? "map"
+      navigationState?.activeOperatorType ?? null
     );
 
   function toggleOperator(operatorType: PipelineOperatorType) {
