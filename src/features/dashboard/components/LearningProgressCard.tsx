@@ -79,7 +79,7 @@ export function LearningProgressCard({
                   type="button"
                   size="icon"
                   className={cn(
-                    "mx-2 size-16 justify-self-end rounded-full shadow-sm sm:mx-4 sm:self-center",
+                    "mx-2 size-16 justify-self-end rounded-full shadow-sm motion-safe:hover:scale-110 sm:mx-4 sm:self-center",
                     allTasksCompleted &&
                       "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-700"
                   )}
@@ -93,7 +93,7 @@ export function LearningProgressCard({
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="left" sideOffset={8}>
+              <TooltipContent side="top" sideOffset={8}>
                 {allTasksCompleted ? "Procvičovat" : "Pokračovat"}
               </TooltipContent>
             </Tooltip>
