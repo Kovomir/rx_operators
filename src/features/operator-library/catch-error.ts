@@ -72,7 +72,6 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
         shape: "circle",
         color: "blue",
         value: 4,
-        emittedAtMs: 450,
       },
       {
         id: "library-catch-error-cancelled-5",
@@ -80,7 +79,6 @@ export const CATCH_ERROR_OPERATOR_LIBRARY_ENTRY: CatchErrorOperatorLibraryEntry 
         shape: "square",
         color: "green",
         value: 5,
-        emittedAtMs: 650,
       },
     ],
   };
