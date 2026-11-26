@@ -223,6 +223,7 @@ export function PlaygroundPage() {
         scrollSync={pipelineScrollSync}
         selectedOperatorId={activeSelectedOperatorId}
         selectedOperatorFocusKey={selectedOperatorFocusKey}
+        showSubscriberOutput
       />
 
       <div className="grid shrink-0 self-end justify-items-end gap-2">

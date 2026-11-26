@@ -30,7 +30,7 @@ export function useVisualScheduler({
   streamLanes,
 }: UseVisualSchedulerArgs) {
   const [visualValues, setVisualValues] = useState<LiveVisualValue[]>([]);
-  const scheduledTimeoutsRef = useRef<number[]>([]);
+  const scheduledTimeoutsRef = useRef(new Set<number>());
   const runIdRef = useRef(0);
   const runStartedAtMsRef = useRef(getAnimationNowMs());
   const playerRef = useRef<ReturnType<typeof createVisualTracePlayer> | null>(
@@ -42,7 +42,7 @@ export function useVisualScheduler({
       window.clearTimeout(timeoutId);
     }
 
-    scheduledTimeoutsRef.current = [];
+    scheduledTimeoutsRef.current.clear();
   }, []);
 
   const createPlayer = useCallback(
@@ -75,6 +75,7 @@ export function useVisualScheduler({
     const elapsedMs = getAnimationNowMs() - runStartedAtMsRef.current;
     const delayMs = Math.max(0, action.atMs - elapsedMs);
     const timeoutId = window.setTimeout(() => {
+      scheduledTimeoutsRef.current.delete(timeoutId);
       if (runId !== runIdRef.current) {
         return;
       }
@@ -85,7 +86,7 @@ export function useVisualScheduler({
       }
     }, delayMs);
 
-    scheduledTimeoutsRef.current.push(timeoutId);
+    scheduledTimeoutsRef.current.add(timeoutId);
   }, []);
 
   const handleTraceEvent = useCallback(

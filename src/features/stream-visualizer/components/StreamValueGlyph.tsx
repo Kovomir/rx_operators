@@ -5,7 +5,7 @@ import {
   DROPPED_STREAM_COLOR_STYLES,
   STREAM_COLOR_STYLES,
 } from "../constants";
-import { formatDisplayNumber } from "../value-formatting";
+import { ERROR_VALUE_LABEL, formatDisplayNumber } from "../value-formatting";
 
 type StreamValueGlyphProps = {
   streamValue: StreamValue;
@@ -89,7 +89,7 @@ function ErrorGlyph() {
         className="select-none font-mono text-[10px] font-bold uppercase"
         fill="#475569"
       >
-        ERR
+        {ERROR_VALUE_LABEL}
       </text>
     </g>
   );

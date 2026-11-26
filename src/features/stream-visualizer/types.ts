@@ -31,8 +31,7 @@ export type ValueAnimationStatus =
   | "mapped"
   | "tapped"
   | "passed"
-  | "dropped"
-  | "completed";
+  | "dropped";
 
 export type LiveVisualValue = {
   id: string;
