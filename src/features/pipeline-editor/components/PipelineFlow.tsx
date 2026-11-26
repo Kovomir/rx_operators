@@ -59,9 +59,9 @@ export function PipelineFlow({
   return (
     <div
       ref={scrollContainerRef}
-      className="max-w-full overflow-x-auto bg-muted/60 dark:bg-background/40"
+      className="h-52 max-w-full overflow-x-auto overflow-y-hidden bg-muted/60 [scrollbar-width:thin] dark:bg-background/40"
     >
-      <div className="flex min-h-60 min-w-max items-center gap-1.5 px-3 py-5">
+      <div className="flex h-48 min-w-max items-center gap-1.5 px-3">
         <EndpointNode
           highlighted={highlightedElement === "source"}
           variant="source"

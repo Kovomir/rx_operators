@@ -15,9 +15,9 @@ export function ValueSequence({
   values,
 }: ValueSequenceProps) {
   return (
-    <div className="grid w-fit max-w-full gap-1">
+    <div className="grid w-fit min-w-0 max-w-full gap-0.5">
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
-      <div className="flex min-h-9 w-fit max-w-full flex-wrap items-center gap-2 rounded-md border bg-card px-2 py-1.5">
+      <div className="flex min-h-11 w-fit max-w-full flex-wrap items-center gap-1 rounded-md border bg-card px-1.5 py-1">
         {values.length === 0 ? (
           <span className="px-1.5 text-xs text-muted-foreground">Prázdný</span>
         ) : (
@@ -44,10 +44,10 @@ function ValueBadge({
   return (
     <span className="grid shrink-0 justify-items-center gap-0.5">
       <svg
-        width="40"
-        height="40"
+        width="36"
+        height="36"
         viewBox="-20 -20 40 40"
-        className="block size-10"
+        className="block size-9"
         aria-label={formatStreamValueLabel(value, caption)}
         role="img"
       >

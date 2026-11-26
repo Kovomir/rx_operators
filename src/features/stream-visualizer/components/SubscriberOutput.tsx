@@ -17,8 +17,8 @@ export function SubscriberOutput({ runId, totalCount, values }: SubscriberOutput
 
   return (
     <div className="grid w-fit max-w-full gap-1">
-      <div className="text-xs font-medium text-muted-foreground mb-1">
-          <strong>Výstup odběratele</strong>
+      <div className="mb-1 text-xs font-medium text-muted-foreground">
+        <strong>Výstup odběratele</strong>
       </div>
       <div className="relative flex min-h-[66px] w-fit max-w-full flex-wrap items-center gap-2 rounded-md border bg-card px-2 py-1.5">
         {values.length === 0 && (

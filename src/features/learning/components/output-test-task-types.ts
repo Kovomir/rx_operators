@@ -10,7 +10,6 @@ export type OutputTestTaskDefinition = {
   taskLabelPrefix?: string;
   difficulty?: "easy" | "medium" | "hard";
   title: string;
-  taskType?: "output" | "behavior";
   inputSummary?: string;
   outputSummary?: string;
   sourceValues: StreamValue[];

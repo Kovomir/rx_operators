@@ -55,7 +55,6 @@ export const DEBOUNCE_TIME_TASKS: DebounceTimeOutputTestTaskDefinition[] = [
     id: "debounce-time-rapid-series",
     taskNumber: 1,
     title: "Zajistěte minimální rozestup",
-    taskType: "behavior",
     inputSummary: "hodnoty přicházejí v rychlé sérii",
     outputSummary:
       "mezi výstupními hodnotami nesmí být menší rozestup než 1 sekunda",

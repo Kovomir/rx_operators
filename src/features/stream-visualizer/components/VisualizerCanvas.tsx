@@ -4,6 +4,8 @@ import type { PipelineScrollSyncController } from "@/features/pipeline-scroll-sy
 
 import { SVG_HEIGHT } from "../constants";
 
+const SCROLLBAR_SPACE_PX = 16;
+
 type VisualizerCanvasProps = {
   children: ReactNode;
   centeredX?: number;
@@ -53,7 +55,8 @@ export function VisualizerCanvas({
   return (
     <div
       ref={scrollContainerRef}
-      className="max-w-full overflow-x-auto bg-muted/60 dark:bg-background/40"
+      className="max-w-full overflow-x-auto overflow-y-hidden bg-muted/60 [scrollbar-width:thin] dark:bg-background/40"
+      style={{ height: SVG_HEIGHT + SCROLLBAR_SPACE_PX }}
     >
       <svg
         width={width}
