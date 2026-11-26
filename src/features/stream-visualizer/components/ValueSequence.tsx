@@ -1,11 +1,12 @@
-import type { StreamValue } from "../types";
-import { formatDisplayNumber, formatStreamValueLabel } from "../value-formatting";
+import type { StreamValue } from "@/types/stream";
+
+import { formatStreamValueLabel } from "../value-formatting";
 import { StreamValueGlyph } from "./StreamValueGlyph";
 
 type ValueSequenceProps = {
   getCaption?: (value: StreamValue) => string | undefined;
   label: string;
-  values: (number | StreamValue)[];
+  values: StreamValue[];
 };
 
 export function ValueSequence({
@@ -20,11 +21,11 @@ export function ValueSequence({
         {values.length === 0 ? (
           <span className="px-1.5 text-xs text-muted-foreground">Prázdný</span>
         ) : (
-          values.map((value, index) => (
+          values.map((value) => (
             <ValueBadge
-              key={index}
+              key={value.id}
               value={value}
-              caption={typeof value === "number" ? undefined : getCaption?.(value)}
+              caption={getCaption?.(value)}
             />
           ))
         )}
@@ -38,16 +39,8 @@ function ValueBadge({
   value,
 }: {
   caption?: string;
-  value: number | StreamValue;
+  value: StreamValue;
 }) {
-  if (typeof value === "number") {
-    return (
-      <span className="flex size-7 items-center justify-center rounded-md border bg-muted font-mono text-xs font-semibold text-foreground shadow-xs dark:bg-background">
-        {formatDisplayNumber(value)}
-      </span>
-    );
-  }
-
   return (
     <span className="grid shrink-0 justify-items-center gap-0.5">
       <svg

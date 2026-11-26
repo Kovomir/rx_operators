@@ -19,11 +19,9 @@ import {
 } from "@/lib/rx/evaluate-pipeline-output";
 import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
+import type { StreamValue } from "@/types/stream";
 import { clonePipelineOperators } from "./pipeline-operator-clone";
-import type {
-  ExpectedOutputValue,
-  OutputTestTaskDefinition,
-} from "./output-test-task-types";
+import type { OutputTestTaskDefinition } from "./output-test-task-types";
 import {
   getOutputTestResult,
   type TestResult,
@@ -67,11 +65,7 @@ export function OutputTestTask({
     () => evaluatePipelineTapValues(task.sourceValues, operators),
     [operators, task.sourceValues]
   );
-  const displayedSourceValues = task.showSourceValueDetails
-    ? task.sourceValues
-    : task.sourceValues.map((value) => value.value);
-  const sourceValuesForDisplay =
-    task.sourceDisplayValues ?? displayedSourceValues;
+  const getTimeCaption = task.showEmissionTimes ? formatEmissionTime : undefined;
   const taskLabel = `${task.taskLabelPrefix ?? "Úloha"} ${task.taskNumber}`;
   const isChallengeTask = task.taskLabelPrefix === "Výzva";
 
@@ -153,18 +147,21 @@ export function OutputTestTask({
             {task.inputSummary && (
               <TaskSummaryLine label="Vstup" value={task.inputSummary} />
             )}
+            <ValueSequence
+              label={task.inputSummary ? "Vstupní hodnoty" : "Vstup"}
+              values={task.sourceValues}
+              getCaption={getTimeCaption}
+            />
             {task.outputSummary && (
               <TaskSummaryLine label="Výstup" value={task.outputSummary} />
-            )}
-            {!task.inputSummary && (
-              <TaskValueSequence label="Vstup" values={sourceValuesForDisplay} />
             )}
             {(task.expectedOutputValues || task.expectedTapValues) && (
               <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
                 {task.expectedOutputValues && (
-                  <TaskValueSequence
+                  <ValueSequence
                     label="Očekávaný výstup"
                     values={task.expectedOutputValues}
+                    getCaption={getTimeCaption}
                   />
                 )}
                 {task.expectedTapValues && (
@@ -219,29 +216,8 @@ export function OutputTestTask({
   );
 }
 
-function TaskValueSequence({
-  label,
-  values,
-}: {
-  label: string;
-  values: ExpectedOutputValue[];
-}) {
-  return (
-    <ValueSequence
-      label={label}
-      values={values.map((value, index) => {
-        if (typeof value === "number") {
-          return value;
-        }
-
-        const { color, shape, value: number, kind, emittedAtMs } = value;
-        return { id: String(index), color, shape, value: number, kind, emittedAtMs };
-      })}
-      getCaption={({ emittedAtMs }) =>
-        emittedAtMs === undefined ? undefined : `${emittedAtMs} ms`
-      }
-    />
-  );
+function formatEmissionTime({ emittedAtMs }: StreamValue) {
+  return emittedAtMs === undefined ? undefined : `${emittedAtMs} ms`;
 }
 
 function TaskSummaryLine({

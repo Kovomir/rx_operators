@@ -95,38 +95,33 @@ const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
   },
 ];
 
-const CATCH_ERROR_TASK_DISPLAY_VALUES: StreamValue[] =
-  CATCH_ERROR_TASK_SOURCE_VALUES.map((value) => ({
-    ...value,
-    emittedAtMs: undefined,
-  }));
-
 export const CATCH_ERROR_TASKS: CatchErrorOutputTestTaskDefinition[] = [
   {
     id: "catch-error-terminal-event",
     taskNumber: 1,
     title: "Zachyťte chybu ve streamu",
     sourceValues: CATCH_ERROR_TASK_SOURCE_VALUES,
-    sourceDisplayValues: CATCH_ERROR_TASK_DISPLAY_VALUES,
     expectedOutputValues: [
       {
+        id: "catch-error-terminal-event-output-1",
         shape: "triangle",
         color: "green",
         value: 10,
       },
       {
+        id: "catch-error-terminal-event-output-2",
         shape: "triangle",
         color: "green",
         value: 30,
       },
       {
+        id: "catch-error-terminal-event-output-3",
         shape: "square",
         color: "green",
         value: -1,
       },
     ],
     enabledOperatorTypes: ["filter", "map", "catchError"],
-    showSourceValueDetails: true,
     maxOperators: 5,
   },
 ];

@@ -53,14 +53,19 @@ const TAP_BEFORE_MAP_SOURCE_VALUES: StreamValue[] = [
   { id: "tap-map-task-source-3", shape: "triangle", color: "green", value: 3 },
 ];
 
+const TAP_FILTER_OUTPUT_VALUES = TAP_FILTER_SOURCE_VALUES.filter(
+  ({ value }) => value % 2 === 0
+);
+
 export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
   {
     id: "tap-log-values",
     taskNumber: 1,
     title: "Použijte operátor tap",
     sourceValues: TAP_LOG_VALUES_SOURCE_VALUES,
-    expectedOutputValues: [1, 2, 3],
-    expectedTapValues: [1, 2, 3],
+    expectedOutputValues: TAP_LOG_VALUES_SOURCE_VALUES,
+    expectedTapValues: TAP_LOG_VALUES_SOURCE_VALUES,
+    validateOutputAppearance: false,
     enabledOperatorTypes: ["tap"],
     maxOperators: 1,
   },
@@ -69,8 +74,9 @@ export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
     taskNumber: 2,
     title: "Použijte operátor tap",
     sourceValues: TAP_FILTER_SOURCE_VALUES,
-    expectedOutputValues: [2, 4, 6],
-    expectedTapValues: [2, 4, 6],
+    expectedOutputValues: TAP_FILTER_OUTPUT_VALUES,
+    expectedTapValues: TAP_FILTER_OUTPUT_VALUES,
+    validateOutputAppearance: false,
     enabledOperatorTypes: ["filter", "tap"],
     maxOperators: 2,
   },
@@ -79,8 +85,12 @@ export const TAP_TASKS: TapOutputTestTaskDefinition[] = [
     taskNumber: 3,
     title: "Použijte operátor tap",
     sourceValues: TAP_BEFORE_MAP_SOURCE_VALUES,
-    expectedOutputValues: [10, 20, 30],
-    expectedTapValues: [1, 2, 3],
+    expectedOutputValues: TAP_BEFORE_MAP_SOURCE_VALUES.map((value) => ({
+      ...value,
+      value: value.value * 10,
+    })),
+    expectedTapValues: TAP_BEFORE_MAP_SOURCE_VALUES,
+    validateOutputAppearance: false,
     enabledOperatorTypes: ["tap", "map"],
     maxOperators: 2,
   },

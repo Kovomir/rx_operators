@@ -17,10 +17,9 @@ export function formatDisplayNumber(value: number) {
 }
 
 export function formatStreamValueLabel(value: StreamValue, caption?: string) {
-  if (value.kind === "error") {
-    return ERROR_VALUE_LABEL;
-  }
-
-  const label = `${formatDisplayNumber(value.value)}, ${value.color}, ${value.shape}`;
+  const displayValue = value.kind === "error"
+    ? ERROR_VALUE_LABEL
+    : formatDisplayNumber(value.value);
+  const label = `${displayValue}, ${value.color}, ${value.shape}`;
   return caption ? `${label}, ${caption}` : label;
 }

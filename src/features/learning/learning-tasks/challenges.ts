@@ -407,8 +407,10 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     difficulty: "easy",
     title: "",
     sourceValues: DEBOUNCE_BEFORE_DISTINCT_SOURCE_VALUES,
+    showEmissionTimes: true,
     expectedOutputValues: [
       {
+        id: "challenge-debounce-before-distinct-output-1",
         shape: "triangle",
         color: "green",
         value: 30,
@@ -416,7 +418,6 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 3,
   },
   {
@@ -426,26 +427,31 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     difficulty: "easy",
     title: "",
     sourceValues: IMMEDIATE_INITIAL_DELAYED_DATA_SOURCE_VALUES,
+    showEmissionTimes: true,
     expectedOutputValues: [
       {
+        id: "challenge-immediate-initial-delayed-data-output-1",
         shape: "circle",
         color: "green",
         value: 10,
         emittedAtMs: 0,
       },
       {
+        id: "challenge-immediate-initial-delayed-data-output-2",
         shape: "circle",
         color: "red",
         value: 2,
         emittedAtMs: 1000,
       },
       {
+        id: "challenge-immediate-initial-delayed-data-output-3",
         shape: "square",
         color: "blue",
         value: 4,
         emittedAtMs: 1250,
       },
       {
+        id: "challenge-immediate-initial-delayed-data-output-4",
         shape: "triangle",
         color: "green",
         value: 6,
@@ -453,7 +459,6 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 3,
   },
   {
@@ -465,23 +470,25 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: DISTINCT_RUNNING_TOTALS_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-distinct-running-totals-output-1",
         shape: "circle",
         color: "red",
         value: 2,
       },
       {
+        id: "challenge-distinct-running-totals-output-2",
         shape: "triangle",
         color: "green",
         value: 5,
       },
       {
+        id: "challenge-distinct-running-totals-output-3",
         shape: "square",
         color: "blue",
         value: 9,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 2,
   },
   {
@@ -493,23 +500,25 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: TRANSFORM_ERROR_REPLACEMENT_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-transform-error-replacement-output-1",
         shape: "circle",
         color: "red",
         value: 3,
       },
       {
+        id: "challenge-transform-error-replacement-output-2",
         shape: "square",
         color: "blue",
         value: 5,
       },
       {
+        id: "challenge-transform-error-replacement-output-3",
         shape: "triangle",
         color: "green",
         value: 0,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 2,
   },
   {
@@ -521,18 +530,19 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: FIRST_LIMIT_MARKERS_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-first-limit-markers-output-1",
         shape: "circle",
         color: "green",
         value: 10,
       },
       {
+        id: "challenge-first-limit-markers-output-2",
         shape: "square",
         color: "green",
         value: 15,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 3,
   },
   {
@@ -544,18 +554,19 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: SKIP_AFTER_CALCULATION_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-skip-after-calculation-output-1",
         shape: "triangle",
         color: "green",
         value: 12,
       },
       {
+        id: "challenge-skip-after-calculation-output-2",
         shape: "circle",
         color: "blue",
         value: 20,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 4,
   },
   {
@@ -567,23 +578,25 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: CLEANED_EVEN_VALUES_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-cleaned-even-values-output-1",
         shape: "triangle",
         color: "green",
         value: 6,
       },
       {
+        id: "challenge-cleaned-even-values-output-2",
         shape: "triangle",
         color: "red",
         value: 12,
       },
       {
+        id: "challenge-cleaned-even-values-output-3",
         shape: "circle",
         color: "blue",
         value: 18,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 4,
   },
   {
@@ -593,14 +606,17 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     difficulty: "medium",
     title: "",
     sourceValues: STABLE_SENSOR_READINGS_SOURCE_VALUES,
+    showEmissionTimes: true,
     expectedOutputValues: [
       {
+        id: "challenge-stable-sensor-readings-output-1",
         shape: "square",
         color: "blue",
         value: 14,
         emittedAtMs: 2100,
       },
       {
+        id: "challenge-stable-sensor-readings-output-2",
         shape: "triangle",
         color: "red",
         value: 16,
@@ -608,7 +624,6 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 4,
   },
   {
@@ -620,28 +635,31 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: ERROR_RECOVERY_WITHOUT_DUPLICATE_STATE_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-error-recovery-without-duplicate-state-output-1",
         shape: "circle",
         color: "green",
         value: 10,
       },
       {
+        id: "challenge-error-recovery-without-duplicate-state-output-2",
         shape: "circle",
         color: "red",
         value: 12,
       },
       {
+        id: "challenge-error-recovery-without-duplicate-state-output-3",
         shape: "square",
         color: "blue",
         value: 16,
       },
       {
+        id: "challenge-error-recovery-without-duplicate-state-output-4",
         shape: "triangle",
         color: "green",
         value: 22,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 5,
   },
   {
@@ -653,23 +671,25 @@ export const CHALLENGE_TASKS: OutputTestTaskDefinition[] = [
     sourceValues: RELEVANT_EVEN_SUBTOTALS_SOURCE_VALUES,
     expectedOutputValues: [
       {
+        id: "challenge-relevant-even-subtotals-output-1",
         shape: "square",
         color: "blue",
         value: 2,
       },
       {
+        id: "challenge-relevant-even-subtotals-output-2",
         shape: "circle",
         color: "blue",
         value: 4,
       },
       {
+        id: "challenge-relevant-even-subtotals-output-3",
         shape: "triangle",
         color: "green",
         value: 6,
       },
     ],
     enabledOperatorTypes: ALL_CHALLENGE_OPERATOR_TYPES,
-    showSourceValueDetails: true,
     maxOperators: 5,
   },
 ];
