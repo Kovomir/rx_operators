@@ -25,49 +25,42 @@ const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
     shape: "circle",
     color: "red",
     value: 1,
-    emittedAtMs: 0,
   },
   {
     id: "catch-error-task-source-2",
     shape: "triangle",
     color: "green",
     value: 2,
-    emittedAtMs: 250,
   },
   {
     id: "catch-error-task-source-3",
     shape: "triangle",
     color: "blue",
     value: 3,
-    emittedAtMs: 500,
   },
   {
     id: "catch-error-task-source-4",
     shape: "triangle",
     color: "green",
     value: 5,
-    emittedAtMs: 750,
   },
   {
     id: "catch-error-task-source-5",
     shape: "triangle",
     color: "red",
     value: 6,
-    emittedAtMs: 1000,
   },
   {
     id: "catch-error-task-source-6",
     shape: "square",
     color: "green",
     value: 4,
-    emittedAtMs: 1250,
   },
   {
     id: "catch-error-task-source-7",
     shape: "triangle",
     color: "green",
     value: 6,
-    emittedAtMs: 1500,
   },
   {
     id: "catch-error-task-source-error",
@@ -75,7 +68,6 @@ const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
     shape: "square",
     color: "red",
     value: 0,
-    emittedAtMs: 1750,
   },
   {
     id: "catch-error-task-source-8",
@@ -83,7 +75,6 @@ const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
     shape: "triangle",
     color: "green",
     value: 8,
-    emittedAtMs: 2000,
   },
   {
     id: "catch-error-task-source-9",
@@ -91,7 +82,6 @@ const CATCH_ERROR_TASK_SOURCE_VALUES: StreamValue[] = [
     shape: "triangle",
     color: "green",
     value: 10,
-    emittedAtMs: 2250,
   },
 ];
 
