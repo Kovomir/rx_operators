@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import {
+  ArrowRightIcon,
   CheckCircle2Icon,
   PlayIcon,
+  PlusIcon,
   RotateCcwIcon,
   XCircleIcon,
 } from "lucide-react";
@@ -68,6 +70,8 @@ export function OutputTestTask({
   const getTimeCaption = task.showEmissionTimes ? formatEmissionTime : undefined;
   const taskLabel = `${task.taskLabelPrefix ?? "Úloha"} ${task.taskNumber}`;
   const isChallengeTask = task.taskLabelPrefix === "Výzva";
+  const hasExpectedOutput = Boolean(task.expectedOutputValues || task.outputSummary);
+  const hasExpectedResult = hasExpectedOutput || task.expectedTapValues;
 
   function handleOperatorsChange(nextOperators: PipelineOperator[]) {
     setOperators(nextOperators);
@@ -100,92 +104,105 @@ export function OutputTestTask({
   }
 
   return (
-    <div className="grid min-w-0 gap-5">
-      <section className="grid min-w-0 gap-4 rounded-lg border bg-primary/5 p-4 dark:bg-primary/10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <div className="min-w-0">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-normal text-primary">
-              {taskLabel}
-            </p>
-            {isChallengeTask && (
-              <p className="mt-1 text-sm leading-6 text-foreground">
-                Vyřešte složitější úlohu.
-              </p>
-            )}
-            {task.title && (
-              <h2 className="mt-1 text-base font-semibold text-foreground">
-                {task.title}
-              </h2>
+    <div className="grid min-w-0 gap-3">
+      <section className="grid min-h-[134px] min-w-0 gap-3 rounded-lg border bg-primary/5 px-3 py-2.5 sm:px-4 dark:bg-primary/10 xl:grid-cols-[20rem_minmax(0,1fr)]">
+        <div className="min-w-0 xl:col-start-2 xl:row-start-1 xl:border-l xl:pl-3">
+          <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
+          <div className="mt-1.5 flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:gap-3">
+            <div className="grid min-w-0 gap-1">
+              <ValueSequence
+                label="Vstup"
+                values={task.sourceValues}
+                getCaption={getTimeCaption}
+              />
+              {task.inputSummary && (
+                <p className="text-xs text-muted-foreground">{task.inputSummary}</p>
+              )}
+            </div>
+            {hasExpectedResult && (
+              <>
+                <ArrowRightIcon
+                  aria-hidden="true"
+                  className="ml-2 size-4 shrink-0 rotate-90 text-muted-foreground sm:mt-8 sm:ml-0 sm:rotate-0"
+                />
+                <div className="flex min-w-0 flex-wrap items-start gap-2 sm:gap-3">
+                  {hasExpectedOutput && (
+                    <div className="grid min-w-0 gap-1">
+                      {task.expectedOutputValues && (
+                        <ValueSequence
+                          label="Očekávaný výstup"
+                          values={task.expectedOutputValues}
+                          getCaption={getTimeCaption}
+                        />
+                      )}
+                      {task.outputSummary && (
+                        <p className="text-xs text-muted-foreground">
+                          {task.outputSummary}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {task.expectedTapValues && (
+                    <div className="flex min-w-0 items-start gap-2 sm:gap-3">
+                      {hasExpectedOutput && (
+                        <PlusIcon
+                          aria-hidden="true"
+                          className="mt-8 size-4 shrink-0 text-muted-foreground"
+                        />
+                      )}
+                      <ValueSequence
+                        label="Očekávaný výpis v konzoli"
+                        values={task.expectedTapValues}
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
+          {task.expectedTapValues && (
+            <InfoBox className="mt-2 px-2 py-1">
+              Konzoli otevřete pomocí{" "}
+              <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+                Ctrl + Shift + I
+              </kbd>{" "}
+              nebo klávesy{" "}
+              <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
+                F12
+              </kbd>
+              .
+            </InfoBox>
+          )}
+        </div>
 
-          <TestResultMessage
-            result={testResult}
-            failureMessage={
-              task.taskType === "behavior"
-                ? "Pipeline zatím nesplňuje požadované chování."
-                : undefined
-            }
-            onContinue={onContinue}
-          />
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button type="button" onClick={checkOutput}>
+        <div className="min-w-0 border-t pt-2.5 xl:col-start-1 xl:row-start-1 xl:self-center xl:border-t-0 xl:pt-0">
+          <p className="text-xs font-semibold uppercase tracking-normal text-primary">
+            {taskLabel}
+          </p>
+          {isChallengeTask && (
+            <p className="mt-0.5 text-sm text-foreground">
+              Vyřešte složitější úlohu.
+            </p>
+          )}
+          {task.title && (
+            <h2 className="mt-0.5 text-sm font-semibold text-foreground">
+              {task.title}
+            </h2>
+          )}
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button type="button" size="sm" onClick={checkOutput}>
               <CheckCircle2Icon />
               Zkontrolovat řešení
             </Button>
-            <Button type="button" variant="outline" onClick={resetTask}>
+            <Button type="button" size="sm" variant="outline" onClick={resetTask}>
               <RotateCcwIcon />
               Resetovat pipeline
             </Button>
           </div>
-        </div>
-
-        <div className="min-w-0 border-t pt-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
-          <h3 className="text-sm font-semibold text-foreground">Zadání</h3>
-          <div className="mt-3 grid gap-3">
-            {task.inputSummary && (
-              <TaskSummaryLine label="Vstup" value={task.inputSummary} />
-            )}
-            <ValueSequence
-              label={task.inputSummary ? "Vstupní hodnoty" : "Vstup"}
-              values={task.sourceValues}
-              getCaption={getTimeCaption}
-            />
-            {task.outputSummary && (
-              <TaskSummaryLine label="Výstup" value={task.outputSummary} />
-            )}
-            {(task.expectedOutputValues || task.expectedTapValues) && (
-              <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
-                {task.expectedOutputValues && (
-                  <ValueSequence
-                    label="Očekávaný výstup"
-                    values={task.expectedOutputValues}
-                    getCaption={getTimeCaption}
-                  />
-                )}
-                {task.expectedTapValues && (
-                  <ValueSequence
-                    label="Očekávaný výpis v konzoli"
-                    values={task.expectedTapValues}
-                  />
-                )}
-              </div>
-            )}
-            {task.expectedTapValues && (
-                <InfoBox>
-                  Konzoli otevřete pomocí{" "}
-                  <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
-                    Ctrl + Shift + I
-                  </kbd>{" "}
-                  nebo klávesy{" "}
-                  <kbd className="rounded border border-primary/20 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground shadow-xs">
-                    F12
-                  </kbd>
-                  .
-                </InfoBox>
-            )}
-          </div>
+          <TestResultMessage
+            result={testResult}
+            onContinue={onContinue}
+          />
         </div>
       </section>
 
@@ -220,63 +237,55 @@ function formatEmissionTime({ emittedAtMs }: StreamValue) {
   return emittedAtMs === undefined ? undefined : `${emittedAtMs} ms`;
 }
 
-function TaskSummaryLine({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-md border bg-card px-3 py-2 text-sm leading-6 text-card-foreground">
-      <span className="font-semibold">{label}:</span>{" "}
-      <span className="text-muted-foreground">{value}</span>
-    </div>
-  );
-}
+const resultBadgeClassName =
+  "flex w-fit max-w-full items-start gap-1.5 rounded-md border px-2 py-1 text-xs leading-5";
 
 function TestResultMessage({
-  failureMessage,
   onContinue,
   result,
 }: {
-  failureMessage?: string;
   result: NullableTestResult;
   onContinue?: () => void;
 }) {
-  if (result === null) {
-    return null;
-  }
-
   const isPassed = result === "passed";
+  const isFailed = result === "failed";
 
   return (
-    <div className="mt-4 flex max-w-full flex-wrap items-center gap-2">
+    <div className="mt-2 grid grid-cols-[minmax(0,1fr)] items-start">
       <div
+        role={isFailed ? "status" : undefined}
         className={cn(
-          "flex w-fit max-w-full items-start gap-2 rounded-md border px-3 py-2 text-xs leading-5",
-          isPassed
-            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-            : "border-red-200 bg-red-50 text-red-900"
+          resultBadgeClassName,
+          "col-start-1 row-start-1 border-red-200 bg-red-50 text-red-900",
+          !isFailed && "invisible"
         )}
       >
-        {isPassed ? (
-          <CheckCircle2Icon className="mt-0.5 size-4 shrink-0" />
-        ) : (
-          <XCircleIcon className="mt-0.5 size-4 shrink-0" />
-        )}
-        <span className="min-w-0">
-          {isPassed
-            ? "Správně."
-            : failureMessage ?? "Výstup neodpovídá očekávaným hodnotám."}
-        </span>
+        <XCircleIcon className="mt-0.5 size-4 shrink-0" />
+        <span className="min-w-0">Řešení není správné.</span>
       </div>
-      {isPassed && onContinue && (
-        <Button type="button" size="sm" onClick={onContinue}>
-          <PlayIcon />
-          Pokračovat
-        </Button>
-      )}
+      <div
+        className={cn(
+          "col-start-1 row-start-1 flex flex-wrap items-center gap-2",
+          !isPassed && "invisible"
+        )}
+      >
+        <div
+          role={isPassed ? "status" : undefined}
+          className={cn(
+            resultBadgeClassName,
+            "border-emerald-200 bg-emerald-50 text-emerald-900"
+          )}
+        >
+          <CheckCircle2Icon className="mt-0.5 size-4 shrink-0" />
+          Správně.
+        </div>
+        {onContinue && (
+          <Button type="button" size="sm" onClick={onContinue}>
+            <PlayIcon />
+            Pokračovat
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

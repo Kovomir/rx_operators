@@ -214,7 +214,7 @@ export function PipelineVisualizer({
 
   return (
     <section className="min-w-0 overflow-hidden rounded-lg border bg-card shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-2">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold text-foreground">{title}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
