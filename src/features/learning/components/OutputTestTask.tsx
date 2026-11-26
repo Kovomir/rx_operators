@@ -15,10 +15,7 @@ import {
   PipelineVisualizer,
   ValueSequence,
 } from "@/features/stream-visualizer";
-import {
-  evaluatePipelineOutput,
-  evaluatePipelineTapValues,
-} from "@/lib/rx/evaluate-pipeline-output";
+import { evaluatePipeline } from "@/lib/rx/evaluate-pipeline-output";
 import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
 import type { StreamValue } from "@/types/stream";
@@ -59,19 +56,13 @@ export function OutputTestTask({
       ? selectedOperatorId
       : null;
 
-  const actualOutputValues = useMemo(
-    () => evaluatePipelineOutput(task.sourceValues, operators),
-    [operators, task.sourceValues]
-  );
-  const actualTapValues = useMemo(
-    () => evaluatePipelineTapValues(task.sourceValues, operators),
+  const { outputValues: actualOutputValues, tapValues: actualTapValues } = useMemo(
+    () => evaluatePipeline(task.sourceValues, operators),
     [operators, task.sourceValues]
   );
   const getTimeCaption = task.showEmissionTimes ? formatEmissionTime : undefined;
   const taskLabel = `${task.taskLabelPrefix ?? "Úloha"} ${task.taskNumber}`;
   const isChallengeTask = task.taskLabelPrefix === "Výzva";
-  const hasExpectedOutput = Boolean(task.expectedOutputValues || task.outputSummary);
-  const hasExpectedResult = hasExpectedOutput || task.expectedTapValues;
 
   function handleOperatorsChange(nextOperators: PipelineOperator[]) {
     setOperators(nextOperators);
@@ -119,46 +110,36 @@ export function OutputTestTask({
                 <p className="text-xs text-muted-foreground">{task.inputSummary}</p>
               )}
             </div>
-            {hasExpectedResult && (
-              <>
-                <ArrowRightIcon
-                  aria-hidden="true"
-                  className="ml-2 size-4 shrink-0 rotate-90 text-muted-foreground sm:mt-8 sm:ml-0 sm:rotate-0"
+            <ArrowRightIcon
+              aria-hidden="true"
+              className="ml-2 size-4 shrink-0 rotate-90 text-muted-foreground sm:mt-8 sm:ml-0 sm:rotate-0"
+            />
+            <div className="flex min-w-0 flex-wrap items-start gap-2 sm:gap-3">
+              <div className="grid min-w-0 gap-1">
+                <ValueSequence
+                  label="Očekávaný výstup"
+                  values={task.expectedOutputValues}
+                  getCaption={getTimeCaption}
                 />
-                <div className="flex min-w-0 flex-wrap items-start gap-2 sm:gap-3">
-                  {hasExpectedOutput && (
-                    <div className="grid min-w-0 gap-1">
-                      {task.expectedOutputValues && (
-                        <ValueSequence
-                          label="Očekávaný výstup"
-                          values={task.expectedOutputValues}
-                          getCaption={getTimeCaption}
-                        />
-                      )}
-                      {task.outputSummary && (
-                        <p className="text-xs text-muted-foreground">
-                          {task.outputSummary}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {task.expectedTapValues && (
-                    <div className="flex min-w-0 items-start gap-2 sm:gap-3">
-                      {hasExpectedOutput && (
-                        <PlusIcon
-                          aria-hidden="true"
-                          className="mt-8 size-4 shrink-0 text-muted-foreground"
-                        />
-                      )}
-                      <ValueSequence
-                        label="Očekávaný výpis v konzoli"
-                        values={task.expectedTapValues}
-                      />
-                    </div>
-                  )}
+                {task.outputSummary && (
+                  <p className="text-xs text-muted-foreground">
+                    {task.outputSummary}
+                  </p>
+                )}
+              </div>
+              {task.expectedTapValues && (
+                <div className="flex min-w-0 items-start gap-2 sm:gap-3">
+                  <PlusIcon
+                    aria-hidden="true"
+                    className="mt-8 size-4 shrink-0 text-muted-foreground"
+                  />
+                  <ValueSequence
+                    label="Očekávaný výpis v konzoli"
+                    values={task.expectedTapValues}
+                  />
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
           {task.expectedTapValues && (
             <InfoBox className="mt-2 px-2 py-1">

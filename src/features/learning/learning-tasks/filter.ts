@@ -101,7 +101,6 @@ export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
     expectedOutputValues: FILTER_VALUE_TASK_SOURCE_VALUES.filter(
       ({ value }) => value % 2 === 0
     ),
-    validateOutputAppearance: false,
     enabledOperatorTypes: ["filter"],
     maxOperators: 1,
   },

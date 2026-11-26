@@ -13,9 +13,8 @@ export type OutputTestTaskDefinition = {
   inputSummary?: string;
   outputSummary?: string;
   sourceValues: StreamValue[];
-  expectedOutputValues?: StreamValue[];
+  expectedOutputValues: StreamValue[];
   expectedTapValues?: StreamValue[];
-  validateOutputAppearance?: boolean;
   showEmissionTimes?: boolean;
   initialOperators?: PipelineOperator[];
   enabledOperatorTypes?: PipelineOperatorType[];

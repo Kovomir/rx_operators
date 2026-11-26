@@ -63,7 +63,6 @@ export const TAKE_TASKS: TakeOutputTestTaskDefinition[] = [
     title: "Použijte operátor take",
     sourceValues: TAKE_FIRST_VALUES_SOURCE_VALUES,
     expectedOutputValues: TAKE_FIRST_VALUES_SOURCE_VALUES.slice(0, 2),
-    validateOutputAppearance: false,
     enabledOperatorTypes: ["take"],
     maxOperators: 1,
   },
