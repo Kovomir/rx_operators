@@ -1,9 +1,8 @@
 import type { PipelineTraceEvent } from "@/lib/rx/pipeline-trace";
 
 import {
-  MAP_PULSE_MS,
   MOVE_DURATION_MS,
-  OPERATOR_PAUSE_MS,
+  SUBSCRIBER_RECEIVE_DURATION_MS,
 } from "./constants";
 import { SUBSCRIBER_STAGE_ID } from "./pipeline-layout";
 import type { StagePosition, StreamLane } from "./types";
@@ -41,12 +40,14 @@ export function playSubscriberNextEvent({
   }
 
   const moveDurationMs = scaleDuration(MOVE_DURATION_MS, playbackSpeed);
-  const pulseDurationMs = scaleDuration(MAP_PULSE_MS, playbackSpeed);
-  const pauseDurationMs = scaleDuration(OPERATOR_PAUSE_MS, playbackSpeed);
+  const receiveDurationMs = scaleDuration(
+    SUBSCRIBER_RECEIVE_DURATION_MS,
+    playbackSpeed
+  );
   const startAtMs = reserveValueVisualTime(
     state,
     event.value.id,
-    moveDurationMs + pulseDurationMs + pauseDurationMs,
+    moveDurationMs,
     elapsedMs
   );
 
@@ -75,19 +76,15 @@ export function playSubscriberNextEvent({
       atMs: startAtMs + moveDurationMs,
       valueId: event.value.id,
       update: {
-        status: "completed",
-        scale: 1.14,
-        transitionDurationMs: pulseDurationMs,
+        opacity: 0,
+        scale: 1.3,
+        transitionDurationMs: receiveDurationMs,
       },
     },
     {
-      type: "update-value",
-      atMs: startAtMs + moveDurationMs + pulseDurationMs,
+      type: "remove-value",
+      atMs: startAtMs + moveDurationMs + receiveDurationMs,
       valueId: event.value.id,
-      update: {
-        scale: 1,
-        transitionDurationMs: pauseDurationMs,
-      },
     },
   ];
 }

@@ -2,12 +2,9 @@ import type {
   PipelineOperator,
   PipelineOperatorType,
 } from "@/features/pipeline-editor";
-import type {
-  DisplayStreamValue,
-  StreamValue,
-} from "@/features/stream-visualizer";
+import type { StreamValue } from "@/features/stream-visualizer";
 
-export type ExpectedOutputValue = DisplayStreamValue;
+export type ExpectedOutputValue = number | Omit<StreamValue, "id">;
 
 export type OutputTestTaskDefinition = {
   id: string;
@@ -19,7 +16,7 @@ export type OutputTestTaskDefinition = {
   inputSummary?: string;
   outputSummary?: string;
   sourceValues: StreamValue[];
-  sourceDisplayValues?: Array<DisplayStreamValue | StreamValue>;
+  sourceDisplayValues?: ExpectedOutputValue[];
   expectedOutputValues?: ExpectedOutputValue[];
   validationOutputValues?: ExpectedOutputValue[];
   expectedTapValues?: number[];

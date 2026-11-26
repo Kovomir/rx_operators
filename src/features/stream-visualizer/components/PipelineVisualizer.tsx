@@ -27,10 +27,20 @@ import {
 import { MAIN_STREAM_ID } from "@/lib/rx/stream-identity";
 import type { StreamValue } from "../types";
 import { StageLayer } from "./StageLayer";
+import { SubscriberOutput } from "./SubscriberOutput";
 import { TrackLayer } from "./TrackLayer";
 import { ValueLayer } from "./ValueLayer";
 import { VisualizerCanvas } from "./VisualizerCanvas";
 import { VisualizerControls } from "./VisualizerControls";
+
+const LIVE_OUTPUT_LIMIT = 10;
+
+const INITIAL_RUN_STATE = {
+  outputCount: 0,
+  outputValues: [] as StreamValue[],
+  runId: 0,
+  sourceCount: 0,
+};
 
 type PipelineVisualizerProps = {
   autoRunSourceValues?: boolean;
@@ -45,6 +55,7 @@ type PipelineVisualizerProps = {
   scrollSync?: PipelineScrollSyncController;
   selectedOperatorId?: string | null;
   selectedOperatorFocusKey?: number;
+  showSubscriberOutput?: boolean;
   restartKey?: number;
   sourceValues?: StreamValue[];
   title?: string;
@@ -63,6 +74,7 @@ export function PipelineVisualizer({
   scrollSync,
   selectedOperatorId,
   selectedOperatorFocusKey,
+  showSubscriberOutput = false,
   restartKey,
   sourceValues: providedSourceValues,
   title = "Vizualizace streamu",
@@ -73,10 +85,7 @@ export function PipelineVisualizer({
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(
     defaultPlaybackSpeed
   );
-  const [stageValueCounts, setStageValueCounts] = useState({
-    output: 0,
-    source: 0,
-  });
+  const [runState, setRunState] = useState(INITIAL_RUN_STATE);
   const sourceValues = providedSourceValues ?? localSourceValues;
   const usesControlledSourceValues = providedSourceValues !== undefined;
   const canEmitLiveValueControl =
@@ -118,31 +127,41 @@ export function PipelineVisualizer({
 
   const resetRunState = useCallback(() => {
     resetVisualValues();
-    setStageValueCounts({
-      output: 0,
-      source: 0,
-    });
+    setRunState((current) => ({ ...INITIAL_RUN_STATE, runId: current.runId + 1 }));
   }, [resetVisualValues]);
 
   const handleRuntimeTraceEvent = useCallback(
     (event: PipelineTraceEvent) => {
       if (event.type === "source-next") {
-        setStageValueCounts((currentCounts) => ({
-          ...currentCounts,
-          source: currentCounts.source + 1,
+        setRunState((current) => ({
+          ...current,
+          sourceCount: current.sourceCount + 1,
         }));
       }
 
       if (event.type === "subscriber-next") {
-        setStageValueCounts((currentCounts) => ({
-          ...currentCounts,
-          output: currentCounts.output + 1,
-        }));
+        const { id, color, shape, value } = event.value;
+        setRunState((current) => {
+          const outputCount = current.outputCount + 1;
+          if (!showSubscriberOutput) {
+            return { ...current, outputCount };
+          }
+
+          const outputValues = [...current.outputValues, { id, color, shape, value }];
+
+          return {
+            ...current,
+            outputCount,
+            outputValues: canEmitLiveValueControl
+              ? outputValues.slice(-LIVE_OUTPUT_LIMIT)
+              : outputValues,
+          };
+        });
       }
 
       handleTraceEvent(event);
     },
-    [handleTraceEvent]
+    [canEmitLiveValueControl, handleTraceEvent, showSubscriberOutput]
   );
 
   const { emitValue, resetRuntime } = usePipelineRuntime({
@@ -241,11 +260,21 @@ export function PipelineVisualizer({
         <StageLayer
           stagePositions={stagePositions}
           selectedStageId={selectedOperatorId}
-          sourceValueCount={stageValueCounts.source}
-          outputValueCount={stageValueCounts.output}
+          sourceValueCount={runState.sourceCount}
+          outputValueCount={runState.outputCount}
         />
         <ValueLayer visualValues={visualValues} />
       </VisualizerCanvas>
+
+      {showSubscriberOutput && (
+        <div className="bg-muted/60 px-4 py-3 dark:bg-background/40">
+          <SubscriberOutput
+            runId={runState.runId}
+            totalCount={runState.outputCount}
+            values={runState.outputValues}
+          />
+        </div>
+      )}
     </section>
   );
 }

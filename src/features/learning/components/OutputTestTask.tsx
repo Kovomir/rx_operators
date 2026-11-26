@@ -20,7 +20,10 @@ import {
 import { usePipelineScrollSync } from "@/features/pipeline-scroll-sync";
 import { cn } from "@/lib/utils";
 import { clonePipelineOperators } from "./pipeline-operator-clone";
-import type { OutputTestTaskDefinition } from "./output-test-task-types";
+import type {
+  ExpectedOutputValue,
+  OutputTestTaskDefinition,
+} from "./output-test-task-types";
 import {
   getOutputTestResult,
   type TestResult,
@@ -154,12 +157,12 @@ export function OutputTestTask({
               <TaskSummaryLine label="Výstup" value={task.outputSummary} />
             )}
             {!task.inputSummary && (
-              <ValueSequence label="Vstup" values={sourceValuesForDisplay} />
+              <TaskValueSequence label="Vstup" values={sourceValuesForDisplay} />
             )}
             {(task.expectedOutputValues || task.expectedTapValues) && (
               <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
                 {task.expectedOutputValues && (
-                  <ValueSequence
+                  <TaskValueSequence
                     label="Očekávaný výstup"
                     values={task.expectedOutputValues}
                   />
@@ -208,10 +211,36 @@ export function OutputTestTask({
         scrollSync={pipelineScrollSync}
         selectedOperatorId={activeSelectedOperatorId}
         selectedOperatorFocusKey={selectedOperatorFocusKey}
+        showSubscriberOutput
         sourceValues={task.sourceValues}
         title="Vizualizace řešení"
       />
     </div>
+  );
+}
+
+function TaskValueSequence({
+  label,
+  values,
+}: {
+  label: string;
+  values: ExpectedOutputValue[];
+}) {
+  return (
+    <ValueSequence
+      label={label}
+      values={values.map((value, index) => {
+        if (typeof value === "number") {
+          return value;
+        }
+
+        const { color, shape, value: number, kind, emittedAtMs } = value;
+        return { id: String(index), color, shape, value: number, kind, emittedAtMs };
+      })}
+      getCaption={({ emittedAtMs }) =>
+        emittedAtMs === undefined ? undefined : `${emittedAtMs} ms`
+      }
+    />
   );
 }
 
