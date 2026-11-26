@@ -60,8 +60,14 @@ export const DEBOUNCE_TIME_TASKS: DebounceTimeOutputTestTaskDefinition[] = [
     outputSummary:
       "mezi výstupními hodnotami nesmí být menší rozestup než 1 sekunda",
     sourceValues: DEBOUNCE_TIME_RAPID_SERIES_SOURCE_VALUES,
-    validationOutputValues: [
-      { color: "blue", shape: "circle", value: 4, emittedAtMs: 1850 },
+    expectedOutputValues: [
+      {
+        id: "debounce-time-rapid-series-output-1",
+        color: "blue",
+        shape: "circle",
+        value: 4,
+        emittedAtMs: 1850,
+      },
     ],
     enabledOperatorTypes: ["debounceTime"],
     maxOperators: 1,

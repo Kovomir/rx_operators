@@ -98,7 +98,10 @@ export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
     taskNumber: 1,
     title: "Filtrujte hodnoty pomocí filter",
     sourceValues: FILTER_VALUE_TASK_SOURCE_VALUES,
-    expectedOutputValues: [2, 4, 6],
+    expectedOutputValues: FILTER_VALUE_TASK_SOURCE_VALUES.filter(
+      ({ value }) => value % 2 === 0
+    ),
+    validateOutputAppearance: false,
     enabledOperatorTypes: ["filter"],
     maxOperators: 1,
   },
@@ -108,10 +111,19 @@ export const FILTER_TASKS: FilterOutputTestTaskDefinition[] = [
     title: "Filtrujte hodnoty pomocí filter",
     sourceValues: FILTER_COLOR_TASK_SOURCE_VALUES,
     expectedOutputValues: [
-      { shape: "triangle", color: "green", value: 4 },
-      { shape: "triangle", color: "green", value: 10 },
+      {
+        id: "filter-even-green-triangles-output-1",
+        shape: "triangle",
+        color: "green",
+        value: 4,
+      },
+      {
+        id: "filter-even-green-triangles-output-2",
+        shape: "triangle",
+        color: "green",
+        value: 10,
+      },
     ],
-    showSourceValueDetails: true,
     enabledOperatorTypes: ["filter"],
     maxOperators: 3,
   },

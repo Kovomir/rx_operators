@@ -1,9 +1,6 @@
-import type { StreamValue } from "@/features/stream-visualizer";
+import type { StreamValue } from "@/types/stream";
 
-import type {
-  ExpectedOutputValue,
-  OutputTestTaskDefinition,
-} from "./output-test-task-types";
+import type { OutputTestTaskDefinition } from "./output-test-task-types";
 
 export type TestResult = "passed" | "failed";
 
@@ -18,14 +15,16 @@ export function getOutputTestResult({
   actualTapValues,
   task,
 }: GetOutputTestResultArgs): TestResult {
-  const outputValuesForValidation =
-    task.validationOutputValues ?? task.expectedOutputValues;
-  const hasExpectedOutput = outputValuesForValidation
-    ? areOutputValuesEqual(actualOutputValues, outputValuesForValidation)
+  const hasExpectedOutput = task.expectedOutputValues
+    ? areOutputValuesEqual(
+        actualOutputValues,
+        task.expectedOutputValues,
+        task.validateOutputAppearance ?? true
+      )
     : true;
   const hasExpectedTapValues = areNumberArraysEqual(
     actualTapValues,
-    task.expectedTapValues
+    task.expectedTapValues?.map(({ value }) => value)
   );
 
   return hasExpectedOutput && hasExpectedTapValues ? "passed" : "failed";
@@ -33,7 +32,8 @@ export function getOutputTestResult({
 
 function areOutputValuesEqual(
   actualValues: StreamValue[],
-  expectedValues: ExpectedOutputValue[]
+  expectedValues: StreamValue[],
+  validateAppearance: boolean
 ) {
   return (
     actualValues.length === expectedValues.length &&
@@ -44,14 +44,11 @@ function areOutputValuesEqual(
         return false;
       }
 
-      if (typeof expectedValue === "number") {
-        return actualValue.value === expectedValue;
-      }
-
       return (
         actualValue.value === expectedValue.value &&
-        actualValue.color === expectedValue.color &&
-        actualValue.shape === expectedValue.shape &&
+        (!validateAppearance ||
+          (actualValue.color === expectedValue.color &&
+            actualValue.shape === expectedValue.shape)) &&
         (typeof expectedValue.emittedAtMs !== "number" ||
           actualValue.emittedAtMs === expectedValue.emittedAtMs)
       );
